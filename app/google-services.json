@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "45107615262",
+    "firebase_url": "https://squash-f392b.firebaseio.com",
+    "project_id": "squash-f392b",
+    "storage_bucket": "squash-f392b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:45107615262:android:6892949ca99e502fadc00f",
+        "android_client_info": {
+          "package_name": "com.example.squash"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "45107615262-m1c66tqnjfqtuas0uutqcm5r8o1g8ait.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.squash",
+            "certificate_hash": "305c0bbbb53baefaab21f5d871753f49b139aa1a"
+          }
+        },
+        {
+          "client_id": "45107615262-htv68apd0423cish9j3clv1ao18b2hbj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzgc8s1u2lIEwfluQ_gF-iaFHLGD-7a_M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "45107615262-htv68apd0423cish9j3clv1ao18b2hbj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

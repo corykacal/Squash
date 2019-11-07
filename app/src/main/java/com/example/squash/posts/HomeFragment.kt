@@ -47,74 +47,21 @@ class HomeFragment: Fragment() {
         }
     }
 
+    private fun initSwipeLayout(root: View) {
+        var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+        refresher.setOnRefreshListener {
+            refresher.isRefreshing = false
+        }
+    }
+
     private fun initAdapter(root: View) {
         var recycler = root.findViewById<RecyclerView>(R.id.searchResults)
         postAdapter = PostListAdapter(viewModel)
         recycler.adapter = postAdapter
         recycler.layoutManager = LinearLayoutManager(context)
 
-        val itemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, viewHolder1: RecyclerView.ViewHolder): Boolean {
-                //2
-                return false
-            }
+        val itemTouchCallback = postTouchHelper(0, ItemTouchHelper.LEFT)
 
-            //override onchilddrawover and onchilddraw to not kill item
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                /*
-                super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-
-                 */
-            }
-
-            override fun onChildDrawOver(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder?,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                /*
-                super.onChildDrawOver(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-
-                 */
-            }
-
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
-                //3
-                val position = viewHolder.adapterPosition
-                val pos = viewModel.observePosts().value?.get(position)
-                Log.d("swipe the comment","$pos")
-            }
-        }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
         itemTouchHelper.attachToRecyclerView(recycler)
@@ -138,6 +85,7 @@ class HomeFragment: Fragment() {
         viewModel = MainActivity.viewModel
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
+        initSwipeLayout(root)
         setDataObserver(root)
         viewModel.getChat()
 

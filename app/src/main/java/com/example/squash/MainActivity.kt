@@ -7,8 +7,11 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
@@ -17,8 +20,14 @@ import com.example.squash.api.User
 import com.example.squash.api.photoapi
 import com.example.squash.posts.HomeFragment
 import com.google.firebase.auth.FirebaseAuth
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 
-import kotlinx.android.synthetic.main.activity_main.*
+
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +40,19 @@ class MainActivity : AppCompatActivity() {
         lateinit var viewModel: MainViewModel
     }
 
+    private fun initActionBar(actionBar: ActionBar) {
+        // Disable the default and enable the custom
+        actionBar.setDisplayShowTitleEnabled(false)
+        actionBar.setDisplayShowCustomEnabled(true)
+        val customView: View =
+            layoutInflater.inflate(R.layout.action_bar, null)
+        // Apply the custom view
+        actionBar.customView = customView
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        return false
+    }
 
     private fun initHomeFragment() {
         supportFragmentManager
@@ -46,6 +68,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.let{
+            initActionBar(it)
+        }
         homeFragment = HomeFragment.newInstance()
         initHomeFragment()
         auth = FirebaseAuth.getInstance()

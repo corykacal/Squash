@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.widget.Button
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.action_bar.*
 
@@ -50,8 +51,10 @@ class MainActivity : AppCompatActivity() {
         hotButton.setOnClickListener {
             if(newPost) {
                 viewModel.sortChatByLikes()
-                it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.background))
+                it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                 newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                 newPost = false
             }
         }
@@ -59,8 +62,10 @@ class MainActivity : AppCompatActivity() {
         newButton.setOnClickListener {
             if (!newPost) {
                 viewModel.sortChatByTime()
-                it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.background))
+                it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                 hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                 newPost = true
             }
         }

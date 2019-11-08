@@ -98,6 +98,8 @@ class MainViewModel : ViewModel() {
         }
     }
 
+
+
     // Debateable how useful this is.
     override fun onCleared() {
         super.onCleared()

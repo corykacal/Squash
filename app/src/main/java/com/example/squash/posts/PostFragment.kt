@@ -3,6 +3,7 @@ package com.example.squash.posts
 import android.graphics.Canvas
 import android.media.MediaRouter
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -30,9 +32,9 @@ import com.example.squash.api.posts.Post
 import com.example.squash.technology.OnSwipeTouchListener
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
+import kotlinx.android.synthetic.main.action_bar.*
 
-
-class HomeFragment: Fragment() {
+class PostFragment: Fragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var auth: FirebaseAuth
 
@@ -40,8 +42,8 @@ class HomeFragment: Fragment() {
 
 
     companion object {
-        fun newInstance(): HomeFragment {
-            return HomeFragment()
+        fun newInstance(): PostFragment {
+            return PostFragment()
         }
     }
 
@@ -52,25 +54,15 @@ class HomeFragment: Fragment() {
         }
     }
 
-    fun startFragment(post: Post) {
-        var postFragment = PostFragment.newInstance()
-        var bundle = Bundle()
-        bundle.putString("contents", post.contents)
-        bundle.putLong("points", post.points!!)
-        postFragment.arguments = bundle
-        fragmentManager!!
-            .beginTransaction()
-            .addToBackStack("postDetails")
-            .add(R.id.main_frame, postFragment)
-            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            .commit()
-    }
-
     private fun initAdapter(root: View) {
+        /*
         var recycler = root.findViewById<RecyclerView>(R.id.searchResults)
         postAdapter = PostListAdapter(viewModel, this)
         recycler.adapter = postAdapter
         recycler.layoutManager = LinearLayoutManager(context)
+
+         */
+
 
         /*
         old cocde when i was going to have swipe left for favorite.
@@ -86,12 +78,11 @@ class HomeFragment: Fragment() {
 
     }
 
-    /*
     private fun initSideSwipes(root: View) {
 
-    }
 
-     */
+
+    }
 
     private fun setDataObserver(root: View) {
         viewModel.observePosts().observe(this, Observer {
@@ -108,13 +99,35 @@ class HomeFragment: Fragment() {
     ): View? {
 
         viewModel = MainActivity.viewModel
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
+        val root = inflater.inflate(R.layout.post_fragment, container, false)
 
+        val contentsTV = root.findViewById<TextView>(R.id.contents)
+        val commentCountTV = root.findViewById<TextView>(R.id.comments)
+        val pointsTV = root.findViewById<TextView>(R.id.points)
+        var  points = arguments?.getLong("points")?.toInt()
+
+        pointsTV.text = points.toString()
+        contentsTV.text = arguments?.getString("contents")
+        commentCountTV.text = "4"
+
+        if(points!!<0) {
+            pointsTV.setTextColor(ContextCompat.getColor(pointsTV.context, R.color.badComment))
+        } else {
+            pointsTV.setTextColor(ContextCompat.getColor(pointsTV.context, R.color.goodComment))
+        }
+
+
+
+
+
+        /*
         initDownSwipeLayout(root)
         setDataObserver(root)
         viewModel.getChat()
 
-        //initSideSwipes(root)
+        initSideSwipes(root)
+
+         */
 
         /*
         root.setOnTouchListener(object: OnSwipeTouchListener(recycle.context) {
@@ -133,5 +146,16 @@ class HomeFragment: Fragment() {
         return root
     }
 
-}
 
+
+
+
+
+
+
+
+
+
+
+
+}

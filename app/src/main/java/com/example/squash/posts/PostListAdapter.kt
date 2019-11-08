@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.ContextCompat.startActivity
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -38,11 +39,10 @@ import kotlin.random.Random
  * Created by witchel on 8/25/2019
  */
 
-class PostListAdapter(private val viewModel: MainViewModel,
-    // If true call notifyDataSetChanged if unfavorited
-                      private val unfavoriteIsRemove: Boolean = false)
+class PostListAdapter(private val viewModel: MainViewModel, private val fragment: HomeFragment)
     : ListAdapter<Post, PostListAdapter.VH>(RedditDiff()) {
     class RedditDiff : DiffUtil.ItemCallback<Post>() {
+
 
 
         override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
@@ -76,6 +76,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
         private var upVote = itemView.findViewById<ImageView>(R.id.upVote)
         private var downVote = itemView.findViewById<ImageView>(R.id.downVote)
 
+
         fun bind(item: Post?) {
             Log.d("post", "$item")
             if (item == null) return
@@ -92,6 +93,10 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 pointsTV.setTextColor(ContextCompat.getColor(itemView.context, R.color.goodComment))
             }
             pointsTV.text = points.toString()
+
+            itemView.setOnClickListener {
+                fragment.startFragment(item)
+            }
         }
     }
 

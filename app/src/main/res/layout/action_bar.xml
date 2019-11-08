@@ -18,28 +18,42 @@
         android:text="329"
         />
 
-    <Button
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:background="@color/background"
-        android:id="@+id/newButton"
-        android:text="new"
-        android:fontFamily="sans-serif-medium"
-        android:textSize="15sp"
-        />
+        android:gravity="center"
+        android:orientation="horizontal">
 
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
-        android:background="@color/secondaryYellow"
-        android:id="@+id/hotButton"
-        android:text="hot"
-        android:fontFamily="sans-serif-medium"
-        android:textSize="15sp"
-        />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:background="@color/selectedButton"
+            android:textColor="@color/secondaryYellow"
+            android:gravity="center"
+            android:id="@+id/newButton"
+            android:text="new"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="15sp"
+            />
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:background="@color/secondaryYellow"
+            android:textColor="@color/selectedButton"
+            android:gravity="center"
+            android:id="@+id/hotButton"
+            android:text="hot"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="15sp"
+            />
+
+    </LinearLayout>
 
 
 

@@ -62,16 +62,16 @@
             app:hideOnScroll="true"
             app:navigationIcon="@drawable/ic_comment_black_24dp" />
 
-        <!-- Floating Action button -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:tint="@android:color/white"
-            android:backgroundTint="@color/mainGreen"
             app:fabSize="normal"
             app:layout_anchor="@id/bar"
-            app:srcCompat="@drawable/new_post" />
+            app:srcCompat="@drawable/new_post"
+            />
+
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

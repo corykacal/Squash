@@ -49,6 +49,7 @@ class MainViewModel : ViewModel() {
                     post.contents,
                     post.imageUUID,
                     post.postID,
+                    post.points,
                     auth!!.getUid(),
                     com.google.firebase.Timestamp.now()
                 )
@@ -69,6 +70,18 @@ class MainViewModel : ViewModel() {
             }
         }
 
+    }
+
+    fun sortChatByTime() {
+        var chatlist = chat.value
+        var sorted = chatlist?.sortedBy { it.timestamp }
+        chat.postValue(sorted)
+    }
+
+    fun sortChatByLikes() {
+        var chatlist = chat.value
+        var sorted = chatlist?.sortedBy { it.points!!.times(-1) }
+        chat.postValue(sorted)
     }
 
     fun uploadJpg(localPath: String, uuid: String) {

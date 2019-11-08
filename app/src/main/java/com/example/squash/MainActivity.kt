@@ -23,10 +23,8 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
-
-
+import androidx.core.content.ContextCompat
+import kotlinx.android.synthetic.main.action_bar.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         lateinit var viewModel: MainViewModel
+        var newPost = true
     }
 
     private fun initActionBar(actionBar: ActionBar) {
@@ -48,6 +47,23 @@ class MainActivity : AppCompatActivity() {
             layoutInflater.inflate(R.layout.action_bar, null)
         // Apply the custom view
         actionBar.customView = customView
+        hotButton.setOnClickListener {
+            if(newPost) {
+                viewModel.sortChatByLikes()
+                it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.background))
+                newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                newPost = false
+            }
+        }
+
+        newButton.setOnClickListener {
+            if (!newPost) {
+                viewModel.sortChatByTime()
+                it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.background))
+                hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                newPost = true
+            }
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {

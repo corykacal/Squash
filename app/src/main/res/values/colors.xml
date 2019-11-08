@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="goodComment">#b3e83a</color>
-    <color name="badComment">#f98500</color>
-    <color name="mainYellow">#edea34</color>
+    <color name="goodComment">#9fe400</color>
+    <color name="badComment">#ff8800</color>
+
+    <color name="mainYellow">#f7ec4f</color>
+    <color name="secondaryYellow">#e1d748</color>
+
+    <color name="mainGreen">#c1e868</color>
+    <color name="secondaryGreen">#b0d35f</color>
+
     <color name="post">#fffffc</color>
-    <color name="background">#fffef7</color>
+    <color name="background">#fffef3</color>
 </resources>

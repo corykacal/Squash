@@ -9,10 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.SimpleAdapter
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -30,6 +27,7 @@ import com.example.squash.api.MainViewModel
 import com.example.squash.api.User
 import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
+import com.example.squash.technology.OnSwipeTouchListener
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
 
@@ -47,7 +45,7 @@ class HomeFragment: Fragment() {
         }
     }
 
-    private fun initSwipeLayout(root: View) {
+    private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
             refresher.isRefreshing = false
@@ -60,11 +58,23 @@ class HomeFragment: Fragment() {
         recycler.adapter = postAdapter
         recycler.layoutManager = LinearLayoutManager(context)
 
+        /*
+        old cocde when i was going to have swipe left for favorite.
+        but i am going to have swipe left for the changing between
+        hot anda new.
+
         val itemTouchCallback = postTouchHelper(0, ItemTouchHelper.LEFT)
 
 
         val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
         itemTouchHelper.attachToRecyclerView(recycler)
+         */
+
+    }
+
+    private fun initSideSwipes(root: View) {
+
+
 
     }
 
@@ -85,13 +95,28 @@ class HomeFragment: Fragment() {
         viewModel = MainActivity.viewModel
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
-        initSwipeLayout(root)
+        initDownSwipeLayout(root)
         setDataObserver(root)
         viewModel.getChat()
+
+        initSideSwipes(root)
+
+        /*
+        root.setOnTouchListener(object: OnSwipeTouchListener(recycle.context) {
+            override fun onSwipeRight() {
+                Toast.makeText(recycle.context, "right", Toast.LENGTH_SHORT).show()
+            }
+            override fun onSwipeLeft() {
+                Toast.makeText(recycle.context, "left", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+         */
 
 
 
         return root
     }
+
 }
 

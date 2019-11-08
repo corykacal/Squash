@@ -9,6 +9,7 @@ data class Post(
     var contents: String? = null,
     var imageUUID: String? = null,
     var postID: Long? = null,
+    var points: Long? = null,
     var opUUID: String? = null,
     @ServerTimestamp val timestamp: com.google.firebase.Timestamp? = null
 )

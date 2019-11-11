@@ -82,33 +82,14 @@ class PostListAdapter(private val viewModel: MainViewModel, private val fragment
         fun bind(item: Post?) {
             if (item == null) return
 
-            //start of horrible time stuff please fix
             val postDate = Date(item.timestamp!!.time)
-            val stamp = Timestamp(System.currentTimeMillis())
-            val date = Date(stamp.getTime())
-            val dateDifference = Date(date.time-postDate.time)
-            val time = dateDifference.time
-            val seconds = time/1000
-            val minutes = seconds/60
-            val hours = minutes/60
-            val days = hours/24
-            val possibleValues = listOf(days, hours, minutes, seconds)
-            Log.d("days ago was:", "${dateDifference.time}")
-            val possibleTickers = listOf(" d", " h", " m", " s")
-            for (i in possibleValues.indices) {
-                val currentValue = possibleValues[i]
-                if(currentValue!=0L) {
-                    timeTV.text = currentValue.toString() + possibleTickers[i]
-                    break
-                }
-            }
-            //end of horrible time stuff
+            timeTV.text = viewModel.getTime(postDate)
 
             contentsTV.text = item.contents
             if(item.imageUUID!=null) {
                 //viewModel.downloadJpg(item.imageUUID, image)
             }
-            commentsTV.text = Random.nextInt(0,32).toString()
+            commentsTV.text = item.comment_count.toString()
             var points = 10
             if(points<0) {
                 pointsTV.setTextColor(ContextCompat.getColor(itemView.context, R.color.badComment))

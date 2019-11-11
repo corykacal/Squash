@@ -11,6 +11,7 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import java.util.*
 
 interface PostApi {
 
@@ -23,6 +24,9 @@ interface PostApi {
                          @Field("reply_to") reply_to: Long?,
                          @Field("opuuid") opuuid: String,
                          @Field("contents") contents: String): Call<PostResponse>
+
+    @GET("/api/post/{post_number}")
+    fun getSinglePost(@Path("post_number") post_number: Long): Call<ListingResponse>
 
     class PostResponse(val results: String)
 
@@ -37,7 +41,7 @@ interface PostApi {
         //private const val BASE_URL = "https://www.reddit.com/"
         var httpurl = HttpUrl.Builder()
             .scheme("http")
-            .host("ec2-3-133-82-128.us-east-2.compute.amazonaws.com")
+            .host("ec2-3-15-217-5.us-east-2.compute.amazonaws.com")
             .port(5000)
             .build()
         fun create(): PostApi = create(httpurl)

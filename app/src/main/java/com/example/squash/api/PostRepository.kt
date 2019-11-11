@@ -23,6 +23,16 @@ class PostRepository(private val postApi: PostApi) {
         return results.isSuccessful
     }
 
+    fun getSinglePost(post_number: Long): Post {
+        val request = postApi.getSinglePost(post_number)
+        var results = request.execute()
+        if(results.isSuccessful) {
+            return results.body()!!.results[0]
+        } else {
+            return Post()
+        }
+    }
+
     fun getPosts(): List<Post>? {
         val request = postApi.getPost()
         var results = request.execute()

@@ -36,6 +36,8 @@ import com.example.squash.technology.OnSwipeTouchListener
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.action_bar.*
+import kotlinx.android.synthetic.main.post_fragment.*
+import java.util.*
 
 class PostFragment: AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
@@ -78,16 +80,28 @@ class PostFragment: AppCompatActivity() {
     private fun initSideSwipes(root: View) {
 
 
-
     }
-    private fun initActionBar(actionBar: ActionBar) {
-        // Disable the default and enable the custom
-        actionBar.setDisplayShowTitleEnabled(false)
-        actionBar.setDisplayShowCustomEnabled(true)
-        val customView: View =
-            layoutInflater.inflate(R.layout.post_bar, null)
-        // Apply the custom view
-        actionBar.customView = customView
+
+    private fun setMainPost(post: Post) {
+        contents.text = post.contents
+        comments.text = post.comment_count.toString()
+        timeStamp.text = viewModel.getTime(Date(post.timestamp!!.time))
+    }
+
+    private fun observeMainPost(post_number: Long) {
+        viewModel.observeSinglePost().observe(this, Observer {
+            setMainPost(it)
+        })
+    }
+
+    private fun initActionBar() {
+        val toolbar = findViewById<Toolbar>(R.id.posttoolbar)
+        toolbar.setTitle(title)
+        toolbar.setNavigationIcon(R.drawable.back_arrow)
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun setDataObserver(root: View) {
@@ -101,11 +115,16 @@ class PostFragment: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.post_fragment)
-        val toolbar: Toolbar = findViewById(R.id.posttoolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.let{
-            initActionBar(it)
-        }
+
+        viewModel = MainActivity.viewModel
+        val intent = intent
+        val post_number = intent.getLongExtra("post_number", 0)
+
+        observeMainPost(post_number)
+        viewModel.getSinglePost(post_number)
+
+        initActionBar()
+
 
     }
 

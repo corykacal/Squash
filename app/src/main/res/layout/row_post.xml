@@ -56,12 +56,12 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="2dp"
                     android:layout_marginEnd="-1dp"
-                    android:maxLines="7"
+                    android:maxLines="5"
                     android:minLines="3"
                     android:gravity="start"
                     android:ellipsize="end"
                     android:textSize="19sp"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="sans-serif"
                     />
 
             </FrameLayout>

@@ -22,6 +22,9 @@ data class Post(
     @SerializedName("reply_to")
     var reply_to: Long? = null,
 
+    @SerializedName("comment_count")
+    var comment_count: Int? = null,
+
     @SerializedName("timestamp")
     @ServerTimestamp val timestamp: Timestamp? = null
 )

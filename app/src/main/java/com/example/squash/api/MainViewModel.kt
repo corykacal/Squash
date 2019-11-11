@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 class MainViewModel : ViewModel() {
@@ -19,6 +20,7 @@ class MainViewModel : ViewModel() {
     private var auth: User? = null
     private lateinit var storage: photoapi
     private var chat = MutableLiveData<List<Post>>()
+    private var singlePost = MutableLiveData<Post>()
     private var chatListener : ListenerRegistration? = null
     // Ouch, this is a very poor man's cache
     private var uuid2localpath = mutableMapOf<String,String>()
@@ -36,19 +38,46 @@ class MainViewModel : ViewModel() {
         this.auth = auth
         this.storage = storage
     }
+
     fun observePosts(): LiveData<List<Post>> {
         return chat
     }
-    fun sendPost(post: Post) {
-        Log.d(
-            "HomeViewModel",
-            String.format(
-                "saveChatRow ownerUid(%s) name(%s) %s",
-                post.contents,
-                post.postID,
-                post.timestamp
-            )
-        )
+
+    fun observeSinglePost(): LiveData<Post> {
+        return singlePost
+    }
+
+    fun getTime(postDate: Date): String {
+        var res = ""
+        val stamp = java.sql.Timestamp(System.currentTimeMillis())
+        val date = Date(stamp.getTime())
+        val dateDifference = Date(date.time-postDate.time)
+        val time = dateDifference.time
+        val seconds = time/1000
+        val minutes = seconds/60
+        val hours = minutes/60
+        val days = hours/24
+        val possibleValues = listOf(days, hours, minutes, seconds)
+        Log.d("days ago was:", "${dateDifference.time}")
+        val possibleTickers = listOf(" d", " h", " m", " s")
+        for (i in possibleValues.indices) {
+            val currentValue = possibleValues[i]
+            if(currentValue!=0L) {
+                res = currentValue.toString() + possibleTickers[i]
+                break
+            }
+        }
+        return res
+    }
+
+    fun getSinglePost(post_number: Long) {
+        viewModelScope.launch(
+            context = viewModelScope.coroutineContext
+                    + Dispatchers.IO) {
+            var post = postRepository.getSinglePost(post_number)
+            Log.d("we got back this:","$post")
+            singlePost.postValue(post)
+        }
     }
 
     fun makePost(contents: String, imageuuid: String?, reply_to: Long?) {
@@ -68,8 +97,8 @@ class MainViewModel : ViewModel() {
             context = viewModelScope.coroutineContext
                     + Dispatchers.IO) {
             // Update LiveData from IO dispatcher, use postValue
-            var post = postRepository.getPosts()
-            chat.postValue(postRepository.getPosts())
+            var posts = postRepository.getPosts()
+            chat.postValue(posts)
         }
     }
 

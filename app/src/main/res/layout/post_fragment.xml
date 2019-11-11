@@ -6,6 +6,22 @@
     android:background="@color/background"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/posttoolbar"
+            android:layout_gravity="fill_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/mainYellow"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
 
 
     <androidx.cardview.widget.CardView
@@ -16,6 +32,7 @@
         android:clickable="true"
         android:layout_marginTop="6dp"
         android:layout_marginHorizontal="0dp"
+        app:layout_constraintTop_toTopOf="parent"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -208,6 +225,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

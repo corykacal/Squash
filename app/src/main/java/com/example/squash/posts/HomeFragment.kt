@@ -1,5 +1,6 @@
 package com.example.squash.posts
 
+import android.content.Intent
 import android.graphics.Canvas
 import android.media.MediaRouter
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -28,8 +30,10 @@ import com.example.squash.api.User
 import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
 import com.example.squash.technology.OnSwipeTouchListener
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
+import kotlinx.android.synthetic.main.fragment_home.*
 
 
 class HomeFragment: Fragment() {
@@ -48,22 +52,20 @@ class HomeFragment: Fragment() {
     private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
+            viewModel.getChat()
             refresher.isRefreshing = false
         }
     }
 
-    fun startFragment(post: Post) {
-        var postFragment = PostFragment.newInstance()
-        var bundle = Bundle()
-        bundle.putString("contents", post.contents)
-        bundle.putLong("points", post.points!!)
-        postFragment.arguments = bundle
-        fragmentManager!!
-            .beginTransaction()
-            .addToBackStack("postDetails")
-            .add(R.id.main_frame, postFragment)
-            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            .commit()
+    fun startPostFragment(post: Post) {
+        val intent = Intent(context, PostFragment::class.java)
+        intent.putExtra("post_number", post.postID)
+        startActivity(intent)
+    }
+
+    private fun startCreatePostActivity(root: View) {
+        var intent = Intent(root.context, NewPostActivity::class.java)
+        startActivity(intent)
     }
 
     private fun initAdapter(root: View) {
@@ -93,6 +95,12 @@ class HomeFragment: Fragment() {
 
      */
 
+    private fun initFloatingButton(root: View) {
+        root.findViewById<FloatingActionButton>(R.id.newPost).setOnClickListener {
+            startCreatePostActivity(root)
+        }
+    }
+
     private fun setDataObserver(root: View) {
         viewModel.observePosts().observe(this, Observer {
             Log.d("new post bro", "wew $it")
@@ -113,6 +121,9 @@ class HomeFragment: Fragment() {
         initDownSwipeLayout(root)
         setDataObserver(root)
         viewModel.getChat()
+
+        initFloatingButton(root)
+
 
         //initSideSwipes(root)
 

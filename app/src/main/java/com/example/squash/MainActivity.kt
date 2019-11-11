@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         actionBar.customView = customView
         hotButton.setOnClickListener {
             if(newPost) {
-                viewModel.sortChatByLikes()
                 it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                 (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                 newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
@@ -61,7 +60,6 @@ class MainActivity : AppCompatActivity() {
 
         newButton.setOnClickListener {
             if (!newPost) {
-                viewModel.sortChatByTime()
                 it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                 (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                 hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))

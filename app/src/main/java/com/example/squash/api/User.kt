@@ -23,7 +23,7 @@ class User(private val auth: FirebaseAuth) {
                 if (it.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("###########", "signInAnonymously:success")
-                    val user = auth.currentUser
+                    user = auth.currentUser
                     //updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
@@ -33,6 +33,7 @@ class User(private val auth: FirebaseAuth) {
             }
         } else {
             Log.d("##########", "user signed in already")
+            user = auth.currentUser
         }
     }
     fun getUid(): String? {

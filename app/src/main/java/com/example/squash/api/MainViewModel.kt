@@ -5,10 +5,13 @@ import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.squash.api.posts.Post
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MainViewModel : ViewModel() {
@@ -19,6 +22,11 @@ class MainViewModel : ViewModel() {
     private var chatListener : ListenerRegistration? = null
     // Ouch, this is a very poor man's cache
     private var uuid2localpath = mutableMapOf<String,String>()
+
+    companion object {
+        var postFetch = PostApi.create()
+        var postRepository = PostRepository(postFetch)
+    }
 
     fun init(auth: User, storage: photoapi) {
         db = FirebaseFirestore.getInstance()
@@ -41,63 +49,29 @@ class MainViewModel : ViewModel() {
                 post.timestamp
             )
         )
-        // XXX Write me
-        // https://firebase.google.com/docs/firestore/manage-data/add-data#add_a_document
-        db.collection("post").document()
-            .set(
-                Post(
-                    post.contents,
-                    post.imageUUID,
-                    post.postID,
-                    post.points,
-                    auth!!.getUid(),
-                    com.google.firebase.Timestamp.now()
-                )
-            )
+    }
 
+    fun makePost(contents: String, imageuuid: String?, reply_to: Long?) {
+        viewModelScope.launch(
+            context = viewModelScope.coroutineContext
+                    + Dispatchers.IO) {
+            // Update LiveData from IO dispatcher, use postValue
+            var opuuid = auth?.getUid()
+            Log.d("MainViewModel", "$opuuid")
+            postRepository.makePost(contents, imageuuid, reply_to, opuuid!!)
+        }
     }
 
     fun getChat() {
         // XXX Write me.  Limit total number of chat rows to 100
-        db.collection("post").limit(100).addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-            if (firebaseFirestoreException != null) {
-                Log.w("####", "listen:error", firebaseFirestoreException)
-                return@addSnapshotListener
-            }
-            Log.d("####", "fetch ${querySnapshot!!.documents.size}")
-            chat.value = querySnapshot.documents.mapNotNull {
-                it.toObject(Post::class.java)
-            }
-        }
-
-    }
-
-    fun sortChatByTime() {
-        var chatlist = chat.value
-        var sorted = chatlist?.sortedBy { it.timestamp }
-        chat.postValue(sorted)
-    }
-
-    fun sortChatByLikes() {
-        var chatlist = chat.value
-        var sorted = chatlist?.sortedBy { it.points!!.times(-1) }
-        chat.postValue(sorted)
-    }
-
-    fun uploadJpg(localPath: String, uuid: String) {
-        storage.uploadImg(localPath, uuid)
-    }
-    // Very poor man's cache.  I should really use glide
-    fun downloadJpg(uuid: String, textView: TextView) {
-        if(uuid2localpath.containsKey(uuid)) {
-            Log.d("####", "local load $uuid")
-            storage.loadFileToTV(uuid, textView)
-        } else {
-            Log.d("####", "remote load $uuid")
-            uuid2localpath[uuid] = storage.downloadImg(uuid, textView)
+        viewModelScope.launch(
+            context = viewModelScope.coroutineContext
+                    + Dispatchers.IO) {
+            // Update LiveData from IO dispatcher, use postValue
+            var post = postRepository.getPosts()
+            chat.postValue(postRepository.getPosts())
         }
     }
-
 
 
     // Debateable how useful this is.

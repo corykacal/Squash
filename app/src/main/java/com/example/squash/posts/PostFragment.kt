@@ -11,6 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -34,18 +37,12 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.action_bar.*
 
-class PostFragment: Fragment() {
+class PostFragment: AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var auth: FirebaseAuth
 
     private lateinit var postAdapter: PostListAdapter
 
-
-    companion object {
-        fun newInstance(): PostFragment {
-            return PostFragment()
-        }
-    }
 
     private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
@@ -83,6 +80,15 @@ class PostFragment: Fragment() {
 
 
     }
+    private fun initActionBar(actionBar: ActionBar) {
+        // Disable the default and enable the custom
+        actionBar.setDisplayShowTitleEnabled(false)
+        actionBar.setDisplayShowCustomEnabled(true)
+        val customView: View =
+            layoutInflater.inflate(R.layout.post_bar, null)
+        // Apply the custom view
+        actionBar.customView = customView
+    }
 
     private fun setDataObserver(root: View) {
         viewModel.observePosts().observe(this, Observer {
@@ -92,69 +98,16 @@ class PostFragment: Fragment() {
         })
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        viewModel = MainActivity.viewModel
-        val root = inflater.inflate(R.layout.post_fragment, container, false)
-
-        val contentsTV = root.findViewById<TextView>(R.id.contents)
-        val commentCountTV = root.findViewById<TextView>(R.id.comments)
-        val pointsTV = root.findViewById<TextView>(R.id.points)
-        var  points = arguments?.getLong("points")?.toInt()
-
-        pointsTV.text = points.toString()
-        contentsTV.text = arguments?.getString("contents")
-        commentCountTV.text = "4"
-
-        if(points!!<0) {
-            pointsTV.setTextColor(ContextCompat.getColor(pointsTV.context, R.color.badComment))
-        } else {
-            pointsTV.setTextColor(ContextCompat.getColor(pointsTV.context, R.color.goodComment))
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.post_fragment)
+        val toolbar: Toolbar = findViewById(R.id.posttoolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.let{
+            initActionBar(it)
         }
 
-
-
-
-
-        /*
-        initDownSwipeLayout(root)
-        setDataObserver(root)
-        viewModel.getChat()
-
-        initSideSwipes(root)
-
-         */
-
-        /*
-        root.setOnTouchListener(object: OnSwipeTouchListener(recycle.context) {
-            override fun onSwipeRight() {
-                Toast.makeText(recycle.context, "right", Toast.LENGTH_SHORT).show()
-            }
-            override fun onSwipeLeft() {
-                Toast.makeText(recycle.context, "left", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-         */
-
-
-
-        return root
     }
-
-
-
-
-
-
-
-
-
-
 
 
 

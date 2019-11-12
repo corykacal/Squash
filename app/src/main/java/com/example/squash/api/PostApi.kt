@@ -15,8 +15,9 @@ import java.util.*
 
 interface PostApi {
 
-    @GET("/api/recent/100")
-    fun getPost(): Call<ListingResponse>
+    @GET("/api/recent/")
+    fun getPost(@Query("opuuid") opuuid: String,
+                @Query("number_of_posts") number_of_posts: Int?): Call<ListingResponse>
 
     @POST("/api/submit/")
     @FormUrlEncoded
@@ -25,8 +26,20 @@ interface PostApi {
                          @Field("opuuid") opuuid: String,
                          @Field("contents") contents: String): Call<PostResponse>
 
-    @GET("/api/post/{post_number}")
-    fun getSinglePost(@Path("post_number") post_number: Long): Call<ListingResponse>
+
+    @POST("/api/vote/")
+    @FormUrlEncoded
+    fun makeDescision(@Field("opuuid") opuuid: String?,
+                      @Field("post_number") post_number: Long,
+                      @Field("descision") descision: Boolean): Call<PostResponse>
+
+    @GET("/api/post/")
+    fun getSinglePost(@Query("post_number") post_number: Long,
+                      @Query("opuuid") opuuid: String): Call<ListingResponse>
+
+    @GET("/api/replies/")
+    fun getComments(@Query("post_number") post_number: Long,
+                    @Query("opuuid") opuuid: String): Call<ListingResponse>
 
     class PostResponse(val results: String)
 

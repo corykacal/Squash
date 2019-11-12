@@ -19,6 +19,8 @@ import com.example.squash.MainActivity
 
 class NewPostActivity: AppCompatActivity() {
 
+    private var isComment: Boolean? = null
+    private var reply_to: Long? = null
     var viewModel = MainActivity.viewModel
 
     private fun openKeybaord() {
@@ -29,10 +31,13 @@ class NewPostActivity: AppCompatActivity() {
     private fun initPostButton() {
         postButton.setOnClickListener {
             var contents = editPostText.text.toString()
-            viewModel.makePost(contents, null, null)
-            viewModel.getChat()
-            hideKeyboard()
-            finish()
+            if(!contents.isBlank()) {
+                viewModel.makePost(contents, null, reply_to)
+                hideKeyboard()
+                finish()
+            } else {
+                postError.text = "Error: can't send blank post"
+            }
         }
     }
 
@@ -65,6 +70,14 @@ class NewPostActivity: AppCompatActivity() {
         overridePendingTransition(R.anim.fade_int, R.anim.fade_out)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_post)
+
+        val intent = intent
+        isComment = intent.getBooleanExtra("isComment", false)
+        if(isComment!!) {
+            reply_to = intent.getLongExtra("reply_to", 0)
+        }
+
+
         listenToEdit()
         openKeybaord()
         initPostButton()

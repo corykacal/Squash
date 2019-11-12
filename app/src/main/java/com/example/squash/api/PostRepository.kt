@@ -15,6 +15,24 @@ class PostRepository(private val postApi: PostApi) {
         //private val favorites: MutableSet<Post> = HashSet()
     }
 
+    fun getComments(post_number: Long, opuuid: String): List<Post> {
+        val request = postApi.getComments(post_number, opuuid)
+        var results = request.execute()
+        Log.d("comments are: ", "${results.body()?.results}")
+        if(results.isSuccessful) {
+            return results.body()!!.results
+        } else {
+            return mutableListOf()
+        }
+    }
+
+    fun makeDescision(opuuid: String, post_number: Long, descision: Boolean): Boolean {
+        var request = postApi.makeDescision(opuuid, post_number, descision)
+        var results = request.execute()
+        Log.d("$$$$$$$$$$$", "${results.body()?.results}")
+        return results.isSuccessful
+    }
+
     fun makePost(contents: String, imageuuid: String?,
                          reply_to: Long?, opuuid: String): Boolean {
         Log.d("PostRepository", "makeing a commmand swasg")
@@ -23,8 +41,8 @@ class PostRepository(private val postApi: PostApi) {
         return results.isSuccessful
     }
 
-    fun getSinglePost(post_number: Long): Post {
-        val request = postApi.getSinglePost(post_number)
+    fun getSinglePost(post_number: Long, opuuid: String): Post {
+        val request = postApi.getSinglePost(post_number, opuuid)
         var results = request.execute()
         if(results.isSuccessful) {
             return results.body()!!.results[0]
@@ -33,8 +51,8 @@ class PostRepository(private val postApi: PostApi) {
         }
     }
 
-    fun getPosts(): List<Post>? {
-        val request = postApi.getPost()
+    fun getPosts(opuuid: String, number_of_post: Int?): List<Post>? {
+        val request = postApi.getPost(opuuid, number_of_post)
         var results = request.execute()
         if(results.isSuccessful) {
             return results.body()!!.results

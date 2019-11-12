@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
                 newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                 newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                 newPost = false
+                viewModel.getChat(100)
             }
         }
 
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity() {
                 hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                 hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                 newPost = true
+                viewModel.getChat(100)
             }
         }
     }

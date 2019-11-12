@@ -25,6 +25,15 @@ data class Post(
     @SerializedName("comment_count")
     var comment_count: Int? = null,
 
+    @SerializedName("descision")
+    var decision: Boolean? = null,
+
+    @SerializedName("up")
+    var up: Int? = null,
+
+    @SerializedName("down")
+    var down: Int? = null,
+
     @SerializedName("timestamp")
     @ServerTimestamp val timestamp: Timestamp? = null
 )

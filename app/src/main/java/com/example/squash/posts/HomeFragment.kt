@@ -34,6 +34,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.searchResults
+import kotlinx.android.synthetic.main.post_fragment.*
 
 
 class HomeFragment: Fragment() {
@@ -52,7 +54,7 @@ class HomeFragment: Fragment() {
     private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
-            viewModel.getChat()
+            viewModel.getChat(100)
             refresher.isRefreshing = false
         }
     }
@@ -65,12 +67,13 @@ class HomeFragment: Fragment() {
 
     private fun startCreatePostActivity(root: View) {
         var intent = Intent(root.context, NewPostActivity::class.java)
+        intent.putExtra("isComment", false)
         startActivity(intent)
     }
 
     private fun initAdapter(root: View) {
         var recycler = root.findViewById<RecyclerView>(R.id.searchResults)
-        postAdapter = PostListAdapter(viewModel, this)
+        postAdapter = PostListAdapter(viewModel, this, false)
         recycler.adapter = postAdapter
         recycler.layoutManager = LinearLayoutManager(context)
 
@@ -104,8 +107,10 @@ class HomeFragment: Fragment() {
     private fun setDataObserver(root: View) {
         viewModel.observePosts().observe(this, Observer {
             Log.d("new post bro", "wew $it")
+            var recyclerViewState = searchResults.getLayoutManager()?.onSaveInstanceState()
             initAdapter(root)
             postAdapter.submitList(it)
+            searchResults.getLayoutManager()?.onRestoreInstanceState(recyclerViewState)
         })
     }
 
@@ -120,7 +125,7 @@ class HomeFragment: Fragment() {
 
         initDownSwipeLayout(root)
         setDataObserver(root)
-        viewModel.getChat()
+        viewModel.getChat(100)
 
         initFloatingButton(root)
 

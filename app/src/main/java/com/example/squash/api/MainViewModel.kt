@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.squash.MainActivity
 import com.example.squash.api.posts.Post
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,6 +23,7 @@ class MainViewModel : ViewModel() {
     private var chat = MutableLiveData<List<Post>>()
     private var singlePost = MutableLiveData<Post>()
     private var chatListener : ListenerRegistration? = null
+    private var singlePostComments = MutableLiveData<List<Post>>()
     // Ouch, this is a very poor man's cache
     private var uuid2localpath = mutableMapOf<String,String>()
 
@@ -39,12 +41,24 @@ class MainViewModel : ViewModel() {
         this.storage = storage
     }
 
+    fun getUUID(): String? {
+        return auth?.getUid()
+    }
+
     fun observePosts(): LiveData<List<Post>> {
         return chat
     }
 
     fun observeSinglePost(): LiveData<Post> {
         return singlePost
+    }
+
+    fun observeComments(): LiveData<List<Post>> {
+        return singlePostComments
+    }
+
+    fun submitSortedPost(posts: List<Post>) {
+        chat.postValue(posts)
     }
 
     fun getTime(postDate: Date): String {
@@ -70,13 +84,31 @@ class MainViewModel : ViewModel() {
         return res
     }
 
+    fun getComments(post_number: Long) {
+        viewModelScope.launch(
+            context = viewModelScope.coroutineContext
+                    + Dispatchers.IO) {
+            var posts = postRepository.getComments(post_number, getUUID()!!)
+            singlePostComments.postValue(posts)
+        }
+    }
+
     fun getSinglePost(post_number: Long) {
         viewModelScope.launch(
             context = viewModelScope.coroutineContext
                     + Dispatchers.IO) {
-            var post = postRepository.getSinglePost(post_number)
-            Log.d("we got back this:","$post")
+            var post = postRepository.getSinglePost(post_number, getUUID()!!)
             singlePost.postValue(post)
+        }
+    }
+
+    fun makeDescition(opuuid: String, post_number: Long, descision: Boolean) {
+        viewModelScope.launch(
+            context = viewModelScope.coroutineContext
+                    + Dispatchers.IO) {
+            // Update LiveData from IO dispatcher, use postValue
+            postRepository.makeDescision(opuuid, post_number, descision)
+            getChat(100)
         }
     }
 
@@ -88,16 +120,25 @@ class MainViewModel : ViewModel() {
             var opuuid = auth?.getUid()
             Log.d("MainViewModel", "$opuuid")
             postRepository.makePost(contents, imageuuid, reply_to, opuuid!!)
+            if(reply_to==null) {
+                getChat(100)
+            } else {
+                getComments(reply_to)
+            }
         }
     }
 
-    fun getChat() {
+    fun getChat(number_of_post: Int?) {
         // XXX Write me.  Limit total number of chat rows to 100
         viewModelScope.launch(
             context = viewModelScope.coroutineContext
                     + Dispatchers.IO) {
             // Update LiveData from IO dispatcher, use postValue
-            var posts = postRepository.getPosts()
+            var uuid = getUUID()
+            var posts = postRepository.getPosts(uuid!!, number_of_post)
+            if(!MainActivity.newPost) {
+                posts = posts?.sortedBy { -(it.up!! - it.down!!) }
+            }
             chat.postValue(posts)
         }
     }

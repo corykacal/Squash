@@ -4,6 +4,7 @@ import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.icu.util.LocaleData
 import android.provider.ContactsContract
 import android.util.Log
@@ -16,6 +17,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -41,7 +43,9 @@ import kotlin.random.Random
  * Created by witchel on 8/25/2019
  */
 
-class PostListAdapter(private val viewModel: MainViewModel, private val fragment: HomeFragment)
+class PostListAdapter(private val viewModel: MainViewModel,
+                      private val fragment: HomeFragment?,
+                      private val isComments: Boolean)
     : ListAdapter<Post, PostListAdapter.VH>(RedditDiff()) {
     class RedditDiff : DiffUtil.ItemCallback<Post>() {
 
@@ -55,6 +59,10 @@ class PostListAdapter(private val viewModel: MainViewModel, private val fragment
             return oldItem.timestamp == newItem.timestamp
                     && oldItem.contents == newItem.contents
         }
+    }
+
+    private fun setSVGcolor(view: ImageView, color: Int) {
+        view.setColorFilter(ContextCompat.getColor(view.context, color), PorterDuff.Mode.SRC_IN)
     }
 
 
@@ -73,6 +81,7 @@ class PostListAdapter(private val viewModel: MainViewModel, private val fragment
         private var image = itemView.findViewById<ImageView>(R.id.image)
         private var timeTV = itemView.findViewById<TextView>(R.id.timeStamp)
         private var commentsTV = itemView.findViewById<TextView>(R.id.comments)
+        private var commentsIV = itemView.findViewById<ImageView>(R.id.comments_icon)
         private var pointsTV = itemView.findViewById<TextView>(R.id.points)
 
         private var upVote = itemView.findViewById<ImageView>(R.id.upVote)
@@ -89,8 +98,14 @@ class PostListAdapter(private val viewModel: MainViewModel, private val fragment
             if(item.imageUUID!=null) {
                 //viewModel.downloadJpg(item.imageUUID, image)
             }
-            commentsTV.text = item.comment_count.toString()
-            var points = 10
+
+            if(isComments) {
+                commentsTV.isVisible = false
+                commentsIV.isVisible = false
+            } else {
+                commentsTV.text = item.comment_count.toString()
+            }
+            var points = item.up!! - item.down!!
             if(points<0) {
                 pointsTV.setTextColor(ContextCompat.getColor(itemView.context, R.color.badComment))
             } else {
@@ -98,8 +113,44 @@ class PostListAdapter(private val viewModel: MainViewModel, private val fragment
             }
             pointsTV.text = points.toString()
 
-            itemView.setOnClickListener {
-                fragment.startPostFragment(item)
+            if(fragment!=null) {
+                contentsTV.setOnClickListener {
+                    fragment.startPostFragment(item)
+                }
+            }
+
+            if(item.decision!=null) {
+                if(item.decision!!) {
+                    setSVGcolor(downVote, R.color.black)
+                    setSVGcolor(upVote, R.color.goodComment)
+                    downVote.tag = "false"
+                    upVote.tag = "true"
+                } else {
+                    setSVGcolor(upVote, R.color.black)
+                    setSVGcolor(downVote, R.color.badComment)
+                    upVote.tag = "false"
+                    downVote.tag = "true"
+                }
+            }
+
+
+            upVote.setOnClickListener {
+                if(downVote.tag=="true") {
+                    setSVGcolor(downVote, R.color.black)
+                    setSVGcolor(upVote, R.color.goodComment)
+                    downVote.tag = "false"
+                    upVote.tag = "true"
+                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, true)
+                }
+            }
+            downVote.setOnClickListener {
+                if(upVote.tag=="true") {
+                    setSVGcolor(upVote, R.color.black)
+                    setSVGcolor(downVote, R.color.badComment)
+                    upVote.tag = "false"
+                    downVote.tag = "true"
+                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, false)
+                }
             }
         }
     }

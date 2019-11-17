@@ -1,3 +1,5 @@
+
+/*
 package com.example.squash.api.glide
 
 
@@ -14,7 +16,6 @@ import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestOptions
 import com.example.squash.R
 
-/*
 
 
 @GlideModule
@@ -67,5 +68,6 @@ object Glide {
             .into(imageView)
     }
 }
- */
 
+
+ */

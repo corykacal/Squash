@@ -40,6 +40,10 @@ class MainActivity : AppCompatActivity() {
         var newPost = true
     }
 
+    private fun refreshChat(func: (Boolean) -> Unit) {
+        viewModel.getChat(100, func)
+    }
+
     private fun initActionBar(actionBar: ActionBar) {
         // Disable the default and enable the custom
         actionBar.setDisplayShowTitleEnabled(false)
@@ -50,23 +54,37 @@ class MainActivity : AppCompatActivity() {
         actionBar.customView = customView
         hotButton.setOnClickListener {
             if(newPost) {
-                it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
-                (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
-                newPost = false
-                viewModel.getChat(100)
+                val sortLambda = { success: Boolean ->
+                    if(success) {
+                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        newPost = false
+                    } else {
+                        Toast.makeText(applicationContext, "sort failed", Toast.LENGTH_LONG)
+                    }
+                    var MakeErrorGoAway = 0
+                }
+                refreshChat(sortLambda)
             }
         }
 
         newButton.setOnClickListener {
             if (!newPost) {
-                it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
-                (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
-                newPost = true
-                viewModel.getChat(100)
+                val sortLambda = { success: Boolean ->
+                    if(success) {
+                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        newPost = true
+                    } else {
+                        Toast.makeText(applicationContext, "sort failed", Toast.LENGTH_LONG)
+                    }
+                    var MakeErrorGoAway = 0
+                }
+                refreshChat(sortLambda)
             }
         }
     }

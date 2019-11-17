@@ -3,6 +3,7 @@ package com.example.squash.api
 
 import android.database.Observable
 import com.example.squash.api.posts.Post
+import com.google.android.gms.tasks.Task
 import com.google.gson.GsonBuilder
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -29,9 +30,9 @@ interface PostApi {
 
     @POST("/api/vote/")
     @FormUrlEncoded
-    fun makeDescision(@Field("opuuid") opuuid: String?,
+    fun makeDescision(@Field("opuuid") opuuid: String,
                       @Field("post_number") post_number: Long,
-                      @Field("descision") descision: Boolean): Call<PostResponse>
+                      @Field("descision") descision: Boolean?): Call<PostResponse>
 
     @GET("/api/post/")
     fun getSinglePost(@Query("post_number") post_number: Long,

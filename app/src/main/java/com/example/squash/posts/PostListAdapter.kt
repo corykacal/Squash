@@ -12,16 +12,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
+import androidx.core.view.marginBottom
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 //import com.example.squash.api.glide.Glide
@@ -77,27 +81,48 @@ class PostListAdapter(private val viewModel: MainViewModel,
         //private var postIV = itemView.findViewById<ImageView>(R.id.imageTextUnion)
 
          */
+
+        private var imageAndText = itemView.findViewById<ConstraintLayout>(R.id.imageTextUnion)
+
         private var contentsTV = itemView.findViewById<TextView>(R.id.contents)
-        private var image = itemView.findViewById<ImageView>(R.id.image)
+        private var imageIV = itemView.findViewById<ImageView>(R.id.image)
         private var timeTV = itemView.findViewById<TextView>(R.id.timeStamp)
         private var commentsTV = itemView.findViewById<TextView>(R.id.comments)
         private var commentsIV = itemView.findViewById<ImageView>(R.id.comments_icon)
         private var pointsTV = itemView.findViewById<TextView>(R.id.points)
+        private var loadingIV = itemView.findViewById<RelativeLayout>(R.id.loadingPanel)
 
         private var upVote = itemView.findViewById<ImageView>(R.id.upVote)
         private var downVote = itemView.findViewById<ImageView>(R.id.downVote)
 
 
+        val imageLoaded = { success: Boolean ->
+            if(success) {
+                loadingIV.isVisible = false
+            }
+        }
+
+
+        val voteLambda = { success: Boolean ->
+            if(!success) {
+                Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG)
+                setSVGcolor(downVote, R.color.black)
+                setSVGcolor(upVote, R.color.black)
+            }
+        }
+
+
         fun bind(item: Post?) {
+            imageIV.setImageDrawable(null)
+            imageIV.isVisible = false
+            contentsTV.minLines = 3
             if (item == null) return
 
             val postDate = Date(item.timestamp!!.time)
             timeTV.text = viewModel.getTime(postDate)
 
             contentsTV.text = item.contents
-            if(item.imageUUID!=null) {
-                //viewModel.downloadJpg(item.imageUUID, image)
-            }
+
 
             if(isComments) {
                 commentsTV.isVisible = false
@@ -114,10 +139,22 @@ class PostListAdapter(private val viewModel: MainViewModel,
             pointsTV.text = points.toString()
 
             if(fragment!=null) {
-                contentsTV.setOnClickListener {
+                imageAndText.setOnClickListener {
                     fragment.startPostFragment(item)
                 }
             }
+
+            if(item.imageUUID!=null) {
+                imageIV.isVisible = true
+                contentsTV.minLines = 0
+                imageIV.clipToOutline = true
+                viewModel.downloadImg(item.imageUUID!!, imageIV, imageLoaded)
+            } else {
+                loadingIV.isVisible = false
+            }
+
+            setSVGcolor(downVote, R.color.black)
+            setSVGcolor(upVote, R.color.black)
 
             if(item.decision!=null) {
                 if(item.decision!!) {
@@ -140,7 +177,13 @@ class PostListAdapter(private val viewModel: MainViewModel,
                     setSVGcolor(upVote, R.color.goodComment)
                     downVote.tag = "false"
                     upVote.tag = "true"
-                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, true)
+                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, true, voteLambda)
+                } else {
+                    downVote.tag = "true"
+                    upVote.tag = "true"
+                    setSVGcolor(downVote, R.color.black)
+                    setSVGcolor(upVote, R.color.black)
+                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, null, voteLambda)
                 }
             }
             downVote.setOnClickListener {
@@ -149,7 +192,13 @@ class PostListAdapter(private val viewModel: MainViewModel,
                     setSVGcolor(downVote, R.color.badComment)
                     upVote.tag = "false"
                     downVote.tag = "true"
-                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, false)
+                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, false, voteLambda)
+                } else {
+                    downVote.tag = "true"
+                    upVote.tag = "true"
+                    setSVGcolor(downVote, R.color.black)
+                    setSVGcolor(upVote, R.color.black)
+                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, null, voteLambda)
                 }
             }
         }

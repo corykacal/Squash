@@ -1,5 +1,7 @@
 package com.example.squash.posts
 
+import android.Manifest
+import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.squash.R
@@ -9,34 +11,82 @@ import android.content.Context.INPUT_METHOD_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 import android.widget.EditText
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.example.squash.MainActivity
+import android.text.Spannable
+import android.text.style.ImageSpan
+import android.text.SpannableString
+import android.widget.TextView
+import android.view.animation.Animation
+import android.view.animation.AlphaAnimation
+import android.widget.Toast
+import androidx.core.view.isVisible
+import java.util.*
 
 
-class NewPostActivity: AppCompatActivity() {
+class NewPostActivity(): AppCompatActivity() {
 
     private var isComment: Boolean? = null
     private var reply_to: Long? = null
+    private var imageURI: Uri? = null
     var viewModel = MainActivity.viewModel
+
+
+    companion object {
+        //image pick code
+        private val IMAGE_PICK_CODE = 1000;
+        //Permission code
+        private val PERMISSION_CODE = 1001;
+    }
 
     private fun openKeybaord() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
     }
 
+    private fun pulseAnimation(textView: TextView) {
+        val anim = AlphaAnimation(0.0f, 1.0f)
+        anim.duration = 100 //You can manage the blinking time with this parameter
+        anim.startOffset = 60
+        anim.repeatMode = Animation.REVERSE
+        anim.repeatCount = 2
+        textView.startAnimation(anim)
+    }
+
+
     private fun initPostButton() {
         postButton.setOnClickListener {
             var contents = editPostText.text.toString()
-            if(!contents.isBlank()) {
-                viewModel.makePost(contents, null, reply_to)
-                hideKeyboard()
-                finish()
-            } else {
+            if(contents.isBlank()) {
                 postError.text = "Error: can't send blank post"
+                pulseAnimation(postError)
+            } else if(contents.lines().size>10) {
+                postError.text = "Error: too many lines: ${contents.lines().size}, max: 10"
+                pulseAnimation(postError)
+            } else {
+                var imageuuid: String? = null
+                if(imageURI!=null) {
+                    imageuuid = UUID.randomUUID().toString()
+                }
+                val postLambda = { success: Boolean ->
+                    if(success) {
+                        hideKeyboard()
+                        finish()
+                    } else {
+                        Toast.makeText(applicationContext, "post failed", Toast.LENGTH_LONG)
+                    }
+                    var makeErrorGoAway = 0
+                }
+                viewModel.makePost(contents, imageURI, imageuuid, reply_to, postLambda)
             }
         }
     }
@@ -54,6 +104,7 @@ class NewPostActivity: AppCompatActivity() {
 
     private fun listenToEdit() {
         editPostText.addTextChangedListener {
+            postError.text = ""
             val text = it.toString()
             val length = text.length
             val remain = 365-length
@@ -66,6 +117,86 @@ class NewPostActivity: AppCompatActivity() {
         }
     }
 
+    private fun initPictureButton() {
+
+        picture.setOnClickListener {
+            //check runtime permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+
+                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_DENIED){
+                    //permission denied
+                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
+                    //show popup to request runtime permission
+                    requestPermissions(permissions, IMAGE_PICK_CODE);
+                }
+                else{
+                    //permission already granted
+                    pickImageFromGallery();
+                }
+            }
+            else{
+                //system OS is < Marshmallow
+                pickImageFromGallery();
+            }
+        }
+    }
+
+
+
+    private fun pickImageFromGallery() {
+        //Intent to pick image
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
+
+    private fun imageVisible(isVisible: Boolean) {
+        selectedImage.isVisible = isVisible && !isComment!!
+        deleteImage.isVisible = isVisible && !isComment!!
+    }
+
+    private fun initDeleteButton() {
+        deleteImage.setOnClickListener {
+            selectedImage.setImageURI(null)
+            imageURI = null
+            imageVisible(false)
+        }
+    }
+
+
+    //handle requested permission result
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when(requestCode){
+            PERMISSION_CODE -> {
+                if (grantResults.size >0 && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED){
+                    //permission from popup granted
+                    pickImageFromGallery()
+                }
+                else{
+                    //permission from popup denied
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+
+
+
+    //handle result of picked image
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
+            selectedImage.setImageURI(data?.data)
+            imageURI = data?.data
+            imageVisible(true)
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         overridePendingTransition(R.anim.fade_int, R.anim.fade_out)
         super.onCreate(savedInstanceState)
@@ -75,12 +206,28 @@ class NewPostActivity: AppCompatActivity() {
         isComment = intent.getBooleanExtra("isComment", false)
         if(isComment!!) {
             reply_to = intent.getLongExtra("reply_to", 0)
+            picture.isVisible = false
         }
 
-
+        imageVisible(false)
         listenToEdit()
         openKeybaord()
         initPostButton()
-
+        initPictureButton()
+        initDeleteButton()
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

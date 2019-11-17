@@ -54,9 +54,20 @@ class HomeFragment: Fragment() {
     private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
-            viewModel.getChat(100)
-            refresher.isRefreshing = false
+            val lambda = { success: Boolean ->
+                refresher.isRefreshing = false
+                if(!success) {
+                    Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG)
+                }
+            }
+            refreshChat(lambda)
         }
+    }
+
+
+
+    private fun refreshChat(func: (Boolean) -> Unit) {
+        viewModel.getChat(100, func)
     }
 
     fun startPostFragment(post: Post) {
@@ -106,9 +117,9 @@ class HomeFragment: Fragment() {
 
     private fun setDataObserver(root: View) {
         viewModel.observePosts().observe(this, Observer {
-            Log.d("new post bro", "wew $it")
             var recyclerViewState = searchResults.getLayoutManager()?.onSaveInstanceState()
             initAdapter(root)
+            Log.d("list has changed: ", "$it")
             postAdapter.submitList(it)
             searchResults.getLayoutManager()?.onRestoreInstanceState(recyclerViewState)
         })
@@ -125,7 +136,14 @@ class HomeFragment: Fragment() {
 
         initDownSwipeLayout(root)
         setDataObserver(root)
-        viewModel.getChat(100)
+
+        val lambda = { success: Boolean ->
+            if(!success) {
+                Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG)
+            }
+        }
+
+        refreshChat(lambda)
 
         initFloatingButton(root)
 

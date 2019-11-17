@@ -14,6 +14,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
@@ -40,6 +43,7 @@ import com.example.squash.technology.OnSwipeTouchListener
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.action_bar.*
+import kotlinx.android.synthetic.main.activity_new_post.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.post_fragment.*
 import kotlinx.android.synthetic.main.post_fragment.searchResults
@@ -174,11 +178,83 @@ class PostFragment: AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun initFloatingButton(post_number: Long) {
-        floating_action_button.setOnClickListener {
-            startCreatePostActivity(post_number)
+    private fun pulseAnimation(textView: TextView) {
+        val anim = AlphaAnimation(0.0f, 1.0f)
+        anim.duration = 100 //You can manage the blinking time with this parameter
+        anim.startOffset = 60
+        anim.repeatMode = Animation.REVERSE
+        anim.repeatCount = 2
+        textView.startAnimation(anim)
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(this)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0);
+    }
+
+
+    fun initSubmitButton(post_number: Long) {
+        submit.setOnClickListener {
+            var contents = post.text.toString()
+            if(contents.isBlank()) {
+                commentError.text = "Error: can't send blank post"
+                pulseAnimation(commentError)
+            } else if(contents.lines().size>5) {
+                commentError.text = "Error: too many lines: ${contents.lines().size}, max: 10"
+                pulseAnimation(commentError)
+            } else {
+                val postLambda = { success: Boolean ->
+                    if(success) {
+                        hideKeyboard()
+                        post.setText("")
+                        commentLeft.isVisible = false
+                    } else {
+                        Toast.makeText(applicationContext, "post failed", Toast.LENGTH_LONG)
+                    }
+                    var makeErrorGoAway = 0
+                }
+                viewModel.makePost(contents, null, null, post_number, postLambda)
+            }
         }
     }
+
+    private fun listenToEdit() {
+        post.addTextChangedListener {
+            commentError.text = ""
+            val text = it.toString()
+            if(text.length==0) {
+                commentLeft.isVisible = false
+                post.isCursorVisible = false
+            } else {
+                commentLeft.isVisible = true
+                post.isCursorVisible = true
+            }
+            if(text.length!=0 && text.trim()=="") {
+                post.setText("")
+            } else {
+                val length = text.length
+                val remain = 365 - length
+                commentLeft.text = (remain).toString()
+                if (remain == 0) {
+                    commentLeft.setTextColor(
+                        ContextCompat.getColor(
+                            commentLeft.context,
+                            R.color.badComment
+                        )
+                    )
+                } else {
+                    commentLeft.setTextColor(ContextCompat.getColor(commentLeft.context, R.color.black))
+                }
+            }
+        }
+    }
+
 
     private fun setDataObserver(post_number: Long) {
         viewModel.observeComments().observe(this, Observer {
@@ -258,9 +334,12 @@ class PostFragment: AppCompatActivity() {
         val intent = intent
         val post_number = intent.getLongExtra("post_number", 0)
 
-        initFloatingButton(post_number)
+        initSubmitButton(post_number)
         initDownSwipeLayout(post_number)
         initVoteArrows(post_number)
+        listenToEdit()
+        commentLeft.isVisible = false
+
 
         setDataObserver(post_number)
         val lambda = { success: Boolean ->

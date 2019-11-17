@@ -13,9 +13,14 @@ import android.widget.EditText
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.inputmethodservice.InputMethodService
 import android.net.Uri
 import android.os.Build
+import android.renderscript.ScriptGroup
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -29,8 +34,12 @@ import android.widget.TextView
 import android.view.animation.Animation
 import android.view.animation.AlphaAnimation
 import android.widget.Toast
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
+import okhttp3.internal.lockAndWaitNanos
+import okhttp3.internal.waitMillis
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class NewPostActivity(): AppCompatActivity() {
@@ -49,8 +58,23 @@ class NewPostActivity(): AppCompatActivity() {
     }
 
     private fun openKeybaord() {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+        editPostText.postDelayed(object : Runnable {
+            override fun run() {
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(editPostText, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }, 100)
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(this)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0);
     }
 
     private fun pulseAnimation(textView: TextView) {
@@ -77,11 +101,14 @@ class NewPostActivity(): AppCompatActivity() {
                 if(imageURI!=null) {
                     imageuuid = UUID.randomUUID().toString()
                 }
+                postButton.startAnimation()
                 val postLambda = { success: Boolean ->
                     if(success) {
+                        postButton.stopAnimation()
                         hideKeyboard()
                         finish()
                     } else {
+                        postButton.revertAnimation()
                         Toast.makeText(applicationContext, "post failed", Toast.LENGTH_LONG)
                     }
                     var makeErrorGoAway = 0
@@ -91,28 +118,27 @@ class NewPostActivity(): AppCompatActivity() {
         }
     }
 
-    private fun hideKeyboard() {
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
-        var view = currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = View(this)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0);
-    }
 
     private fun listenToEdit() {
         editPostText.addTextChangedListener {
             postError.text = ""
             val text = it.toString()
-            val length = text.length
-            val remain = 365-length
-            textLeft.text = (remain).toString()
-            if(remain==0) {
-                textLeft.setTextColor(ContextCompat.getColor(textLeft.context, R.color.badComment))
+            if(text.length!=0 && text.trim()=="") {
+                editPostText.setText("")
             } else {
-                textLeft.setTextColor(ContextCompat.getColor(textLeft.context, R.color.black))
+                val length = text.length
+                val remain = 365 - length
+                textLeft.text = (remain).toString()
+                if (remain == 0) {
+                    textLeft.setTextColor(
+                        ContextCompat.getColor(
+                            textLeft.context,
+                            R.color.badComment
+                        )
+                    )
+                } else {
+                    textLeft.setTextColor(ContextCompat.getColor(textLeft.context, R.color.black))
+                }
             }
         }
     }
@@ -126,18 +152,18 @@ class NewPostActivity(): AppCompatActivity() {
                 if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_DENIED){
                     //permission denied
-                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
+                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                     //show popup to request runtime permission
-                    requestPermissions(permissions, IMAGE_PICK_CODE);
+                    requestPermissions(permissions, IMAGE_PICK_CODE)
                 }
                 else{
                     //permission already granted
-                    pickImageFromGallery();
+                    pickImageFromGallery()
                 }
             }
             else{
                 //system OS is < Marshmallow
-                pickImageFromGallery();
+                pickImageFromGallery()
             }
         }
     }
@@ -145,6 +171,7 @@ class NewPostActivity(): AppCompatActivity() {
 
 
     private fun pickImageFromGallery() {
+        hideKeyboard()
         //Intent to pick image
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "image/*"
@@ -189,6 +216,7 @@ class NewPostActivity(): AppCompatActivity() {
     //handle result of picked image
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        openKeybaord()
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
             selectedImage.setImageURI(data?.data)
             imageURI = data?.data
@@ -211,7 +239,6 @@ class NewPostActivity(): AppCompatActivity() {
 
         imageVisible(false)
         listenToEdit()
-        openKeybaord()
         initPostButton()
         initPictureButton()
         initDeleteButton()

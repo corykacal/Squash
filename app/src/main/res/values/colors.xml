@@ -10,11 +10,12 @@
     <color name="secondaryGreen">#b0d35f</color>
 
     <color name="post">#fffffc</color>
-    <color name="background">#fffef3</color>
+    <color name="background">#f7f6df</color>
 
     <color name="selectedButton">#fffef3</color>
     <color name="selectedText">#f7ec4f</color>
     <color name="black">#000000</color>
+    <color name="gray">#f2f2e6</color>
 
 
 </resources>

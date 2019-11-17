@@ -52,32 +52,6 @@ class PostFragment: AppCompatActivity() {
 
     private lateinit var postAdapter: PostListAdapter
 
-
-
-    private fun initAdapter(root: View) {
-        /*
-        var recycler = root.findViewById<RecyclerView>(R.id.searchResults)
-        postAdapter = PostListAdapter(viewModel, this)
-        recycler.adapter = postAdapter
-        recycler.layoutManager = LinearLayoutManager(context)
-
-         */
-
-
-        /*
-        old cocde when i was going to have swipe left for favorite.
-        but i am going to have swipe left for the changing between
-        hot anda new.
-
-        val itemTouchCallback = postTouchHelper(0, ItemTouchHelper.LEFT)
-
-
-        val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
-        itemTouchHelper.attachToRecyclerView(recycler)
-         */
-
-    }
-
     private fun initSideSwipes(root: View) {
 
 
@@ -172,6 +146,7 @@ class PostFragment: AppCompatActivity() {
         updatePointColors(points)
     }
 
+
     override fun onBackPressed() {
         val lambda = { success: Boolean ->
             if(success) {
@@ -237,9 +212,10 @@ class PostFragment: AppCompatActivity() {
         }
         var downVote = findViewById<ImageView>(R.id.downVote)
         var upVote = findViewById<ImageView>(R.id.upVote)
-        val lambda = { success: Boolean ->
 
+        val lambda = { success: Boolean ->
         }
+
         upVote.setOnClickListener {
             if(downVote.tag=="true") {
                 var curPoints = points.text.toString().toInt()

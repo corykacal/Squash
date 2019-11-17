@@ -80,6 +80,10 @@ class MainViewModel : ViewModel() {
     }
 
 
+    fun clearComments() {
+        singlePostComments.postValue(null)
+    }
+
     fun getUUID(): String? {
         return auth?.getUid()
     }

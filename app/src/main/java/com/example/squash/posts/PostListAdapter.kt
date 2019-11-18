@@ -141,6 +141,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             if(fragment!=null) {
                 imageAndText.setOnClickListener {
                     fragment.startPostFragment(item)
+                    imageAndText.isEnabled = false
                 }
             }
 

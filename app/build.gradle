@@ -65,6 +65,9 @@ dependencies {
 
     //button animation
     implementation 'br.com.simplepass:loading-button-android:2.2.0'
+
+    //keyboard listen
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.3.0'
 }
 
 

@@ -47,6 +47,8 @@ import kotlinx.android.synthetic.main.activity_new_post.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.post_fragment.*
 import kotlinx.android.synthetic.main.post_fragment.searchResults
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import okhttp3.internal.wait
 import java.util.*
 
@@ -203,11 +205,9 @@ class PostFragment: AppCompatActivity() {
         submit.setOnClickListener {
             var contents = post.text.toString()
             if(contents.isBlank()) {
-                commentError.text = "Error: can't send blank post"
-                pulseAnimation(commentError)
+                Toast.makeText(baseContext, "Error: can't send blank post", Toast.LENGTH_SHORT).show()
             } else if(contents.lines().size>5) {
-                commentError.text = "Error: too many lines: ${contents.lines().size}, max: 10"
-                pulseAnimation(commentError)
+                Toast.makeText(baseContext, "Error: too many lines: ${contents.lines().size}, max: 10", Toast.LENGTH_SHORT).show()
             } else {
                 val postLambda = { success: Boolean ->
                     if(success) {
@@ -215,7 +215,7 @@ class PostFragment: AppCompatActivity() {
                         post.setText("")
                         commentLeft.isVisible = false
                     } else {
-                        Toast.makeText(applicationContext, "post failed", Toast.LENGTH_LONG)
+                        Toast.makeText(baseContext, "post failed", Toast.LENGTH_LONG).show()
                     }
                     var makeErrorGoAway = 0
                 }
@@ -226,7 +226,6 @@ class PostFragment: AppCompatActivity() {
 
     private fun listenToEdit() {
         post.addTextChangedListener {
-            commentError.text = ""
             val text = it.toString()
             if(text.length==0) {
                 commentLeft.isVisible = false
@@ -330,6 +329,21 @@ class PostFragment: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.post_fragment)
 
+        /*
+        KeyboardVisibilityEvent.setEventListener(this, object: KeyboardVisibilityEventListener {
+            override fun onVisibilityChanged(isOpen: Boolean) {
+                Toast.makeText(baseContext, "$isOpen", Toast.LENGTH_SHORT).show()
+                if(!isOpen) {
+                    commentLeft.isVisible = false
+                    post.isCursorVisible = false
+                } else {
+                    commentLeft.isVisible = true
+                    post.isCursorVisible = true
+                }
+            }
+        })
+         */
+
         viewModel = MainActivity.viewModel
         val intent = intent
         val post_number = intent.getLongExtra("post_number", 0)
@@ -343,8 +357,8 @@ class PostFragment: AppCompatActivity() {
 
         setDataObserver(post_number)
         val lambda = { success: Boolean ->
-
         }
+
         refreshSinglePost(post_number, lambda)
 
         initActionBar()

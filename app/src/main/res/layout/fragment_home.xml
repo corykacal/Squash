@@ -8,6 +8,31 @@
     >
 
 
+    <Button
+        android:id="@+id/newButton"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:background="@color/post"
+        android:textColor="@color/secondaryYellow"
+        android:text="new"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/hotButton"
+        />
+
+    <Button
+        android:id="@+id/hotButton"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:background="@color/secondaryYellow"
+        android:textColor="@color/post"
+        android:text="hot"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/newButton"
+        />
+
+
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="wrap_content"

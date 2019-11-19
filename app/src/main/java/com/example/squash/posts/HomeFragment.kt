@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.media.MediaRouter
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -44,6 +45,9 @@ class HomeFragment: Fragment() {
 
     private lateinit var postAdapter: PostListAdapter
 
+    private var currentRecyclerState: Parcelable? = null
+    private var previousRecyclerState: Parcelable? = null
+
 
     companion object {
         fun newInstance(): HomeFragment {
@@ -54,6 +58,7 @@ class HomeFragment: Fragment() {
     private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
+            setCurrentRecyclerState()
             val lambda = { success: Boolean ->
                 refresher.isRefreshing = false
                 if(!success) {
@@ -115,13 +120,22 @@ class HomeFragment: Fragment() {
         }
     }
 
+    fun changeCurrentRecyclerState() {
+        currentRecyclerState = previousRecyclerState
+        previousRecyclerState = searchResults.getLayoutManager()?.onSaveInstanceState()
+    }
+
+    fun setCurrentRecyclerState() {
+        currentRecyclerState = searchResults.getLayoutManager()?.onSaveInstanceState()
+    }
+
     private fun setDataObserver(root: View) {
         viewModel.observePosts().observe(this, Observer {
-            var recyclerViewState = searchResults.getLayoutManager()?.onSaveInstanceState()
+            var recyclerState =  currentRecyclerState
             initAdapter(root)
             Log.d("list has changed: ", "$it")
             postAdapter.submitList(it)
-            searchResults.getLayoutManager()?.onRestoreInstanceState(recyclerViewState)
+            searchResults.getLayoutManager()?.onRestoreInstanceState(recyclerState)
         })
     }
 

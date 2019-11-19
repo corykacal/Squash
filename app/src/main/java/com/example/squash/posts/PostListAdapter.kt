@@ -116,6 +116,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             imageIV.setImageDrawable(null)
             imageIV.isVisible = false
             contentsTV.minLines = 3
+            contentsTV.maxLines = 5
             if (item == null) return
 
             val postDate = Date(item.timestamp!!.time)
@@ -140,6 +141,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
             if(fragment!=null) {
                 imageAndText.setOnClickListener {
+                    fragment.setCurrentRecyclerState()
                     fragment.startPostFragment(item)
                     imageAndText.isEnabled = false
                 }
@@ -150,6 +152,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 contentsTV.minLines = 0
                 imageIV.clipToOutline = true
                 viewModel.downloadImg(item.imageUUID!!, imageIV, imageLoaded)
+                contentsTV.maxLines = 4
             } else {
                 loadingIV.isVisible = false
             }

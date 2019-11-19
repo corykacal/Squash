@@ -175,7 +175,12 @@ class MainViewModel : ViewModel() {
 
     fun getChat(number_of_post: Int?, func: (Boolean) -> Unit) {
         var uuid = getUUID()
-        var task = postRepository.getPosts(uuid!!, number_of_post)
+        var task: Call<PostApi.ListingResponse>
+        if(!MainActivity.newPost) {
+            task = postRepository.getHotPosts(uuid!!, number_of_post)
+        } else {
+            task = postRepository.getRecentPosts(uuid!!, number_of_post)
+        }
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {
                 func(false)
@@ -183,9 +188,6 @@ class MainViewModel : ViewModel() {
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
                 func(true)
                 var posts = response!!.body()!!.results
-                if(!MainActivity.newPost) {
-                    posts = posts?.sortedBy { -(it.up!! - it.down!!) }
-                }
                 chat.postValue(posts)
             }
         })

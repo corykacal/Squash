@@ -16,9 +16,14 @@ import java.util.*
 
 interface PostApi {
 
+
     @GET("/api/recent/")
-    fun getPost(@Query("opuuid") opuuid: String,
+    fun getRecentPost(@Query("opuuid") opuuid: String,
                 @Query("number_of_posts") number_of_posts: Int?): Call<ListingResponse>
+
+    @GET("/api/hot/")
+    fun getHotPost(@Query("opuuid") opuuid: String,
+                      @Query("number_of_posts") number_of_posts: Int?): Call<ListingResponse>
 
     @POST("/api/submit/")
     @FormUrlEncoded

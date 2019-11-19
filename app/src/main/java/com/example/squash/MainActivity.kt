@@ -54,36 +54,48 @@ class MainActivity : AppCompatActivity() {
         actionBar.customView = customView
         hotButton.setOnClickListener {
             if(newPost) {
+                newPost = false
                 val sortLambda = { success: Boolean ->
                     if(success) {
                         it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                         (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                         newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                         newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
-                        newPost = false
                     } else {
                         Toast.makeText(applicationContext, "sort failed", Toast.LENGTH_LONG)
+                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        newPost = true
                     }
                     var MakeErrorGoAway = 0
                 }
+                homeFragment.changeCurrentRecyclerState()
                 refreshChat(sortLambda)
             }
         }
 
         newButton.setOnClickListener {
             if (!newPost) {
+                newPost = true
                 val sortLambda = { success: Boolean ->
                     if(success) {
                         it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                         (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                         hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
                         hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
-                        newPost = true
                     } else {
                         Toast.makeText(applicationContext, "sort failed", Toast.LENGTH_LONG)
+                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        newPost = false
                     }
                     var MakeErrorGoAway = 0
                 }
+                homeFragment.changeCurrentRecyclerState()
                 refreshChat(sortLambda)
             }
         }

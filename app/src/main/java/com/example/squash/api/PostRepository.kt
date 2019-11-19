@@ -16,8 +16,13 @@ class PostRepository(private val postApi: PostApi) {
         //private val favorites: MutableSet<Post> = HashSet()
     }
 
-    fun getPosts(opuuid: String, number_of_post: Int?): Call<PostApi.ListingResponse> {
-        val request = postApi.getPost(opuuid, number_of_post)
+    fun getRecentPosts(opuuid: String, number_of_post: Int?): Call<PostApi.ListingResponse> {
+        val request = postApi.getRecentPost(opuuid, number_of_post)
+        return request
+    }
+
+    fun getHotPosts(opuuid: String, number_of_post: Int?): Call<PostApi.ListingResponse> {
+        val request = postApi.getHotPost(opuuid, number_of_post)
         return request
     }
 

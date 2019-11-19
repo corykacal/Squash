@@ -17,7 +17,6 @@ class PostRepository(private val postApi: PostApi) {
     }
 
     fun getRecentPosts(opuuid: String, number_of_post: Int?): Call<PostApi.ListingResponse> {
-        Log.d("nigga we in here", "4jk432jl4k;32jl4k32kl")
         val request = postApi.getRecentPosts(opuuid, number_of_post)
         return request
     }

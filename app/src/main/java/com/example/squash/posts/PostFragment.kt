@@ -352,6 +352,8 @@ class PostFragment: AppCompatActivity() {
         initDownSwipeLayout(post_number)
         initVoteArrows(post_number)
         listenToEdit()
+
+
         commentLeft.isVisible = false
 
 

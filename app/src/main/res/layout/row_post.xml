@@ -17,7 +17,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/post"
+        android:background="?attr/colorAccent"
         tools:context=".MainActivity">
 
 
@@ -49,7 +49,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:alpha="0.85"
-                    android:textColor="@color/black"
                     android:layout_marginStart="12dp"
                     android:layout_marginBottom="1dp"
                     android:maxLines="5"

@@ -3,7 +3,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/background"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 
@@ -16,9 +15,9 @@
         android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:titleTextColor="@color/background"
+        android:background="?attr/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/mainYellow">
+        >
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -64,7 +63,6 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/post"
             tools:context=".MainActivity">
 
 

@@ -176,6 +176,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
 
             upVote.setOnClickListener {
+                fragment?.setCurrentRecyclerState()
                 if(downVote.tag=="true") {
                     setSVGcolor(downVote, R.color.black)
                     setSVGcolor(upVote, R.color.goodComment)
@@ -191,6 +192,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 }
             }
             downVote.setOnClickListener {
+                fragment?.setCurrentRecyclerState()
                 if(upVote.tag=="true") {
                     setSVGcolor(upVote, R.color.black)
                     setSVGcolor(downVote, R.color.badComment)

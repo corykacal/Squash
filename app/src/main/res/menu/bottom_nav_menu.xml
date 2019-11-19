@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/posts_icon"
+        android:enabled="true"
+        android:icon="@drawable/posts_icon"
+        android:title="Posts"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/peek_icon"
+        android:enabled="true"
+        android:icon="@drawable/peek_chat"
+        android:title="Peek"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/profile_icon"
+        android:enabled="true"
+        android:icon="@drawable/user_profile"
+        android:title="Pofile"
+        app:showAsAction="ifRoom"
+        />
+
+</menu>

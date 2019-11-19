@@ -31,13 +31,12 @@ import kotlinx.android.synthetic.main.action_bar.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var homeFragment: HomeFragment
 
     val TAG = "####"
 
     companion object {
-        var viewModel = MainViewModel()
         var newPost = true
+        lateinit var viewModel: MainViewModel
     }
 
     private fun refreshChat(func: (Boolean) -> Unit) {
@@ -58,16 +57,29 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-    private fun initHomeFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            // No back stack for home
-            .add(R.id.main_frame, homeFragment)
-            // TRANSIT_FRAGMENT_FADE calls for the Fragment to fade away
-            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-            .commit()
-    }
+    private lateinit var homeFragment: HomeFragment
+    fun launchNewFragment(fragment: Fragment, tag: Int) {
+        var replaceFrag = supportFragmentManager.findFragmentByTag(tag.toString())
+        if(replaceFrag==null) {
+            replaceFrag = fragment
+            supportFragmentManager
+                .beginTransaction()
+                // No back stack for home
+                .add(R.id.main_frame, replaceFrag, tag.toString())
+                // TRANSIT_FRAGMENT_FADE calls for the Fragment to fade away
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit()
+        } else {
+            supportFragmentManager
+                .beginTransaction()
+                // No back stack for home
+                .replace(R.id.main_frame, replaceFrag, tag.toString())
+                // TRANSIT_FRAGMENT_FADE calls for the Fragment to fade away
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit()
 
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,12 +89,13 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.let{
             initActionBar(it)
         }
+        findViewById<bottomNavBar>(R.id.bar).setInstance(this)
         auth = FirebaseAuth.getInstance()
         var user = User(auth)
+        viewModel = MainViewModel()
         viewModel.init(user, photoapi(resources))
         homeFragment = HomeFragment.newInstance()
-        initHomeFragment()
-
+        launchNewFragment(homeFragment, R.id.posts_icon)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -52,6 +52,8 @@ class HomeFragment: Fragment() {
     private var currentRecyclerState: Parcelable? = null
     private var previousRecyclerState: Parcelable? = null
 
+    var fragId = R.id.posts_icon
+
 
     companion object {
         fun newInstance(): HomeFragment {
@@ -74,8 +76,26 @@ class HomeFragment: Fragment() {
     }
 
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("call$#@$#@", "destroy")
+    }
 
-    private fun refreshChat(func: (Boolean) -> Unit) {
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("meme", "meme")
+        Log.d("$#@!$#@!$#@!", "calling save instance state")
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        var prev = savedInstanceState?.getString("meme")
+        Log.d("i said before: ", "$prev")
+    }
+
+
+
+    fun refreshChat(func: (Boolean) -> Unit) {
         viewModel.getChat(100, func)
     }
 
@@ -149,16 +169,12 @@ class HomeFragment: Fragment() {
                 MainActivity.newPost = false
                 val sortLambda = { success: Boolean ->
                     if(success) {
-                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        it.setBackground(resources.getDrawable(R.drawable.selected_button))
                         (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                        newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        newButton.setBackground(resources.getDrawable(R.drawable.unselected_button))
                         newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                     } else {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
-                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
-                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                        hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                        hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                         MainActivity.newPost = true
                     }
                     var MakeErrorGoAway = 0
@@ -173,16 +189,12 @@ class HomeFragment: Fragment() {
                 MainActivity.newPost = true
                 val sortLambda = { success: Boolean ->
                     if(success) {
-                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        it.setBackground(resources.getDrawable(R.drawable.selected_button))
                         (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                        hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        hotButton.setBackground(resources.getDrawable(R.drawable.unselected_button))
                         hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                     } else {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
-                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
-                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                        newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                        newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                         MainActivity.newPost = false
                     }
                     var MakeErrorGoAway = 0
@@ -193,6 +205,29 @@ class HomeFragment: Fragment() {
         }
 
     }
+
+    private fun listenForScrolling(root: View) {
+        //not sure how pretty or useful to the UX  this is
+        /*
+        val fab = root.findViewById<FloatingActionButton>(R.id.newPost)
+        root.findViewById<RecyclerView>(R.id.searchResults).addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if(dy > 0 || dy < 0 && fab.isShown) {
+                    fab.alpha = 0.5f
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    fab.alpha = 0.9f
+                }
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        })
+         */
+    }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -206,17 +241,13 @@ class HomeFragment: Fragment() {
         initDownSwipeLayout(root)
         setDataObserver(root)
 
-        val lambda = { success: Boolean ->
-            if(!success) {
-                Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG)
-            }
-        }
+        listenForScrolling(root)
 
-        refreshChat(lambda)
 
         initFloatingButton(root)
 
         initListButtons(root)
+
 
 
         //initSideSwipes(root)

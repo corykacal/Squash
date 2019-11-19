@@ -34,16 +34,14 @@ class MainViewModel : ViewModel() {
     private var singlePostComments = MutableLiveData<List<Post>>()
 
     companion object {
-        private lateinit var postRepository: PostRepository
+        private lateinit var postFetch: PostApi
     }
 
     fun init(auth: User, storage: photoapi) {
         db = FirebaseFirestore.getInstance()
         this.auth = auth
         this.storage = storage
-        var postFetch = PostApi.create()
-        postRepository = PostRepository(postFetch)
-        getChat(10, {success: Boolean -> })
+        postFetch = PostApi.create()
     }
 
     fun getTime(postDate: Date): String {
@@ -100,7 +98,7 @@ class MainViewModel : ViewModel() {
 
     fun getComments(post_number: Long, func: (Boolean) -> Unit) {
         var uuid = getUUID()!!
-        var task = postRepository?.getComments(post_number, uuid)
+        var task = postFetch.getComments(post_number, uuid)
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
                 var posts = response!!.body()!!.results
@@ -116,7 +114,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getSinglePost(post_number: Long, func: (Boolean) -> Unit) {
-        val task = postRepository?.getSinglePost(post_number, getUUID()!!)
+        val task = postFetch.getSinglePost(post_number, getUUID()!!)
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
                 var post = response!!.body()!!.results[0]
@@ -130,7 +128,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun makeDescition(opuuid: String, post_number: Long, descision: Boolean?, func: (Boolean) -> Unit) {
-        val task = postRepository?.makeDescision(opuuid, post_number, descision)
+        val task = postFetch.makeDescision(opuuid, post_number, descision)
         task.enqueue(object : Callback<PostApi.PostResponse> {
             override fun onResponse(call: Call<PostApi.PostResponse>?, response: Response<PostApi.PostResponse>?) {
                 getChat(100,{success: Boolean ->})
@@ -145,7 +143,7 @@ class MainViewModel : ViewModel() {
     fun makePost(contents: String, imageuri: Uri?,
                  imageuuid: String?, reply_to: Long?, func: (Boolean) -> Unit) {
         var opuuid = getUUID()!!
-        var task = postRepository?.makePost(contents, imageuuid, reply_to, opuuid!!)
+        var task = postFetch.makePost(imageuuid, reply_to, opuuid!!, contents)
         if(imageuuid!=null) {
             var task = uploadJpg(imageuri!!, imageuuid)
             task.addOnSuccessListener {
@@ -175,9 +173,9 @@ class MainViewModel : ViewModel() {
         var uuid = getUUID()
         var task: Call<PostApi.ListingResponse>
         if(!MainActivity.newPost) {
-            task = postRepository.getHotPosts(uuid!!, number_of_post)
+            task = postFetch.getHotPosts(uuid!!, number_of_post)
         } else {
-            task = postRepository.getRecentPosts(uuid!!, number_of_post)
+            task = postFetch.getRecentPosts(uuid!!, number_of_post)
         }
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {

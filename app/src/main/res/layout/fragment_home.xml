@@ -8,40 +8,56 @@
     >
 
 
-    <Button
-        android:id="@+id/newButton"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:background="@color/post"
-        android:textColor="@color/secondaryYellow"
-        android:text="new"
+    <LinearLayout
+        android:id="@+id/listButtons"
+        android:layout_width="match_parent"
+        android:layout_height="33dp"
+        android:orientation="horizontal"
+        android:weightSum="1"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/hotButton"
-        />
+        >
 
-    <Button
-        android:id="@+id/hotButton"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:background="@color/secondaryYellow"
-        android:textColor="@color/post"
-        android:text="hot"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/newButton"
-        />
+        <Button
+            android:id="@+id/newButton"
+            android:layout_weight="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/post"
+            android:foreground="?attr/selectableItemBackground"
+            android:elevation="10dp"
+            android:textColor="@color/secondaryYellow"
+            android:text="new"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/hotButton"
+            />
 
+        <Button
+            android:id="@+id/hotButton"
+            android:layout_weight="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/secondaryYellow"
+            android:foreground="?attr/selectableItemBackground"
+            android:elevation="10dp"
+            android:textColor="@color/post"
+            android:text="hot"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/newButton"
+            />
+
+    </LinearLayout>
 
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:id="@+id/swipeRefreshLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/guide"
+        app:layout_constraintTop_toBottomOf="@id/listButtons"
+        app:layout_constraintBottom_toBottomOf="parent"
         >
 
         <androidx.recyclerview.widget.RecyclerView

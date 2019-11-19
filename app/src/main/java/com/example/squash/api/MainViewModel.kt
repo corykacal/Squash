@@ -32,20 +32,18 @@ class MainViewModel : ViewModel() {
     private var singlePost = MutableLiveData<Post>()
     private var chatListener : ListenerRegistration? = null
     private var singlePostComments = MutableLiveData<List<Post>>()
-    // Ouch, this is a very poor man's cache
 
     companion object {
-        var postFetch = PostApi.create()
-        var postRepository = PostRepository(postFetch)
+        private lateinit var postRepository: PostRepository
     }
 
     fun init(auth: User, storage: photoapi) {
         db = FirebaseFirestore.getInstance()
-        if (db == null) {
-            Log.d("XXX", "XXX FirebaseFirestore is null!")
-        }
         this.auth = auth
         this.storage = storage
+        var postFetch = PostApi.create()
+        postRepository = PostRepository(postFetch)
+        getChat(10, {success: Boolean -> })
     }
 
     fun getTime(postDate: Date): String {
@@ -85,7 +83,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getUUID(): String? {
-        return auth?.getUid()
+        return this.auth!!.getUid()
     }
 
     fun observePosts(): LiveData<List<Post>> {
@@ -102,7 +100,7 @@ class MainViewModel : ViewModel() {
 
     fun getComments(post_number: Long, func: (Boolean) -> Unit) {
         var uuid = getUUID()!!
-        var task = postRepository.getComments(post_number, uuid)
+        var task = postRepository?.getComments(post_number, uuid)
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
                 var posts = response!!.body()!!.results
@@ -118,7 +116,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getSinglePost(post_number: Long, func: (Boolean) -> Unit) {
-        val task = postRepository.getSinglePost(post_number, getUUID()!!)
+        val task = postRepository?.getSinglePost(post_number, getUUID()!!)
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
                 var post = response!!.body()!!.results[0]
@@ -132,7 +130,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun makeDescition(opuuid: String, post_number: Long, descision: Boolean?, func: (Boolean) -> Unit) {
-        val task = postRepository.makeDescision(opuuid, post_number, descision)
+        val task = postRepository?.makeDescision(opuuid, post_number, descision)
         task.enqueue(object : Callback<PostApi.PostResponse> {
             override fun onResponse(call: Call<PostApi.PostResponse>?, response: Response<PostApi.PostResponse>?) {
                 getChat(100,{success: Boolean ->})
@@ -147,7 +145,7 @@ class MainViewModel : ViewModel() {
     fun makePost(contents: String, imageuri: Uri?,
                  imageuuid: String?, reply_to: Long?, func: (Boolean) -> Unit) {
         var opuuid = getUUID()!!
-        var task = postRepository.makePost(contents, imageuuid, reply_to, opuuid!!)
+        var task = postRepository?.makePost(contents, imageuuid, reply_to, opuuid!!)
         if(imageuuid!=null) {
             var task = uploadJpg(imageuri!!, imageuuid)
             task.addOnSuccessListener {
@@ -188,11 +186,11 @@ class MainViewModel : ViewModel() {
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
                 func(true)
                 var posts = response!!.body()!!.results
+                Log.d("we got this shit ", "$posts")
                 chat.postValue(posts)
             }
         })
     }
-
 
     // Debateable how useful this is.
     override fun onCleared() {

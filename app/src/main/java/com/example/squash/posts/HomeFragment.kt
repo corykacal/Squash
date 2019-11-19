@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.squash.MainActivity
+import com.example.squash.MainActivity.Companion.viewModel
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.User
@@ -34,7 +35,10 @@ import com.example.squash.technology.OnSwipeTouchListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
+import kotlinx.android.synthetic.main.action_bar.*
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.hotButton
+import kotlinx.android.synthetic.main.fragment_home.newButton
 import kotlinx.android.synthetic.main.fragment_home.searchResults
 import kotlinx.android.synthetic.main.post_fragment.*
 
@@ -139,6 +143,57 @@ class HomeFragment: Fragment() {
         })
     }
 
+    private fun initListButtons(root: View) {
+        root.findViewById<Button>(R.id.hotButton).setOnClickListener {
+            if(MainActivity.newPost) {
+                MainActivity.newPost = false
+                val sortLambda = { success: Boolean ->
+                    if(success) {
+                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                    } else {
+                        Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
+                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        MainActivity.newPost = true
+                    }
+                    var MakeErrorGoAway = 0
+                }
+                changeCurrentRecyclerState()
+                refreshChat(sortLambda)
+            }
+        }
+
+        root.findViewById<Button>(R.id.newButton).setOnClickListener {
+            if (!MainActivity.newPost) {
+                MainActivity.newPost = true
+                val sortLambda = { success: Boolean ->
+                    if(success) {
+                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        hotButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                    } else {
+                        Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
+                        it.setBackgroundColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        newButton.setBackgroundColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
+                        newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
+                        MainActivity.newPost = false
+                    }
+                    var MakeErrorGoAway = 0
+                }
+                changeCurrentRecyclerState()
+                refreshChat(sortLambda)
+            }
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -160,6 +215,8 @@ class HomeFragment: Fragment() {
         refreshChat(lambda)
 
         initFloatingButton(root)
+
+        initListButtons(root)
 
 
         //initSideSwipes(root)

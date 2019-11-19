@@ -18,11 +18,11 @@ interface PostApi {
 
 
     @GET("/api/recent/")
-    fun getRecentPost(@Query("opuuid") opuuid: String,
+    fun getRecentPosts(@Query("opuuid") opuuid: String,
                 @Query("number_of_posts") number_of_posts: Int?): Call<ListingResponse>
 
     @GET("/api/hot/")
-    fun getHotPost(@Query("opuuid") opuuid: String,
+    fun getHotPosts(@Query("opuuid") opuuid: String,
                       @Query("number_of_posts") number_of_posts: Int?): Call<ListingResponse>
 
     @POST("/api/submit/")

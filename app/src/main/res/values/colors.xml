@@ -12,6 +12,8 @@
     <color name="post">#fffffc</color>
     <color name="background">#f7f6df</color>
 
+    <color name="statisticsBackground">#faf9ed</color>
+
     <color name="selectedButton">#fffef3</color>
     <color name="selectedText">#f7ec4f</color>
     <color name="black">#000000</color>

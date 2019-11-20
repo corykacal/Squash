@@ -71,6 +71,7 @@ class HomeFragment: Fragment() {
                     Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG)
                 }
             }
+            viewModel.getUserData {}
             refreshChat(lambda)
         }
     }
@@ -157,7 +158,6 @@ class HomeFragment: Fragment() {
         viewModel.observePosts().observe(this, Observer {
             var recyclerState =  currentRecyclerState
             initAdapter(root)
-            Log.d("list has changed: ", "$it")
             postAdapter.submitList(it)
             searchResults.getLayoutManager()?.onRestoreInstanceState(recyclerState)
         })

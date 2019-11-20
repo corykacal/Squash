@@ -16,6 +16,8 @@ import java.util.*
 
 interface PostApi {
 
+    @GET("/api/user/")
+    fun getUserData(@Query("opuuid") opuuid: String): Call<UserDataReponse>
 
     @GET("/api/recent/")
     fun getRecentPosts(@Query("opuuid") opuuid: String,
@@ -50,6 +52,8 @@ interface PostApi {
     class PostResponse(val results: String)
 
     class ListingResponse(val results: List<Post>)
+
+    class UserDataReponse(val results: List<UserData>)
 
 
     companion object {

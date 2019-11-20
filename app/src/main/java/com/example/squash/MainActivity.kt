@@ -23,8 +23,11 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.view.MenuInflater
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.action_bar.*
 
 
@@ -34,10 +37,12 @@ class MainActivity : AppCompatActivity() {
 
     val TAG = "####"
 
+
     companion object {
         var newPost = true
         lateinit var viewModel: MainViewModel
     }
+
 
     private fun refreshChat(func: (Boolean) -> Unit) {
         viewModel.getChat(100, func)
@@ -53,8 +58,9 @@ class MainActivity : AppCompatActivity() {
         actionBar.customView = customView
     }
 
+
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        return false
+        return true
     }
 
     private lateinit var homeFragment: HomeFragment
@@ -81,6 +87,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun observePoints() {
+        viewModel.observeUserData().observe(this, Observer {
+            userPoints.text = (it.post_up!!+it.comment_up!!).toString()
+        })
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -96,6 +108,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.init(user, photoapi(resources))
         homeFragment = HomeFragment.newInstance()
         launchNewFragment(homeFragment, R.id.posts_icon)
+        observePoints()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -32,6 +32,7 @@ class MainViewModel : ViewModel() {
     private var singlePost = MutableLiveData<Post>()
     private var chatListener : ListenerRegistration? = null
     private var singlePostComments = MutableLiveData<List<Post>>()
+    private var userData = MutableLiveData<UserData>()
 
     companion object {
         private lateinit var postFetch: PostApi
@@ -94,6 +95,30 @@ class MainViewModel : ViewModel() {
 
     fun observeComments(): LiveData<List<Post>> {
         return singlePostComments
+    }
+
+    fun observeUserData(): LiveData<UserData> {
+        return userData
+    }
+
+    fun getUserData(func: (Boolean) -> Unit) {
+        var uuid = getUUID()!!
+        var task = postFetch.getUserData(uuid)
+        task.enqueue(object : Callback<PostApi.UserDataReponse> {
+            override fun onResponse(call: Call<PostApi.UserDataReponse>?, response: Response<PostApi.UserDataReponse>?) {
+                var data = response!!.body()!!.results
+                if(data.size==0) {
+                    userData.postValue(UserData(0,0,0,0,0,0,0,0,0,0))
+                } else {
+                    userData.postValue(data[0])
+                }
+                func(true)
+            }
+            override fun onFailure(call: Call<PostApi.UserDataReponse>?, t: Throwable?) {
+                func(false)
+            }
+        })
+
     }
 
     fun getComments(post_number: Long, func: (Boolean) -> Unit) {

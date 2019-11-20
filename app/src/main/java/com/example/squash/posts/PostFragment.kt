@@ -39,6 +39,7 @@ import com.example.squash.api.MainViewModel
 import com.example.squash.api.User
 import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
+import com.example.squash.technology.Cartesian
 import com.example.squash.technology.OnSwipeTouchListener
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
@@ -51,12 +52,14 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import okhttp3.internal.wait
 import java.util.*
+import kotlin.random.Random
 
 class PostFragment: AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var auth: FirebaseAuth
 
     private lateinit var postAdapter: PostListAdapter
+    private lateinit var mixedPairs: List<List<Int>>
 
     private fun initSideSwipes(root: View) {
 
@@ -70,7 +73,7 @@ class PostFragment: AppCompatActivity() {
 
     private fun initAdapter() {
         var recycler = findViewById<RecyclerView>(R.id.searchResults)
-        postAdapter = PostListAdapter(viewModel, null, true)
+        postAdapter = PostListAdapter(viewModel, null, true, mixedPairs)
         recycler.adapter = postAdapter
         recycler.layoutManager = LinearLayoutManager(this)
 
@@ -325,9 +328,53 @@ class PostFragment: AppCompatActivity() {
         }
     }
 
+    private var veggies = listOf<Int>(R.drawable.ic_apple,
+        R.drawable.ic_beetroot,
+        R.drawable.ic_bell_pepper,
+        R.drawable.ic_broccoli,
+        R.drawable.ic_carrot,
+        R.drawable.ic_cherry,
+        R.drawable.ic_chili,
+        R.drawable.ic_corn,
+        R.drawable.ic_cucumber,
+        R.drawable.ic_eggplant,
+        R.drawable.ic_grape,
+        R.drawable.ic_orange,
+        R.drawable.ic_pineapple,
+        R.drawable.ic_strawberry,
+        R.drawable.ic_watermelon,
+        R.drawable.ic_avocado
+    )
+
+    private var colors = listOf<Int>(
+        R.color.red,
+        R.color.orange,
+        R.color.yellow,
+        R.color.green,
+        R.color.lime,
+        R.color.maroon,
+        R.color.blue,
+        R.color.teal,
+        R.color.turquoise,
+        R.color.navy,
+        R.color.pink,
+        R.color.brown,
+        R.color.beige,
+        R.color.purple,
+        R.color.grey,
+        R.color.golden
+    )
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.post_fragment)
+
+
+
+
 
         /*
         KeyboardVisibilityEvent.setEventListener(this, object: KeyboardVisibilityEventListener {
@@ -352,6 +399,11 @@ class PostFragment: AppCompatActivity() {
         initDownSwipeLayout(post_number)
         initVoteArrows(post_number)
         listenToEdit()
+
+
+        val pairs = Cartesian.nAryCartesianProduct(listOf<List<Int>>(colors, veggies))
+
+        mixedPairs = pairs.shuffled(Random(post_number)) as List<List<Int>>
 
 
         commentLeft.isVisible = false

@@ -49,7 +49,8 @@ import kotlin.random.Random
 
 class PostListAdapter(private val viewModel: MainViewModel,
                       private val fragment: HomeFragment?,
-                      private val isComments: Boolean)
+                      private val isComments: Boolean,
+                      private val pairs: List<List<Int>>?)
     : ListAdapter<Post, PostListAdapter.VH>(RedditDiff()) {
     class RedditDiff : DiffUtil.ItemCallback<Post>() {
 
@@ -94,6 +95,9 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
         private var upVote = itemView.findViewById<ImageView>(R.id.upVote)
         private var downVote = itemView.findViewById<ImageView>(R.id.downVote)
+        private var comment_tag = itemView.findViewById<ConstraintLayout>(R.id.comment_tag)
+        private var veggieIV = itemView.findViewById<ImageView>(R.id.veggie)
+        private var opTag = itemView.findViewById<TextView>(R.id.opTag)
 
 
         val imageLoaded = { success: Boolean ->
@@ -117,6 +121,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             imageIV.isVisible = false
             contentsTV.minLines = 3
             contentsTV.maxLines = 5
+            comment_tag.isVisible = false
             if (item == null) return
 
             val postDate = Date(item.timestamp!!.time)
@@ -126,6 +131,18 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
 
             if(isComments) {
+                val uniqueCommenter = item.uniqueCommenter!!
+                val cur_pair = pairs?.get(uniqueCommenter%256)
+                val color = cur_pair?.get(0)
+                val veggie = cur_pair?.get(1)
+                //setSVGcolor(comment_tag, color!!)
+                opTag.text = ""
+                if(uniqueCommenter==0) {
+                    opTag.text="OP"
+                }
+                comment_tag.setBackgroundResource(color!!)
+                veggieIV.setImageResource(veggie!!)
+                comment_tag.isVisible = true
                 commentsTV.isVisible = false
                 commentsIV.isVisible = false
             } else {

@@ -114,7 +114,7 @@ class HomeFragment: Fragment() {
 
     private fun initAdapter(root: View) {
         var recycler = root.findViewById<RecyclerView>(R.id.searchResults)
-        postAdapter = PostListAdapter(viewModel, this, false)
+        postAdapter = PostListAdapter(viewModel, this, false, null)
         recycler.adapter = postAdapter
         recycler.layoutManager = LinearLayoutManager(context)
 

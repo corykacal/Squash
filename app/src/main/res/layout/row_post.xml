@@ -20,14 +20,51 @@
         android:background="?attr/colorAccent"
         tools:context=".MainActivity">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/comment_tag"
+            android:layout_width="25dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="-10dp"
+            android:textColor="@color/post"
+            android:fontFamily="sans-serif-medium"
+            app:layout_constraintEnd_toStartOf="@id/postVoteUnion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+
+            <ImageView
+                android:id="@+id/veggie"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_avocado"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/opTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/post"
+                app:layout_constraintTop_toBottomOf="@id/veggie"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:id="@+id/postVoteUnion"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/comment_tag"
             app:layout_constraintEnd_toEndOf="parent"
             >
 

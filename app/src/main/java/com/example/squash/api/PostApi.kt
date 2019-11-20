@@ -17,37 +17,46 @@ import java.util.*
 interface PostApi {
 
     @GET("/api/user/")
-    fun getUserData(@Query("opuuid") opuuid: String): Call<UserDataReponse>
+    fun getUserData(@Query("opuuid") opuuid: String
+    ): Call<UserDataReponse>
 
     @GET("/api/recent/")
     fun getRecentPosts(@Query("opuuid") opuuid: String,
-                @Query("number_of_posts") number_of_posts: Int?): Call<ListingResponse>
+                       @Query("number_of_posts") number_of_posts: Int?,
+                       @Query("page_number") page_number: Int?
+    ): Call<ListingResponse>
 
     @GET("/api/hot/")
     fun getHotPosts(@Query("opuuid") opuuid: String,
-                      @Query("number_of_posts") number_of_posts: Int?): Call<ListingResponse>
+                    @Query("number_of_posts") number_of_posts: Int?,
+                    @Query("page_number") page_number: Int?
+    ): Call<ListingResponse>
 
     @POST("/api/submit/")
     @FormUrlEncoded
     fun makePost(@Field("imageuuid") imageuuid: String?,
-                         @Field("reply_to") reply_to: Long?,
-                         @Field("opuuid") opuuid: String,
-                         @Field("contents") contents: String): Call<PostResponse>
+                 @Field("reply_to") reply_to: Long?,
+                 @Field("opuuid") opuuid: String,
+                 @Field("contents") contents: String
+    ): Call<PostResponse>
 
 
     @POST("/api/vote/")
     @FormUrlEncoded
     fun makeDescision(@Field("opuuid") opuuid: String,
                       @Field("post_number") post_number: Long,
-                      @Field("descision") descision: Boolean?): Call<PostResponse>
+                      @Field("descision") descision: Boolean?
+    ): Call<PostResponse>
 
     @GET("/api/post/")
     fun getSinglePost(@Query("post_number") post_number: Long,
-                      @Query("opuuid") opuuid: String): Call<ListingResponse>
+                      @Query("opuuid") opuuid: String
+    ): Call<ListingResponse>
 
     @GET("/api/replies/")
     fun getComments(@Query("post_number") post_number: Long,
-                    @Query("opuuid") opuuid: String): Call<ListingResponse>
+                    @Query("opuuid") opuuid: String
+    ): Call<ListingResponse>
 
     class PostResponse(val results: String)
 

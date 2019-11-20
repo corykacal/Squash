@@ -198,9 +198,9 @@ class MainViewModel : ViewModel() {
         var uuid = getUUID()
         var task: Call<PostApi.ListingResponse>
         if(!MainActivity.newPost) {
-            task = postFetch.getHotPosts(uuid!!, number_of_post)
+            task = postFetch.getHotPosts(uuid!!, number_of_post, 1)
         } else {
-            task = postFetch.getRecentPosts(uuid!!, number_of_post)
+            task = postFetch.getRecentPosts(uuid!!, number_of_post, 1)
         }
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {

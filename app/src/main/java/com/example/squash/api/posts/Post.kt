@@ -16,6 +16,9 @@ data class Post(
     @SerializedName("post_number")
     var postID: Long? = null,
 
+    @SerializedName("unique_commenter")
+    var uniqueCommenter: Int? = null,
+
     @SerializedName("opuuid")
     var opUUID: String? = null,
 

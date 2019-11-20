@@ -17,12 +17,12 @@ class PostRepository(private val postApi: PostApi) {
     }
 
     fun getRecentPosts(opuuid: String, number_of_post: Int?): Call<PostApi.ListingResponse> {
-        val request = postApi.getRecentPosts(opuuid, number_of_post)
+        val request = postApi.getRecentPosts(opuuid, number_of_post, 0)
         return request
     }
 
     fun getHotPosts(opuuid: String, number_of_post: Int?): Call<PostApi.ListingResponse> {
-        val request = postApi.getHotPosts(opuuid, number_of_post)
+        val request = postApi.getHotPosts(opuuid, number_of_post, 0)
         return request
     }
 

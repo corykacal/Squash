@@ -1,24 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
 
 
 
-    <TextView
-        android:id="@+id/userPoints"
+
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="30dp"
-        android:fontFamily="monospace"
-        android:gravity="center_vertical"
-        android:textSize="30sp"
-        android:text="0"
-        />
+        android:background="@drawable/karma_outline"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="20dp"
+        android:textAlignment="center"
+        >
+
+        <TextView
+            android:id="@+id/userPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="30sp"
+            android:text="130"
+            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            android:alpha="0.6"
+            android:textColor="@color/black"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="↑"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="34sp"
+            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            android:alpha="0.6"
+            android:textColor="@color/black"
+            />
+
+    </LinearLayout>
 
 
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

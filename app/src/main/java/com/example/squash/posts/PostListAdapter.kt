@@ -93,6 +93,9 @@ class PostListAdapter(private val viewModel: MainViewModel,
         private var upVote = itemView.findViewById<ImageView>(R.id.upVote)
         private var downVote = itemView.findViewById<ImageView>(R.id.downVote)
 
+        private var subjectTag = itemView.findViewById<ConstraintLayout>(R.id.subject_tag)
+        private var subjectTV = itemView.findViewById<TextView>(R.id.subject)
+
 
         val imageLoaded = { success: Boolean ->
             if(success) {
@@ -115,6 +118,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             imageIV.isVisible = false
             contentsTV.minLines = 3
             contentsTV.maxLines = 5
+            subjectTag.isVisible = false
             if (item == null) return
 
             val postDate = Date(item.timestamp!!.time)
@@ -124,6 +128,14 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
 
             commentsTV.text = item.comment_count.toString()
+
+            if(item.subject!=null) {
+                subjectTag.isVisible = true
+                subjectTV.text = item.subject!!.toUpperCase()
+                if(item.subject=="Memes") {
+                    subjectTag.setBackgroundResource(R.color.blue)
+                }
+            }
 
             var points = item.up!! - item.down!!
             if(points<0) {

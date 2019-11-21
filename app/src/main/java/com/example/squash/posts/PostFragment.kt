@@ -61,6 +61,8 @@ class PostFragment: AppCompatActivity() {
     private lateinit var postAdapter: CommentListAdapter
     private lateinit var mixedPairs: List<List<Int>>
 
+    private lateinit var toolbar: Toolbar
+
     private fun initSideSwipes(root: View) {
 
 
@@ -125,6 +127,10 @@ class PostFragment: AppCompatActivity() {
         }
         contents.text = post.contents
         comments.text = post.comment_count.toString()
+
+        if(post.subject!=null) {
+            toolbar.setTitle(post.subject)
+        }
         timeStamp.text = viewModel.getTime(Date(post.timestamp!!.time))
         if(post.imageUUID!=null) {
             image.isVisible = true
@@ -167,7 +173,7 @@ class PostFragment: AppCompatActivity() {
     }
 
     private fun initActionBar() {
-        val toolbar = findViewById<Toolbar>(R.id.posttoolbar)
+        toolbar = findViewById(R.id.posttoolbar)
         toolbar.setTitle(title)
         toolbar.setNavigationIcon(R.drawable.back_arrow)
         setSupportActionBar(toolbar)
@@ -222,7 +228,7 @@ class PostFragment: AppCompatActivity() {
                     }
                     var makeErrorGoAway = 0
                 }
-                viewModel.makePost(contents, null, null, post_number, postLambda)
+                viewModel.makePost(contents, null, null, null, post_number, postLambda)
             }
         }
     }
@@ -293,6 +299,7 @@ class PostFragment: AppCompatActivity() {
 
         val lambda = { success: Boolean ->
         }
+
 
         upVote.setOnClickListener {
             if(downVote.tag=="true") {

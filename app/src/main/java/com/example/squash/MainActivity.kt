@@ -48,19 +48,9 @@ class MainActivity : AppCompatActivity() {
         viewModel.getChat(100, func)
     }
 
-    private fun initActionBar(actionBar: ActionBar) {
-        // Disable the default and enable the custom
-        actionBar.setDisplayShowTitleEnabled(false)
-        actionBar.setDisplayShowCustomEnabled(true)
-        val customView: View =
-            layoutInflater.inflate(R.layout.action_bar, null)
-        // Apply the custom view
-        actionBar.customView = customView
-    }
-
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        return true
+        return false
     }
 
     private lateinit var homeFragment: HomeFragment
@@ -96,11 +86,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.let{
-            initActionBar(it)
-        }
         findViewById<bottomNavBar>(R.id.bar).setInstance(this)
         auth = FirebaseAuth.getInstance()
         var user = User(auth)

@@ -90,6 +90,10 @@ class NewPostActivity(): AppCompatActivity() {
     private fun initPostButton() {
         postButton.setOnClickListener {
             var contents = editPostText.text.toString()
+            var subject: String? = null
+            if(spinner.selectedItemId.toInt()!=0) {
+                 subject = spinner.selectedItem.toString()
+            }
             if(contents.isBlank()) {
                 postError.text = "Error: can't send blank post"
                 pulseAnimation(postError)
@@ -113,7 +117,7 @@ class NewPostActivity(): AppCompatActivity() {
                     }
                     var makeErrorGoAway = 0
                 }
-                viewModel.makePost(contents, imageURI, imageuuid, reply_to, postLambda)
+                viewModel.makePost(contents, subject, imageURI, imageuuid, reply_to, postLambda)
             }
         }
     }

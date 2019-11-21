@@ -42,9 +42,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.action_bar.*
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_home.hotButton
-import kotlinx.android.synthetic.main.fragment_home.newButton
-import kotlinx.android.synthetic.main.fragment_home.searchResults
 import kotlinx.android.synthetic.main.post_fragment.*
 
 

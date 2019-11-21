@@ -9,13 +9,70 @@
     >
 
 
+    <androidx.appcompat.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:fitsSystemWindows="true"
+        android:minHeight="?attr/actionBarSize"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:background="?attr/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/karma_outline"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="20dp"
+            android:textAlignment="center"
+            >
+
+            <TextView
+                android:id="@+id/userPoints"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="30sp"
+                android:text="130"
+                android:textAlignment="center"
+                android:gravity="center_horizontal"
+                android:alpha="0.6"
+                android:textColor="@color/black"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="↑"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="34sp"
+                android:textAlignment="center"
+                android:gravity="center_horizontal"
+                android:alpha="0.6"
+                android:textColor="@color/black"
+                />
+
+        </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+
+
+
     <LinearLayout
         android:id="@+id/listButtons"
         android:layout_width="match_parent"
         android:layout_height="33dp"
         android:orientation="horizontal"
         android:weightSum="1"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         >
 
         <Button

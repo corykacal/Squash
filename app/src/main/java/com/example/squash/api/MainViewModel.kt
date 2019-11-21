@@ -127,7 +127,7 @@ class MainViewModel : ViewModel() {
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
                 var posts = response!!.body()!!.results
-                posts = posts?.sortedBy { it.timestamp }
+                posts = posts.sortedBy { it.timestamp }
                 singlePostComments.postValue(posts)
                 func(true)
             }
@@ -165,10 +165,10 @@ class MainViewModel : ViewModel() {
         })
     }
 
-    fun makePost(contents: String, imageuri: Uri?,
+    fun makePost(contents: String, subject: String?, imageuri: Uri?,
                  imageuuid: String?, reply_to: Long?, func: (Boolean) -> Unit) {
         var opuuid = getUUID()!!
-        var task = postFetch.makePost(imageuuid, reply_to, opuuid!!, contents)
+        var task = postFetch.makePost(imageuuid, reply_to, opuuid!!, contents, subject)
         if(imageuuid!=null) {
             var task = uploadJpg(imageuri!!, imageuuid)
             task.addOnSuccessListener {

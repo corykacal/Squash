@@ -99,7 +99,6 @@
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="2dp"
                         android:layout_marginEnd="-1dp"
-                        android:autoLink="web"
                         android:maxLines="10"
                         android:minLines="3"
                         android:gravity="start"
@@ -107,6 +106,9 @@
                         android:textSize="17sp"
                         android:fontFamily="sans-serif"
                         android:text="▇▇▇▇▇▇▇▇▇▇"
+                        android:textColorLink="@color/badComment"
+                        android:linksClickable="true"
+                        android:autoLink="all"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         />

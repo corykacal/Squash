@@ -5,6 +5,8 @@
 
     <color name="mainYellow">#f7e463</color>
     <color name="secondaryYellow">#ead75d</color>
+    <color name="accentYellow">#f7e87e</color>
+    <color name="secondAccentYellow">#f7e774</color>
 
     <color name="mainGreen">#c1e868</color>
     <color name="secondaryGreen">#b0d35f</color>

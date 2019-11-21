@@ -10,6 +10,9 @@ data class Post(
     @SerializedName("contents")
     var contents: String? = null,
 
+    @SerializedName("subject")
+    var subject: String? = null,
+
     @SerializedName("imageuuid")
     var imageUUID: String? = null,
 

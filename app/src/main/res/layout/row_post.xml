@@ -21,6 +21,35 @@
         tools:context=".MainActivity">
 
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/subject_tag"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:background="@color/secondaryYellow"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/postVoteUnion"
+            app:layout_constraintStart_toStartOf="parent"
+            >
+
+            <TextView
+                android:id="@+id/subject"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/post"
+                android:singleLine="true"
+                android:ellipsize="none"
+                android:rotation="90"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
@@ -28,7 +57,7 @@
             android:orientation="horizontal"
             android:id="@+id/postVoteUnion"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/subject_tag"
             app:layout_constraintEnd_toEndOf="parent"
             >
 

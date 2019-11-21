@@ -19,6 +19,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +34,7 @@ import com.example.squash.api.User
 import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
 import com.example.squash.technology.OnSwipeTouchListener
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
@@ -247,6 +250,8 @@ class HomeFragment: Fragment() {
         initFloatingButton(root)
 
         initListButtons(root)
+
+
 
 
 

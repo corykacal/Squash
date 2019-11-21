@@ -37,8 +37,8 @@ interface PostApi {
     fun makePost(@Field("imageuuid") imageuuid: String?,
                  @Field("reply_to") reply_to: Long?,
                  @Field("opuuid") opuuid: String,
-                 @Field("contents") contents: String
-                //@Field("subject") subject: String
+                 @Field("contents") contents: String,
+                 @Field("subject") subject: String?
     ): Call<PostResponse>
 
 

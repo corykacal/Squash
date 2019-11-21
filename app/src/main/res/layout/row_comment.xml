@@ -46,19 +46,14 @@
 
             <TextView
                 android:id="@+id/opTag"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/post"
-                android:ellipsize="none"
                 android:alpha="0.9"
-                android:singleLine="true"
-                android:text="subject"
-                android:rotation="-90"
                 app:layout_constraintTop_toBottomOf="@id/veggie"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 />
 
 
@@ -101,6 +96,9 @@
                     android:ellipsize="end"
                     android:textSize="15.5sp"
                     android:fontFamily="sans-serif"
+                    android:textColorLink="@color/badComment"
+                    android:linksClickable="true"
+                    android:autoLink="all"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     />

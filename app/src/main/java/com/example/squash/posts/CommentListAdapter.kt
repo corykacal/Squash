@@ -47,12 +47,10 @@ import kotlin.random.Random
  * Created by witchel on 8/25/2019
  */
 
-class PostListAdapter(private val viewModel: MainViewModel,
-                      private val fragment: HomeFragment?)
-    : ListAdapter<Post, PostListAdapter.VH>(RedditDiff()) {
+class CommentListAdapter(private val viewModel: MainViewModel,
+                      private val pairs: List<List<Int>>?)
+    : ListAdapter<Post, CommentListAdapter.VH>(RedditDiff()) {
     class RedditDiff : DiffUtil.ItemCallback<Post>() {
-
-
 
         override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
             return oldItem.postID == newItem.postID
@@ -70,35 +68,18 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
 
     inner class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        /*
-        private var titleTV = itemView.findViewById<TextView>(R.id.title)
-        private var selfTextTV = itemView.findViewById<TextView>(R.id.selfText)
-        private var commentsTV = itemView.findViewById<TextView>(R.id.comments)
-        private var leUpBoatsTV = itemView.findViewById<TextView>(R.id.score)
-        private var heart = itemView.findViewById<ImageView>(R.id.rowFav)
-        private var postImage = itemView.findViewById<ImageView>(R.id.image)
-        //private var postIV = itemView.findViewById<ImageView>(R.id.imageTextUnion)
 
-         */
-
-        private var imageAndText = itemView.findViewById<ConstraintLayout>(R.id.imageTextUnion)
 
         private var contentsTV = itemView.findViewById<TextView>(R.id.contents)
-        private var imageIV = itemView.findViewById<ImageView>(R.id.image)
         private var timeTV = itemView.findViewById<TextView>(R.id.timeStamp)
-        private var commentsTV = itemView.findViewById<TextView>(R.id.comments)
         private var pointsTV = itemView.findViewById<TextView>(R.id.points)
-        private var loadingIV = itemView.findViewById<RelativeLayout>(R.id.loadingPanel)
 
         private var upVote = itemView.findViewById<ImageView>(R.id.upVote)
         private var downVote = itemView.findViewById<ImageView>(R.id.downVote)
+        private var comment_tag = itemView.findViewById<ConstraintLayout>(R.id.comment_tag)
+        private var veggieIV = itemView.findViewById<ImageView>(R.id.veggie)
+        private var opTag = itemView.findViewById<TextView>(R.id.opTag)
 
-
-        val imageLoaded = { success: Boolean ->
-            if(success) {
-                loadingIV.isVisible = false
-            }
-        }
 
 
         val voteLambda = { success: Boolean ->
@@ -111,8 +92,6 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
 
         fun bind(item: Post?) {
-            imageIV.setImageDrawable(null)
-            imageIV.isVisible = false
             contentsTV.minLines = 3
             contentsTV.maxLines = 5
             if (item == null) return
@@ -123,7 +102,17 @@ class PostListAdapter(private val viewModel: MainViewModel,
             contentsTV.text = item.contents
 
 
-            commentsTV.text = item.comment_count.toString()
+            val uniqueCommenter = item.uniqueCommenter!!
+            val cur_pair = pairs?.get(uniqueCommenter%256)
+            val color = cur_pair?.get(0)
+            val veggie = cur_pair?.get(1)
+            //setSVGcolor(comment_tag, color!!)
+            opTag.text = ""
+            if(uniqueCommenter==0) {
+                opTag.text="OP"
+            }
+            comment_tag.setBackgroundResource(color!!)
+            veggieIV.setImageResource(veggie!!)
 
             var points = item.up!! - item.down!!
             if(points<0) {
@@ -132,22 +121,6 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 pointsTV.setTextColor(ContextCompat.getColor(itemView.context, R.color.goodComment))
             }
             pointsTV.text = points.toString()
-
-            imageAndText.setOnClickListener {
-                fragment!!.setCurrentRecyclerState()
-                fragment!!.startPostFragment(item)
-                imageAndText.isEnabled = false
-            }
-
-            if(item.imageUUID!=null) {
-                imageIV.isVisible = true
-                contentsTV.minLines = 0
-                imageIV.clipToOutline = true
-                viewModel.downloadImg(item.imageUUID!!, imageIV, imageLoaded)
-                contentsTV.maxLines = 4
-            } else {
-                loadingIV.isVisible = false
-            }
 
             setSVGcolor(downVote, R.color.black)
             setSVGcolor(upVote, R.color.black)
@@ -168,7 +141,6 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
 
             upVote.setOnClickListener {
-                fragment?.setCurrentRecyclerState()
                 if(downVote.tag=="true") {
                     setSVGcolor(downVote, R.color.black)
                     setSVGcolor(upVote, R.color.goodComment)
@@ -184,7 +156,6 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 }
             }
             downVote.setOnClickListener {
-                fragment?.setCurrentRecyclerState()
                 if(upVote.tag=="true") {
                     setSVGcolor(upVote, R.color.black)
                     setSVGcolor(downVote, R.color.badComment)
@@ -204,7 +175,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.row_post, parent, false)
+            .inflate(R.layout.row_comment, parent, false)
         return VH(itemView)
     }
 

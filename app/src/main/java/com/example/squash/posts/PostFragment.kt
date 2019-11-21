@@ -58,7 +58,7 @@ class PostFragment: AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var auth: FirebaseAuth
 
-    private lateinit var postAdapter: PostListAdapter
+    private lateinit var postAdapter: CommentListAdapter
     private lateinit var mixedPairs: List<List<Int>>
 
     private fun initSideSwipes(root: View) {
@@ -73,7 +73,7 @@ class PostFragment: AppCompatActivity() {
 
     private fun initAdapter() {
         var recycler = findViewById<RecyclerView>(R.id.searchResults)
-        postAdapter = PostListAdapter(viewModel, null, true, mixedPairs)
+        postAdapter = CommentListAdapter(viewModel, mixedPairs)
         recycler.adapter = postAdapter
         recycler.layoutManager = LinearLayoutManager(this)
 

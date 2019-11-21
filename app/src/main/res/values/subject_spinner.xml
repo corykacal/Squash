@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="subject_prompt">Subject (optional)</string>
+
+    <string-array name="subject_arrays">
+        <item>No subject</item>
+        <item>Football</item>
+        <item>Memes</item>
+        <item>Campus Antics</item>
+        <item>Food</item>
+        <item>Parties</item>
+        <item>Greg Gym</item>
+        <item>Classes</item>
+    </string-array>
+
+</resources>

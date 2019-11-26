@@ -12,7 +12,7 @@
     <color name="secondaryGreen">#b0d35f</color>
 
     <color name="post">#fffffc</color>
-    <color name="background">#f7f6df</color>
+    <color name="background">#edecd5</color>
 
     <color name="statisticsBackground">#faf9ed</color>
 
@@ -22,21 +22,21 @@
     <color name="gray">#696963</color>
 
 
-    <color name="red">#DC143C</color>
-    <color name="orange">#FFA500</color>
-    <color name="yellow">#FFFF66</color>
-    <color name="green">#3cb44b</color>
-    <color name="lime">#bfef45</color>
-    <color name="maroon">#8B0000</color>
-    <color name="blue">#6495ED</color>
-    <color name="teal">#008080</color>
-    <color name="turquoise">#40E0D0</color>
-    <color name="navy">#000075</color>
-    <color name="pink">#FFC0CB</color>
-    <color name="brown">#A0522D</color>
-    <color name="beige">#D2B48C</color>
-    <color name="purple">#DDA0DD</color>
-    <color name="grey">#a9a9a9</color>
+    <color name="red">#ff1654</color>
+    <color name="orange">#efb062</color>
+    <color name="yellow">#f2e090</color>
+    <color name="green">#9ab87a</color>
+    <color name="lime">#f3ffbd</color>
+    <color name="maroon">#708b75</color>
+    <color name="blue">#6290c3</color>
+    <color name="teal">#c2e7da</color>
+    <color name="turquoise">#00a896</color>
+    <color name="navy">#05668d</color>
+    <color name="pink">#ffb4a2</color>
+    <color name="brown">#b5838d</color>
+    <color name="beige">#efd09e</color>
+    <color name="purple">#b5838d</color>
+    <color name="grey">#d2d8b3</color>
     <color name="golden">#FFD700</color>
 
 

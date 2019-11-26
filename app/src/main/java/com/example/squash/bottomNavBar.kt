@@ -28,6 +28,7 @@ class bottomNavBar @JvmOverloads constructor(
 
     override fun dispatchDraw(canvas: Canvas?) {
         super.dispatchDraw(canvas)
+
         this.setOnNavigationItemSelectedListener {
             val newSelectId = it.itemId
             val prevSelectId = this.selectedItemId

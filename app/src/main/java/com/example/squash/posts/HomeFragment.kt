@@ -238,7 +238,8 @@ class HomeFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        viewModel = MainActivity.viewModel
+        viewModel = ViewModelProviders.of(activity!!)[MainViewModel::class.java]
+
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
         initDownSwipeLayout(root)
@@ -252,6 +253,7 @@ class HomeFragment: Fragment() {
         initListButtons(root)
 
 
+        //refreshChat {  }
 
 
 

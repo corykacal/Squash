@@ -25,23 +25,10 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
-//import com.example.squash.api.glide.Glide
 import com.example.squash.api.posts.Post
-import com.example.squash.technology.OnSwipeTouchListener
-import com.google.type.Date
-import kotlinx.coroutines.test.withTestContext
-import okhttp3.internal.waitMillis
-import org.w3c.dom.Text
-import java.sql.Timestamp
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.*
-import kotlin.coroutines.coroutineContext
-import kotlin.random.Random
 
 /**
  * Created by witchel on 8/25/2019
@@ -118,7 +105,8 @@ class PostListAdapter(private val viewModel: MainViewModel,
             imageIV.isVisible = false
             contentsTV.minLines = 3
             contentsTV.maxLines = 5
-            subjectTag.isVisible = false
+            subjectTV.text = ""
+            subjectTag.setBackgroundResource(R.color.post)
             if (item == null) return
 
             val postDate = Date(item.timestamp!!.time)
@@ -130,10 +118,11 @@ class PostListAdapter(private val viewModel: MainViewModel,
             commentsTV.text = item.comment_count.toString()
 
             if(item.subject!=null) {
-                subjectTag.isVisible = true
                 subjectTV.text = item.subject!!.toUpperCase()
                 if(item.subject=="Memes") {
-                    subjectTag.setBackgroundResource(R.color.blue)
+                    subjectTag.setBackgroundResource(R.color.orange)
+                } else {
+                    subjectTag.setBackgroundResource(R.color.yellow)
                 }
             }
 
@@ -145,10 +134,15 @@ class PostListAdapter(private val viewModel: MainViewModel,
             }
             pointsTV.text = points.toString()
 
+
+
+            var lastTimeSent = 0L
             imageAndText.setOnClickListener {
-                fragment!!.setCurrentRecyclerState()
-                fragment!!.startPostFragment(item)
-                imageAndText.isEnabled = false
+                if(System.currentTimeMillis() > lastTimeSent + 1000) {
+                    lastTimeSent = System.currentTimeMillis()
+                    fragment!!.setCurrentRecyclerState()
+                    fragment!!.startPostFragment(item)
+                }
             }
 
             if(item.imageUUID!=null) {

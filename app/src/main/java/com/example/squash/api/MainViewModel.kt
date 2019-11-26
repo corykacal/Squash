@@ -26,8 +26,6 @@ import java.util.*
 
 class MainViewModel : ViewModel() {
     private lateinit var db: FirebaseFirestore
-    private var auth: User? = null
-    private lateinit var storage: photoapi
     private var chat = MutableLiveData<List<Post>>()
     private var singlePost = MutableLiveData<Post>()
     private var chatListener : ListenerRegistration? = null
@@ -36,12 +34,14 @@ class MainViewModel : ViewModel() {
 
     companion object {
         private lateinit var postFetch: PostApi
+        private lateinit var auth: User
+        private lateinit var storage: photoapi
     }
 
-    fun init(auth: User, storage: photoapi) {
+    fun init(authy: User, storagey: photoapi) {
         db = FirebaseFirestore.getInstance()
-        this.auth = auth
-        this.storage = storage
+        auth = authy
+        storage = storagey
         postFetch = PostApi.create()
     }
 
@@ -82,7 +82,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getUUID(): String? {
-        return this.auth!!.getUid()
+        return auth!!.getUid()
     }
 
     fun observePosts(): LiveData<List<Post>> {

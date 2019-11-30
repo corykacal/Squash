@@ -76,6 +76,10 @@ class MainViewModel : ViewModel() {
         storage.downloadImg(uuid, textView, func)
     }
 
+    fun downloadImgThumb(uuid: String, textView: ImageView, func: (Boolean) -> Unit) {
+        storage.downloadImgThumb(uuid, textView, func)
+    }
+
 
     fun clearComments() {
         singlePostComments.postValue(null)
@@ -152,7 +156,8 @@ class MainViewModel : ViewModel() {
         })
     }
 
-    fun makeDescition(opuuid: String, post_number: Long, descision: Boolean?, func: (Boolean) -> Unit) {
+    fun makeDescition(post_number: Long, descision: Boolean?, func: (Boolean) -> Unit) {
+        val opuuid = getUUID()!!
         val task = postFetch.makeDescision(opuuid, post_number, descision)
         task.enqueue(object : Callback<PostApi.PostResponse> {
             override fun onResponse(call: Call<PostApi.PostResponse>?, response: Response<PostApi.PostResponse>?) {
@@ -170,28 +175,38 @@ class MainViewModel : ViewModel() {
         var opuuid = getUUID()!!
         var task = postFetch.makePost(imageuuid, reply_to, opuuid!!, contents, subject)
         if(imageuuid!=null) {
-            var task = uploadJpg(imageuri!!, imageuuid)
-            task.addOnSuccessListener {
-                getChat(100,{success: Boolean ->})
+            var imageTask = uploadJpg(imageuri!!, imageuuid)
+            imageTask.addOnSuccessListener {
                 func(true)
+                task.enqueue(object : Callback<PostApi.PostResponse> {
+                    override fun onResponse(
+                        call: Call<PostApi.PostResponse>?,
+                        response: Response<PostApi.PostResponse>?
+                    ) {
+                        func(true)
+                    }
+
+                    override fun onFailure(call: Call<PostApi.PostResponse>?, t: Throwable?) {
+                        func(false)
+                    }
+                })
             }.addOnFailureListener {
                 func(false)
             }
-        }
-        task.enqueue(object : Callback<PostApi.PostResponse> {
-            override fun onResponse(call: Call<PostApi.PostResponse>?, response: Response<PostApi.PostResponse>?) {
-                if(imageuuid==null) {
-                    if(reply_to!=null) {
-                        getComments(reply_to!!, {success: Boolean ->})
-                    } else {
-                        getChat(100,{success: Boolean ->})
-                    }
+        } else {
+            task.enqueue(object : Callback<PostApi.PostResponse> {
+                override fun onResponse(
+                    call: Call<PostApi.PostResponse>?,
+                    response: Response<PostApi.PostResponse>?
+                ) {
                     func(true)
                 }
-            }
-            override fun onFailure(call: Call<PostApi.PostResponse>?, t: Throwable?) {
-            }
-        })
+
+                override fun onFailure(call: Call<PostApi.PostResponse>?, t: Throwable?) {
+                    func(false)
+                }
+            })
+        }
     }
 
     fun getChat(number_of_post: Int?, func: (Boolean) -> Unit) {

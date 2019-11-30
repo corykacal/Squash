@@ -223,6 +223,7 @@ class PostFragment: AppCompatActivity() {
                         hideKeyboard()
                         post.setText("")
                         commentLeft.isVisible = false
+                        viewModel.getComments(post_number) {}
                     } else {
                         Toast.makeText(baseContext, "post failed", Toast.LENGTH_LONG).show()
                     }
@@ -313,7 +314,7 @@ class PostFragment: AppCompatActivity() {
                 setSVGcolor(upVote, R.color.goodComment)
                 downVote.tag = "false"
                 upVote.tag = "true"
-                viewModel.makeDescition(viewModel.getUUID()!!, post_number, true, voteLambda)
+                viewModel.makeDescition(post_number, true, voteLambda)
                 updatePointColors(curPoints)
             }
         }
@@ -329,7 +330,7 @@ class PostFragment: AppCompatActivity() {
                 setSVGcolor(downVote, R.color.badComment)
                 upVote.tag = "false"
                 downVote.tag = "true"
-                viewModel.makeDescition(viewModel.getUUID()!!, post_number, false, voteLambda)
+                viewModel.makeDescition(post_number, false, voteLambda)
                 updatePointColors(curPoints)
             }
         }

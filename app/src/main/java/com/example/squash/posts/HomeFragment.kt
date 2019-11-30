@@ -97,8 +97,6 @@ class HomeFragment: Fragment() {
         Log.d("i said before: ", "$prev")
     }
 
-
-
     fun refreshChat(func: (Boolean) -> Unit) {
         viewModel.getChat(100, func)
     }
@@ -106,7 +104,7 @@ class HomeFragment: Fragment() {
     fun startPostFragment(post: Post) {
         val intent = Intent(context, PostFragment::class.java)
         intent.putExtra("post_number", post.postID)
-        startActivity(intent)
+        startActivityForResult(intent, 1)
     }
 
     private fun startCreatePostActivity(root: View) {

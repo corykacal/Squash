@@ -35,11 +35,15 @@ import android.view.animation.Animation
 import android.view.animation.AlphaAnimation
 import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.net.toFile
 import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModel
+import kotlinx.android.synthetic.main.row_post.*
 import okhttp3.internal.lockAndWaitNanos
 import okhttp3.internal.waitMillis
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.coroutineContext
 
 
 class NewPostActivity(): AppCompatActivity() {
@@ -110,6 +114,7 @@ class NewPostActivity(): AppCompatActivity() {
                     if(success) {
                         postButton.stopAnimation()
                         hideKeyboard()
+                        viewModel.getChat(100) {}
                         finish()
                     } else {
                         postButton.revertAnimation()

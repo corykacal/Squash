@@ -1,6 +1,7 @@
 package com.example.squash
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
@@ -47,7 +48,6 @@ class MainActivity : AppCompatActivity() {
     private fun refreshChat(func: (Boolean) -> Unit) {
         viewModel.getChat(100, func)
     }
-
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         return false

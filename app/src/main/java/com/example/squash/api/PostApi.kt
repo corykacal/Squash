@@ -74,7 +74,7 @@ interface PostApi {
         //private const val BASE_URL = "https://www.reddit.com/"
         var httpurl = HttpUrl.Builder()
             .scheme("http")
-            .host("ec2-3-15-217-5.us-east-2.compute.amazonaws.com")
+            .host("ec2-18-218-80-162.us-east-2.compute.amazonaws.com")
             .port(5000)
             .build()
         fun create(): PostApi = create(httpurl)

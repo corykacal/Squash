@@ -103,6 +103,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
         fun bind(item: Post?) {
             imageIV.setImageDrawable(null)
             imageIV.isVisible = false
+            loadingIV.isVisible = true
             contentsTV.minLines = 3
             contentsTV.maxLines = 5
             subjectTV.text = ""
@@ -149,7 +150,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 imageIV.isVisible = true
                 contentsTV.minLines = 0
                 imageIV.clipToOutline = true
-                viewModel.downloadImg(item.imageUUID!!, imageIV, imageLoaded)
+                viewModel.downloadImgThumb(item.imageUUID!!, imageIV, imageLoaded)
                 contentsTV.maxLines = 4
             } else {
                 loadingIV.isVisible = false
@@ -180,13 +181,13 @@ class PostListAdapter(private val viewModel: MainViewModel,
                     setSVGcolor(upVote, R.color.goodComment)
                     downVote.tag = "false"
                     upVote.tag = "true"
-                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, true, voteLambda)
+                    viewModel.makeDescition(item.postID!!, true, voteLambda)
                 } else {
                     downVote.tag = "true"
                     upVote.tag = "true"
                     setSVGcolor(downVote, R.color.black)
                     setSVGcolor(upVote, R.color.black)
-                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, null, voteLambda)
+                    viewModel.makeDescition(item.postID!!, null, voteLambda)
                 }
             }
             downVote.setOnClickListener {
@@ -196,13 +197,13 @@ class PostListAdapter(private val viewModel: MainViewModel,
                     setSVGcolor(downVote, R.color.badComment)
                     upVote.tag = "false"
                     downVote.tag = "true"
-                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, false, voteLambda)
+                    viewModel.makeDescition(item.postID!!, false, voteLambda)
                 } else {
                     downVote.tag = "true"
                     upVote.tag = "true"
                     setSVGcolor(downVote, R.color.black)
                     setSVGcolor(upVote, R.color.black)
-                    viewModel.makeDescition(viewModel.getUUID()!!, item.postID!!, null, voteLambda)
+                    viewModel.makeDescition(item.postID!!, null, voteLambda)
                 }
             }
         }

@@ -23,6 +23,12 @@ import com.example.squash.posts.NewPostActivity
 import com.example.squash.technology.SingleClickListener
 import kotlinx.android.synthetic.main.activity_new_post.*
 import java.util.*
+import android.provider.MediaStore.Images
+import android.content.ContentUris
+import android.content.ContentValues
+import android.content.ContentResolver
+
+
 
 
 class ImageFragment: Fragment() {
@@ -92,22 +98,57 @@ class ImageFragment: Fragment() {
         })
     }
 
-    private fun saveImage() {
 
-        // Save image to gallery
 
+    fun saveImage(): String? {
         val imageView = root.findViewById<ImageView>(R.id.image)
-        val bitmap = (imageView.drawable as BitmapDrawable).bitmap
+        val cr = activity?.contentResolver!!
+        val source = (imageView.drawable as BitmapDrawable).bitmap
         val title = UUID.randomUUID().toString()
+        val description = "Image saved from Squash"
 
-        val savedImageURL = MediaStore.Images.Media.insertImage(
-            activity?.contentResolver,
-            bitmap,
-            title,
-            "Image of $title"
-        )
+
+        val values = ContentValues()
+        values.put(Images.Media.TITLE, title)
+        values.put(Images.Media.DISPLAY_NAME, title)
+        values.put(Images.Media.DESCRIPTION, description)
+        values.put(Images.Media.MIME_TYPE, "image/jpeg")
+        // Add the date meta data to ensure the image is added at the front of the gallery
+        values.put(Images.Media.DATE_ADDED, System.currentTimeMillis())
+        values.put(Images.Media.DATE_TAKEN, System.currentTimeMillis())
+
+        var url: Uri? = null
+        var stringUrl: String? = null    /* value to be returned */
+
+        try {
+            url = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+            if (source != null) {
+                val imageOut = cr.openOutputStream(url!!)
+                try {
+                    source.compress(Bitmap.CompressFormat.JPEG, 70, imageOut)
+                } finally {
+                    imageOut!!.close()
+                }
+
+                val id = ContentUris.parseId(url)
+            } else {
+                cr.delete(url!!, null, null)
+                url = null
+            }
+        } catch (e: Exception) {
+            if (url != null) {
+                cr.delete(url, null, null)
+                url = null
+            }
+        }
+
+        if (url != null) {
+            stringUrl = url.toString()
+        }
 
         Toast.makeText(root.context, "saved to gallery", Toast.LENGTH_LONG).show()
+        return stringUrl
     }
 
     private fun setImage(root: View, uuid: String?) {

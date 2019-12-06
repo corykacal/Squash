@@ -33,6 +33,7 @@ import com.example.squash.api.MainViewModel
 import com.example.squash.api.User
 import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
+import com.example.squash.technology.ListFragment
 import com.example.squash.technology.OnSwipeTouchListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -46,11 +47,13 @@ import kotlinx.android.synthetic.main.fragment_home.searchResults
 import kotlinx.android.synthetic.main.post_fragment.*
 
 
-class HomeFragment: Fragment() {
+class HomeFragment: ListFragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var auth: FirebaseAuth
 
     private lateinit var postAdapter: PostListAdapter
+
+    private lateinit var userPoints: TextView
 
     private var currentRecyclerState: Parcelable? = null
     private var previousRecyclerState: Parcelable? = null
@@ -101,7 +104,7 @@ class HomeFragment: Fragment() {
         viewModel.getChat(100, func)
     }
 
-    fun startPostFragment(post: Post) {
+    override fun startPostFragment(post: Post) {
         val intent = Intent(context, PostFragment::class.java)
         intent.putExtra("post_number", post.postID)
         startActivityForResult(intent, 1)
@@ -151,7 +154,7 @@ class HomeFragment: Fragment() {
         previousRecyclerState = searchResults.getLayoutManager()?.onSaveInstanceState()
     }
 
-    fun setCurrentRecyclerState() {
+    override fun setCurrentRecyclerState() {
         currentRecyclerState = searchResults.getLayoutManager()?.onSaveInstanceState()
     }
 
@@ -161,6 +164,14 @@ class HomeFragment: Fragment() {
             initAdapter(root)
             postAdapter.submitList(it)
             searchResults.getLayoutManager()?.onRestoreInstanceState(recyclerState)
+        })
+        viewModel.observeUserData().observe(this, Observer {
+            userPoints.text = (it.post_up!! + it.comment_up!!).toString()
+        })
+        viewModel.observeSubject().observe(this, Observer {
+            refreshChat {  }
+            viewModel.getUserData {  }
+            searchResults.scrollToPosition(0)
         })
     }
 
@@ -172,7 +183,7 @@ class HomeFragment: Fragment() {
                     if(success) {
                         it.setBackground(resources.getDrawable(R.drawable.selected_button))
                         (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                        newButton.setBackground(resources.getDrawable(R.drawable.unselected_button))
+                       newButton.setBackground(resources.getDrawable(R.drawable.unselected_button))
                         newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                     } else {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
@@ -228,6 +239,19 @@ class HomeFragment: Fragment() {
          */
     }
 
+    private fun listenToSpinner(root: View) {
+        root.findViewById<Spinner>(R.id.subjectSpinner).onItemSelectedListener =
+            object: AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                viewModel.setCurrentSubject(p0!!.selectedItem as String)
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+        }
+    }
+
 
 
     override fun onCreateView(
@@ -240,11 +264,14 @@ class HomeFragment: Fragment() {
 
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
+        userPoints = root.findViewById(R.id.userPoints)
+
         initDownSwipeLayout(root)
         setDataObserver(root)
 
         listenForScrolling(root)
 
+        listenToSpinner(root)
 
         initFloatingButton(root)
 

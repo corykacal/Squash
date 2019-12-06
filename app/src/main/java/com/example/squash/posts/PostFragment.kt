@@ -9,6 +9,7 @@ import android.media.MediaRouter
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
+import android.text.Layout
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -39,8 +40,10 @@ import com.example.squash.api.MainViewModel
 import com.example.squash.api.User
 import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
+import com.example.squash.posts.subContent.ImageFragment
 import com.example.squash.technology.Cartesian
 import com.example.squash.technology.OnSwipeTouchListener
+import com.example.squash.technology.SingleClickListener
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.action_bar.*
@@ -99,7 +102,7 @@ class PostFragment: AppCompatActivity() {
             val lambda = { success: Boolean ->
                 refresher.isRefreshing = false
                 if(!success) {
-                    Toast.makeText(applicationContext, "refresh failed", Toast.LENGTH_LONG)
+                    Toast.makeText(applicationContext, "refresh failed", Toast.LENGTH_LONG).show()
                 }
             }
             refreshSinglePost(post_number, lambda)
@@ -129,7 +132,7 @@ class PostFragment: AppCompatActivity() {
         comments.text = post.comment_count.toString()
 
         if(post.subject!=null) {
-            toolbar.setTitle(post.subject)
+            subjectTitle.text = post.subject
         }
         timeStamp.text = viewModel.getTime(Date(post.timestamp!!.time))
         if(post.imageUUID!=null) {
@@ -137,6 +140,22 @@ class PostFragment: AppCompatActivity() {
             contents.minLines = 0
             image.clipToOutline = true
             viewModel.downloadImg(post.imageUUID!!, image, imageLoaded)
+            image.setOnClickListener(object : SingleClickListener() {
+                override fun onSingleClick(v: View) {
+                    val fragment = ImageFragment.newInstance()
+                    val bundle = Bundle()
+                    bundle.putString("imageuuid", post.imageUUID)
+                    fragment.arguments = bundle
+                    supportFragmentManager
+                        .beginTransaction()
+                        // No back stack for home
+                        .add(R.id.post_fragment, fragment)
+                        .addToBackStack("image_fragment")
+                        // TRANSIT_FRAGMENT_FADE calls for the Fragment to fade away. causes crash
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .commit()
+                }
+            })
         } else {
             loadingPanel.isVisible = false
         }
@@ -164,8 +183,8 @@ class PostFragment: AppCompatActivity() {
 
     override fun onBackPressed() {
         val lambda = { success: Boolean ->
-            if(success) {
-                Toast.makeText(applicationContext, "refresh failed", Toast.LENGTH_LONG)
+            if(!success) {
+                Toast.makeText(applicationContext, "refresh failed", Toast.LENGTH_LONG).show()
             }
         }
         viewModel.getChat(100, lambda)
@@ -173,6 +192,7 @@ class PostFragment: AppCompatActivity() {
     }
 
     private fun initActionBar() {
+        /*
         toolbar = findViewById(R.id.posttoolbar)
         toolbar.setTitle(title)
         toolbar.setNavigationIcon(R.drawable.back_arrow)
@@ -180,6 +200,8 @@ class PostFragment: AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
+
+         */
     }
 
     private fun startCreatePostActivity(post_number: Long) {
@@ -210,28 +232,31 @@ class PostFragment: AppCompatActivity() {
     }
 
 
+
     fun initSubmitButton(post_number: Long) {
-        submit.setOnClickListener {
-            var contents = post.text.toString()
-            if(contents.isBlank()) {
-                Toast.makeText(baseContext, "Error: can't send blank post", Toast.LENGTH_SHORT).show()
-            } else if(contents.lines().size>5) {
-                Toast.makeText(baseContext, "Error: too many lines: ${contents.lines().size}, max: 10", Toast.LENGTH_SHORT).show()
-            } else {
-                val postLambda = { success: Boolean ->
-                    if(success) {
-                        hideKeyboard()
-                        post.setText("")
-                        commentLeft.isVisible = false
-                        viewModel.getComments(post_number) {}
-                    } else {
-                        Toast.makeText(baseContext, "post failed", Toast.LENGTH_LONG).show()
+        commentButton.setOnClickListener(object : SingleClickListener() {
+            override fun onSingleClick(v: View) {
+                var contents = post.text.toString()
+                if(contents.isBlank()) {
+                    Toast.makeText(baseContext, "Error: can't send blank post", Toast.LENGTH_SHORT).show()
+                } else if(contents.lines().size>5) {
+                    Toast.makeText(baseContext, "Error: too many lines: ${contents.lines().size}, max: 10", Toast.LENGTH_SHORT).show()
+                } else {
+                    val postLambda = { success: Boolean ->
+                        if(success) {
+                            hideKeyboard()
+                            post.setText("")
+                            commentLeft.isVisible = false
+                            viewModel.getComments(post_number) {}
+                        } else {
+                            Toast.makeText(baseContext, "post failed", Toast.LENGTH_LONG).show()
+                        }
+                        var makeErrorGoAway = 0
                     }
-                    var makeErrorGoAway = 0
+                    viewModel.makePost(contents, null, null, null, post_number, postLambda)
                 }
-                viewModel.makePost(contents, null, null, null, post_number, postLambda)
             }
-        }
+        })
     }
 
     private fun listenToEdit() {
@@ -290,7 +315,7 @@ class PostFragment: AppCompatActivity() {
     private fun initVoteArrows(post_number: Long) {
         val voteLambda = { success: Boolean ->
             if(!success) {
-                Toast.makeText(applicationContext, "vote failed", Toast.LENGTH_LONG)
+                Toast.makeText(applicationContext, "vote failed", Toast.LENGTH_LONG).show()
                 setSVGcolor(downVote, R.color.black)
                 setSVGcolor(upVote, R.color.black)
             }
@@ -334,6 +359,14 @@ class PostFragment: AppCompatActivity() {
                 updatePointColors(curPoints)
             }
         }
+    }
+
+    private fun setBackButton() {
+        backButton.setOnClickListener(object: SingleClickListener() {
+            override fun onSingleClick(v: View) {
+                onBackPressed()
+            }
+        })
     }
 
     private var veggies = listOf<Int>(R.drawable.ic_apple,
@@ -407,6 +440,8 @@ class PostFragment: AppCompatActivity() {
         initDownSwipeLayout(post_number)
         initVoteArrows(post_number)
         listenToEdit()
+
+        setBackButton()
 
 
         val pairs = Cartesian.nAryCartesianProduct(listOf<List<Int>>(colors, veggies))

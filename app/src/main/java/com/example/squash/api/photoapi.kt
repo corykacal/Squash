@@ -47,6 +47,7 @@ class photoapi(private val resources: Resources) {
         return uploadTask
     }
 
+
     fun loadFileToTV(localFile: String, textView: ImageView, isThumbnail: Boolean) {
         var bitmap = BitmapFactory.decodeFile(localFile)
         if(isThumbnail) {

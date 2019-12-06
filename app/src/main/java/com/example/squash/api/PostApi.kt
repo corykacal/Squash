@@ -20,16 +20,24 @@ interface PostApi {
     fun getUserData(@Query("opuuid") opuuid: String
     ): Call<UserDataReponse>
 
+    @GET("/api/my_post/")
+    fun getMyPosts(@Query("opuuid") opuuid: String,
+                       @Query("number_of_posts") number_of_posts: Int?,
+                       @Query("page_number") page_number: Int?
+    ): Call<ListingResponse>
+
     @GET("/api/recent/")
     fun getRecentPosts(@Query("opuuid") opuuid: String,
                        @Query("number_of_posts") number_of_posts: Int?,
-                       @Query("page_number") page_number: Int?
+                       @Query("page_number") page_number: Int?,
+                       @Query("subject") subject: String?
     ): Call<ListingResponse>
 
     @GET("/api/hot/")
     fun getHotPosts(@Query("opuuid") opuuid: String,
                     @Query("number_of_posts") number_of_posts: Int?,
-                    @Query("page_number") page_number: Int?
+                    @Query("page_number") page_number: Int?,
+                    @Query("subject") subject: String?
     ): Call<ListingResponse>
 
     @POST("/api/submit/")

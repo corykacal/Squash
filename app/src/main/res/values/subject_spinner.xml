@@ -4,7 +4,7 @@
     <string name="subject_prompt">Subject (optional)</string>
 
     <string-array name="subject_arrays">
-        <item>No subject</item>
+        <item>All</item>
         <item>Football</item>
         <item>Memes</item>
         <item>Campus Antics</item>

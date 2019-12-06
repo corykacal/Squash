@@ -1,25 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+    android:id="@+id/post_fragment"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-
-
-
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/posttoolbar"
-        android:minHeight="?attr/actionBarSize"
-        android:layout_width="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar"
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:fitsSystemWindows="true"
+        android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="5dp"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal"
         >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back_arrow"
+                android:tint="@color/post"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/subjectTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/post"
+                android:textSize="20sp"
+                android:layout_marginStart="15dp"
+                app:layout_constraintStart_toEndOf="@id/backButton"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.appcompat.widget.Toolbar>
+
+
+
+
+
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
@@ -27,7 +67,7 @@
         android:id="@+id/swipeRefreshLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/posttoolbar"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         >
 
     <androidx.core.widget.NestedScrollView
@@ -105,7 +145,7 @@
                         android:ellipsize="end"
                         android:textSize="17sp"
                         android:fontFamily="sans-serif"
-                        android:text="▇▇▇▇▇▇▇▇▇▇"
+                        android:text=""
                         android:textColorLink="@color/badComment"
                         android:linksClickable="true"
                         android:autoLink="all"
@@ -342,7 +382,7 @@
         android:focusableInTouchMode="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/submit"
+        app:layout_constraintEnd_toStartOf="@id/commentButton"
         >
 
         <EditText
@@ -359,7 +399,7 @@
     </RelativeLayout>
 
     <ImageView
-        android:id="@+id/submit"
+        android:id="@+id/commentButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/submit_arrow"

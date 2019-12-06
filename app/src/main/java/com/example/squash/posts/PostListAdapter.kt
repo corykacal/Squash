@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.posts.Post
+import com.example.squash.technology.ListFragment
+import com.example.squash.technology.SingleClickListener
 import java.util.*
 
 /**
@@ -35,7 +37,7 @@ import java.util.*
  */
 
 class PostListAdapter(private val viewModel: MainViewModel,
-                      private val fragment: HomeFragment?)
+                      private val fragment: ListFragment?)
     : ListAdapter<Post, PostListAdapter.VH>(RedditDiff()) {
     class RedditDiff : DiffUtil.ItemCallback<Post>() {
 
@@ -135,16 +137,12 @@ class PostListAdapter(private val viewModel: MainViewModel,
             }
             pointsTV.text = points.toString()
 
-
-
-            var lastTimeSent = 0L
-            imageAndText.setOnClickListener {
-                if(System.currentTimeMillis() > lastTimeSent + 1000) {
-                    lastTimeSent = System.currentTimeMillis()
-                    fragment!!.setCurrentRecyclerState()
-                    fragment!!.startPostFragment(item)
+            imageAndText.setOnClickListener(object : SingleClickListener() {
+                override fun onSingleClick(v: View) {
+                    fragment?.setCurrentRecyclerState()
+                    fragment?.startPostFragment(item)
                 }
-            }
+            })
 
             if(item.imageUUID!=null) {
                 imageIV.isVisible = true

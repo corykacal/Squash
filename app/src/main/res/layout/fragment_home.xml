@@ -30,20 +30,21 @@
             android:layout_height="wrap_content"
             >
 
-            <TextView
-                android:id="@+id/current_subject"
+
+            <Spinner
+                android:id="@+id/subjectSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:fontFamily="sans-serif-smallcaps"
-                android:textSize="26sp"
-                android:alpha="0.6"
-                android:background="@drawable/karma_outline"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:prompt="@array/subject_arrays"
+                android:entries="@array/subject_arrays"
+                android:background="@drawable/subject_outline"
+                android:spinnerMode="dropdown"
+                android:theme="@style/SpinnerThemeList"
+                android:gravity="center"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 />
 
             <LinearLayout
@@ -62,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
                     android:textSize="30sp"
-                    android:text="130"
+                    android:text="0"
                     android:textAlignment="center"
                     android:gravity="center_horizontal"
                     android:alpha="0.6"

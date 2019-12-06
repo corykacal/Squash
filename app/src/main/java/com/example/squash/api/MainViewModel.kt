@@ -27,10 +27,12 @@ import java.util.*
 class MainViewModel : ViewModel() {
     private lateinit var db: FirebaseFirestore
     private var chat = MutableLiveData<List<Post>>()
+    private var myPost = MutableLiveData<List<Post>>()
     private var singlePost = MutableLiveData<Post>()
     private var chatListener : ListenerRegistration? = null
     private var singlePostComments = MutableLiveData<List<Post>>()
     private var userData = MutableLiveData<UserData>()
+    private var currentSubject = MutableLiveData<String>()
 
     companion object {
         private lateinit var postFetch: PostApi
@@ -89,6 +91,10 @@ class MainViewModel : ViewModel() {
         return auth!!.getUid()
     }
 
+    fun observeSubject(): LiveData<String> {
+        return currentSubject
+    }
+
     fun observePosts(): LiveData<List<Post>> {
         return chat
     }
@@ -103,6 +109,14 @@ class MainViewModel : ViewModel() {
 
     fun observeUserData(): LiveData<UserData> {
         return userData
+    }
+
+    fun observeMyPost(): LiveData<List<Post>> {
+        return myPost
+    }
+
+    fun setCurrentSubject(subject: String) {
+        currentSubject.postValue(subject)
     }
 
     fun getUserData(func: (Boolean) -> Unit) {
@@ -209,13 +223,29 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun getMyPost(number_of_post: Int?, func: (Boolean) -> Unit) {
+        var uuid = getUUID()
+        var task = postFetch.getMyPosts(uuid!!, number_of_post, 1)
+        task.enqueue(object : Callback<PostApi.ListingResponse> {
+            override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {
+                func(false)
+            }
+            override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
+                func(true)
+                var posts = response!!.body()!!.results
+                myPost.postValue(posts)
+            }
+        })
+    }
+
     fun getChat(number_of_post: Int?, func: (Boolean) -> Unit) {
+        val subject = currentSubject.value
         var uuid = getUUID()
         var task: Call<PostApi.ListingResponse>
         if(!MainActivity.newPost) {
-            task = postFetch.getHotPosts(uuid!!, number_of_post, 1)
+            task = postFetch.getHotPosts(uuid!!, number_of_post, 1, subject)
         } else {
-            task = postFetch.getRecentPosts(uuid!!, number_of_post, 1)
+            task = postFetch.getRecentPosts(uuid!!, number_of_post, 1, subject)
         }
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {
@@ -224,7 +254,6 @@ class MainViewModel : ViewModel() {
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
                 func(true)
                 var posts = response!!.body()!!.results
-                Log.d("we got this shit ", "$posts")
                 chat.postValue(posts)
             }
         })

@@ -21,7 +21,7 @@
         android:id="@+id/profile_icon"
         android:enabled="true"
         android:icon="@drawable/user_profile"
-        android:title="Pofile"
+        android:title="Profile"
         app:showAsAction="ifRoom"
         />
 

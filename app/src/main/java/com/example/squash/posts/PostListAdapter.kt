@@ -140,7 +140,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             imageAndText.setOnClickListener(object : SingleClickListener() {
                 override fun onSingleClick(v: View) {
                     fragment?.setCurrentRecyclerState()
-                    fragment?.startPostFragment(item)
+                    fragment?.startPostActivity(item)
                 }
             })
 

@@ -76,10 +76,10 @@ class HomeFragment: ListFragment() {
         refresher.setOnRefreshListener {
             setCurrentRecyclerState()
             viewModel.getUserData {}
-            refreshChat { success: Boolean ->
+            refreshPosts { success: Boolean ->
                 refresher.isRefreshing = false
                 if(!success) {
-                    Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG)
+                    Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
                 } else {
                     currentPage = 1
                 }
@@ -105,12 +105,16 @@ class HomeFragment: ListFragment() {
         Log.d("i said before: ", "$prev")
     }
 
-    fun refreshChat(func: (Boolean) -> Unit) {
+    fun refreshPosts(func: (Boolean) -> Unit) {
         viewModel.getPosts(PAGE_SIZE, 1, func)
     }
 
-    override fun startPostFragment(post: Post) {
-        val intent = Intent(context, PostFragment::class.java)
+    fun loadPosts(page_number: Int, func: (Boolean) -> Unit) {
+        viewModel.getPosts(PAGE_SIZE, page_number, func)
+    }
+
+    override fun startPostActivity(post: Post) {
+        val intent = Intent(context, PostActivity::class.java)
         intent.putExtra("post_number", post.postID)
         startActivityForResult(intent, 1)
     }
@@ -118,16 +122,19 @@ class HomeFragment: ListFragment() {
     private fun startCreatePostActivity(root: View) {
         var intent = Intent(root.context, NewPostActivity::class.java)
         intent.putExtra("isComment", false)
-        startActivity(intent)
+        startActivityForResult(intent, 2)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        refreshChat { success: Boolean ->
-            if(!success) {
-                Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG)
-            } else {
-                currentPage = 1
+        if(requestCode == 2) {
+            refreshPosts { success: Boolean ->
+                if (!success) {
+                    Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
+                } else {
+                    currentPage = 1
+                    searchResults.scrollToPosition(0)
+                }
             }
         }
     }
@@ -150,7 +157,7 @@ class HomeFragment: ListFragment() {
                         && totalItemCount >= PAGE_SIZE) {
                     setCurrentRecyclerState()
                     currentPage+=1
-                    viewModel.getPosts(8, currentPage) {
+                    loadPosts(currentPage) {
                     }
                 }
             }
@@ -187,6 +194,10 @@ class HomeFragment: ListFragment() {
         }
     }
 
+    fun resetCurrentRecyclerState() {
+        searchResults.scrollToPosition(0)
+    }
+
     fun changeCurrentRecyclerState() {
         currentRecyclerState = previousRecyclerState
         previousRecyclerState = searchResults.getLayoutManager()?.onSaveInstanceState()
@@ -197,19 +208,34 @@ class HomeFragment: ListFragment() {
     }
 
     private fun setDataObserver(root: View) {
+
+        //listen to post refreshing
+        //TODO bugs have arrived from paging. it involves reseting states
         viewModel.observePosts().observe(this, Observer {
             var recyclerState =  currentRecyclerState
             initAdapter(root)
             postAdapter.submitList(it)
             searchResults.getLayoutManager()?.onRestoreInstanceState(recyclerState)
         })
+
+
+        //listen to user data change
         viewModel.observeUserData().observe(this, Observer {
             userPoints.text = (it.post_up!! + it.comment_up!!).toString()
         })
+
+
+        //listen to subject changing
         viewModel.observeSubject().observe(this, Observer {
-            refreshChat {  }
+            refreshPosts { success: Boolean ->
+                if(!success) {
+                    Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
+                } else {
+                    currentPage = 1
+                    searchResults.scrollToPosition(0)
+                }
+            }
             viewModel.getUserData {  }
-            searchResults.scrollToPosition(0)
         })
     }
 
@@ -231,7 +257,7 @@ class HomeFragment: ListFragment() {
                     var MakeErrorGoAway = 0
                 }
                 changeCurrentRecyclerState()
-                refreshChat(sortLambda)
+                refreshPosts(sortLambda)
             }
         }
 
@@ -250,7 +276,7 @@ class HomeFragment: ListFragment() {
                     }
                 }
                 changeCurrentRecyclerState()
-                refreshChat(sortLambda)
+                refreshPosts(sortLambda)
             }
         }
 
@@ -316,7 +342,7 @@ class HomeFragment: ListFragment() {
         initListButtons(root)
 
 
-        //refreshChat {  }
+        //refreshPosts {  }
 
 
 

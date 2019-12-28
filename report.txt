@@ -1,0 +1,40 @@
+
+Members: Cory Kacal
+
+Squash
+A location based chat application that features anonymynity and reddit-like
+voting and popularity ranking. You can post optional pictures along with your text and also include a subject.
+
+<screen shot>
+
+I do not use any external APIs except my own. My own just has a few simple endpoints:
+/getPost //gets a single post
+/makePost //submits a post
+/getRecent //gets recent posts
+/getHot //gets hot posts
+/makeDescision //vote on a comment or post
+/getComments //gets comments on a post
+
+I have my own bottom app bar and top app bar. My top app bar shows the users current points they have earned.
+
+I used a third party library i found on github to make my submit buttons elegant and to prevent from double posting. It starts an animation when you click submit and takes away button functionality until the post fails or succeeds. If it succeeds then it quits animation and goes back to the previous fragment.
+
+I have tried severeal version of my posts UI. I tried to keep a big focus on the users post and image. I had subjects to the left of the post but this shifted the contents of the post causing lots of mess. So they are on top now. I have also made the timestamp and comment count transparent too to keep the focus on the post contnet.
+
+One thing that was iteresting and a big problem for me was assigning users random per post IDs for the comments. As you can see, there is a fruit/vegitable + a color with every user that comments on a post. I wanted this to be done on the front end as much as possible to save on backend processing but I also didnt want the user to receive the unique UUIDs of the users. On the back end I assign a unique integer to every UUID that has commented on a post. Starting with the original poster being
+0 and continuting down to 256.
+
+I learned a lot about using authentication and how hard that would be to pair with a database to give the user their unique content tied to their token. I had to keep track of what a user has voted on what and send that to them when they ask for recent or hot post.
+
+The most difficult part of my project was assigning unique ids per post to anonymous posters.
+
+
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+XML                             63            306              2           2018
+Kotlin                          19            443            177           1913
+-------------------------------------------------------------------------------
+SUM:                            82            749            179           3931
+-------------------------------------------------------------------------------
+

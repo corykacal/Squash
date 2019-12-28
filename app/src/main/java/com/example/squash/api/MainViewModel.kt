@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.squash.MainActivity
 import com.example.squash.api.posts.Post
+import com.example.squash.technology.Constants.Companion.PAGE_SIZE
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
@@ -175,7 +176,6 @@ class MainViewModel : ViewModel() {
         val task = postFetch.makeDescision(opuuid, post_number, descision)
         task.enqueue(object : Callback<PostApi.PostResponse> {
             override fun onResponse(call: Call<PostApi.PostResponse>?, response: Response<PostApi.PostResponse>?) {
-                getChat(100,{success: Boolean ->})
                 func(true)
             }
             override fun onFailure(call: Call<PostApi.PostResponse>?, t: Throwable?) {
@@ -238,14 +238,14 @@ class MainViewModel : ViewModel() {
         })
     }
 
-    fun getChat(number_of_post: Int?, func: (Boolean) -> Unit) {
+    fun getPosts(number_of_post: Int, page_number: Int, func: (Boolean) -> Unit) {
         val subject = currentSubject.value
         var uuid = getUUID()
         var task: Call<PostApi.ListingResponse>
         if(!MainActivity.newPost) {
-            task = postFetch.getHotPosts(uuid!!, number_of_post, 1, subject)
+            task = postFetch.getHotPosts(uuid!!, number_of_post, page_number, subject)
         } else {
-            task = postFetch.getRecentPosts(uuid!!, number_of_post, 1, subject)
+            task = postFetch.getRecentPosts(uuid!!, number_of_post, page_number, subject)
         }
         task.enqueue(object : Callback<PostApi.ListingResponse> {
             override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {
@@ -254,7 +254,13 @@ class MainViewModel : ViewModel() {
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
                 func(true)
                 var posts = response!!.body()!!.results
-                chat.postValue(posts)
+                var currentPosts = chat.value?.toMutableList()
+                if(currentPosts == null) {
+                    chat.postValue(posts)
+                } else {
+                    currentPosts.addAll(posts)
+                    chat.postValue(currentPosts)
+                }
             }
         })
     }

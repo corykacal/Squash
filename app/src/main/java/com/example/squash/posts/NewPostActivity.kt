@@ -38,6 +38,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toFile
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModel
+import com.example.squash.technology.Constants.Companion.PAGE_SIZE
 import kotlinx.android.synthetic.main.row_post.*
 import okhttp3.internal.lockAndWaitNanos
 import okhttp3.internal.waitMillis
@@ -114,7 +115,6 @@ class NewPostActivity(): AppCompatActivity() {
                     if(success) {
                         postButton.stopAnimation()
                         hideKeyboard()
-                        viewModel.getChat(100) {}
                         finish()
                     } else {
                         postButton.revertAnimation()

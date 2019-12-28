@@ -45,10 +45,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun refreshChat(func: (Boolean) -> Unit) {
-        viewModel.getChat(100, func)
-    }
-
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         return false
     }

@@ -33,6 +33,7 @@ import com.example.squash.api.MainViewModel
 import com.example.squash.api.User
 import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
+import com.example.squash.technology.Constants.Companion.PAGE_SIZE
 import com.example.squash.technology.ListFragment
 import com.example.squash.technology.OnSwipeTouchListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
@@ -58,6 +59,9 @@ class HomeFragment: ListFragment() {
     private var currentRecyclerState: Parcelable? = null
     private var previousRecyclerState: Parcelable? = null
 
+    //first page always grabbed with initial refresh
+    private var currentPage: Int = 1
+
     var fragId = R.id.posts_icon
 
 
@@ -71,14 +75,15 @@ class HomeFragment: ListFragment() {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
             setCurrentRecyclerState()
-            val lambda = { success: Boolean ->
+            viewModel.getUserData {}
+            refreshChat { success: Boolean ->
                 refresher.isRefreshing = false
                 if(!success) {
                     Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG)
+                } else {
+                    currentPage = 1
                 }
             }
-            viewModel.getUserData {}
-            refreshChat(lambda)
         }
     }
 
@@ -101,7 +106,7 @@ class HomeFragment: ListFragment() {
     }
 
     fun refreshChat(func: (Boolean) -> Unit) {
-        viewModel.getChat(100, func)
+        viewModel.getPosts(PAGE_SIZE, 1, func)
     }
 
     override fun startPostFragment(post: Post) {
@@ -116,11 +121,44 @@ class HomeFragment: ListFragment() {
         startActivity(intent)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        refreshChat { success: Boolean ->
+            if(!success) {
+                Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG)
+            } else {
+                currentPage = 1
+            }
+        }
+    }
+
     private fun initAdapter(root: View) {
         var recycler = root.findViewById<RecyclerView>(R.id.searchResults)
         postAdapter = PostListAdapter(viewModel, this)
         recycler.adapter = postAdapter
-        recycler.layoutManager = LinearLayoutManager(context)
+        val layoutManager = LinearLayoutManager(context)
+        recycler.layoutManager =  layoutManager
+        recycler.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy);
+                var visibleItemCount = layoutManager.getChildCount()
+                var totalItemCount = layoutManager.getItemCount()
+                var firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= PAGE_SIZE) {
+                    setCurrentRecyclerState()
+                    currentPage+=1
+                    viewModel.getPosts(8, currentPage) {
+                    }
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        })
 
         /*
         old cocde when i was going to have swipe left for favorite.
@@ -189,6 +227,7 @@ class HomeFragment: ListFragment() {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
                         MainActivity.newPost = true
                     }
+                    //makes error go away
                     var MakeErrorGoAway = 0
                 }
                 changeCurrentRecyclerState()
@@ -209,7 +248,6 @@ class HomeFragment: ListFragment() {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
                         MainActivity.newPost = false
                     }
-                    var MakeErrorGoAway = 0
                 }
                 changeCurrentRecyclerState()
                 refreshChat(sortLambda)

@@ -42,6 +42,7 @@ import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
 import com.example.squash.posts.subContent.ImageFragment
 import com.example.squash.technology.Cartesian
+import com.example.squash.technology.Constants.Companion.PAGE_SIZE
 import com.example.squash.technology.OnSwipeTouchListener
 import com.example.squash.technology.SingleClickListener
 import com.google.firebase.auth.FirebaseAuth
@@ -182,12 +183,16 @@ class PostFragment: AppCompatActivity() {
 
 
     override fun onBackPressed() {
+        /*
+         * Do I want this???
+
         val lambda = { success: Boolean ->
             if(!success) {
                 Toast.makeText(applicationContext, "refresh failed", Toast.LENGTH_LONG).show()
             }
         }
-        viewModel.getChat(100, lambda)
+        viewModel.getPosts(PAGE_SIZE, 1, lambda)
+         */
         super.onBackPressed()
     }
 

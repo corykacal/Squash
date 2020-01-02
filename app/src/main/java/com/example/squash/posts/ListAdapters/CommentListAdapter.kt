@@ -1,47 +1,22 @@
-package com.example.squash.posts
+package com.example.squash.posts.ListAdapters
 
-import android.app.PendingIntent.getActivity
-import android.content.Intent
-import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.PorterDuff
-import android.icu.util.LocaleData
-import android.provider.ContactsContract
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getColor
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.view.isVisible
-import androidx.core.view.marginBottom
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 //import com.example.squash.api.glide.Glide
 import com.example.squash.api.posts.Post
-import com.example.squash.technology.OnSwipeTouchListener
-import com.google.type.Date
-import kotlinx.coroutines.test.withTestContext
-import okhttp3.internal.waitMillis
-import org.w3c.dom.Text
-import java.sql.Timestamp
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.*
-import kotlin.coroutines.coroutineContext
-import kotlin.random.Random
 
 /**
  * Created by witchel on 8/25/2019

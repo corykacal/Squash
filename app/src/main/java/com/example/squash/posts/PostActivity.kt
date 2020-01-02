@@ -1,60 +1,33 @@
 package com.example.squash.posts
 
-import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
 import android.graphics.PorterDuff
-import android.media.Image
-import android.media.MediaRouter
 import android.os.Bundle
-import android.os.Parcelable
-import android.text.Editable
-import android.text.Layout
-import android.text.TextWatcher
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.squash.MainActivity
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
-import com.example.squash.api.User
-import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
+import com.example.squash.posts.ListAdapters.CommentListAdapter
 import com.example.squash.posts.subContent.ImageFragment
 import com.example.squash.technology.Cartesian
-import com.example.squash.technology.Constants.Companion.PAGE_SIZE
-import com.example.squash.technology.OnSwipeTouchListener
 import com.example.squash.technology.SingleClickListener
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.*
-import kotlinx.android.synthetic.main.action_bar.*
-import kotlinx.android.synthetic.main.activity_new_post.*
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.post_fragment.*
-import kotlinx.android.synthetic.main.post_fragment.searchResults
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
-import okhttp3.internal.wait
+import kotlinx.android.synthetic.main.activity_singlepost.*
 import java.util.*
 import kotlin.random.Random
 
@@ -79,7 +52,8 @@ class PostActivity: AppCompatActivity() {
 
     private fun initAdapter() {
         var recycler = findViewById<RecyclerView>(R.id.searchResults)
-        postAdapter = CommentListAdapter(viewModel, mixedPairs)
+        postAdapter =
+            CommentListAdapter(viewModel, mixedPairs)
         recycler.adapter = postAdapter
         recycler.layoutManager = LinearLayoutManager(this)
 
@@ -416,11 +390,7 @@ class PostActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.post_fragment)
-
-
-
-
+        setContentView(R.layout.activity_singlepost)
 
         /*
         KeyboardVisibilityEvent.setEventListener(this, object: KeyboardVisibilityEventListener {

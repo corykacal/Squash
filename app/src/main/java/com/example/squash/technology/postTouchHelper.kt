@@ -1,4 +1,4 @@
-package com.example.squash.posts
+package com.example.squash.technology
 
 import android.graphics.Canvas
 import android.util.Log

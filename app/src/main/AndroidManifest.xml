@@ -28,7 +28,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden">
 
         </activity>
-        <activity android:name=".posts.PostFragment"
+        <activity android:name=".posts.PostActivity"
             android:theme="@style/LightSquash"
             android:configChanges="orientation|screenSize|keyboardHidden"
             >

@@ -252,14 +252,25 @@ class MainViewModel : ViewModel() {
                 func(false)
             }
             override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
-                func(true)
-                var posts = response!!.body()!!.results
-                var currentPosts = chat.value?.toMutableList()
-                if(currentPosts == null) {
-                    chat.postValue(posts)
+                if(response!!.isSuccessful) {
+                    func(true)
+                    var posts = response!!.body()!!.results
+                    var currentPosts: MutableList<Post>? = null
+                    if(page_number == 1) {
+                        currentPosts = mutableListOf<Post>()
+                    } else {
+                        currentPosts = chat.value?.toMutableList()
+                    }
+
+
+                    if(currentPosts == null) {
+                        chat.postValue(posts)
+                    } else {
+                        currentPosts.addAll(posts)
+                        chat.postValue(currentPosts)
+                    }
                 } else {
-                    currentPosts.addAll(posts)
-                    chat.postValue(currentPosts)
+                    func(false)
                 }
             }
         })

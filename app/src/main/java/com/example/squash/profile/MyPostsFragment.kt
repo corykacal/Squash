@@ -8,9 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,13 +16,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.posts.Post
-import com.example.squash.posts.PostFragment
-import com.example.squash.posts.PostListAdapter
+import com.example.squash.posts.PostActivity
+import com.example.squash.posts.ListAdapters.PostListAdapter
 import com.example.squash.technology.ListFragment
-import kotlinx.android.synthetic.main.fragment_home.*
 
 
-class MyPostFragment: ListFragment() {
+class MyPostsFragment: ListFragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var postAdapter: PostListAdapter
@@ -33,8 +30,8 @@ class MyPostFragment: ListFragment() {
     private lateinit var userPoints: TextView
 
     companion object {
-        fun newInstance(): MyPostFragment {
-            return MyPostFragment()
+        fun newInstance(): MyPostsFragment {
+            return MyPostsFragment()
         }
     }
 
@@ -89,8 +86,8 @@ class MyPostFragment: ListFragment() {
         })
     }
 
-    override fun startPostFragment(post: Post) {
-        val intent = Intent(context, PostFragment::class.java)
+    override fun startPostActivity(post: Post) {
+        val intent = Intent(context, PostActivity::class.java)
         intent.putExtra("post_number", post.postID)
         startActivityForResult(intent, 1)
     }
@@ -108,7 +105,7 @@ class MyPostFragment: ListFragment() {
 
         viewModel = ViewModelProviders.of(activity!!)[MainViewModel::class.java]
 
-        val root = inflater.inflate(R.layout.my_post_fragment, container, false)
+        val root = inflater.inflate(R.layout.fragment_sub_myposts, container, false)
 
         userPoints = root.findViewById(R.id.userPoints)
 

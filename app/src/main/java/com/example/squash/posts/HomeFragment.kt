@@ -1,51 +1,31 @@
 package com.example.squash.posts
 
 import android.content.Intent
-import android.graphics.Canvas
-import android.media.MediaRouter
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.squash.MainActivity
-import com.example.squash.MainActivity.Companion.viewModel
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
-import com.example.squash.api.User
-import com.example.squash.api.photoapi
 import com.example.squash.api.posts.Post
+import com.example.squash.posts.ListAdapters.PostListAdapter
 import com.example.squash.technology.Constants.Companion.PAGE_SIZE
 import com.example.squash.technology.ListFragment
-import com.example.squash.technology.OnSwipeTouchListener
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.*
-import kotlinx.android.synthetic.main.action_bar.*
-import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.hotButton
 import kotlinx.android.synthetic.main.fragment_home.newButton
 import kotlinx.android.synthetic.main.fragment_home.searchResults
-import kotlinx.android.synthetic.main.post_fragment.*
 
 
 class HomeFragment: ListFragment() {
@@ -211,6 +191,7 @@ class HomeFragment: ListFragment() {
 
         //listen to post refreshing
         //TODO bugs have arrived from paging. it involves reseting states
+        //TODO saving the loaded pages
         viewModel.observePosts().observe(this, Observer {
             var recyclerState =  currentRecyclerState
             initAdapter(root)

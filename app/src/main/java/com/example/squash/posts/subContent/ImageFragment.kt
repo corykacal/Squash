@@ -19,16 +19,11 @@ import androidx.lifecycle.ViewModelProviders
 import com.bogdwellers.pinchtozoom.ImageMatrixTouchHandler
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
-import com.example.squash.posts.NewPostActivity
 import com.example.squash.technology.SingleClickListener
-import kotlinx.android.synthetic.main.activity_new_post.*
 import java.util.*
 import android.provider.MediaStore.Images
 import android.content.ContentUris
 import android.content.ContentValues
-import android.content.ContentResolver
-
-
 
 
 class ImageFragment: Fragment() {
@@ -175,7 +170,7 @@ class ImageFragment: Fragment() {
 
         viewModel = ViewModelProviders.of(activity!!)[MainViewModel::class.java]
 
-        root = inflater.inflate(R.layout.image_fragment, container, false)
+        root = inflater.inflate(R.layout.fragment_imageviewer, container, false)
 
         val bundle = arguments
         val imageUUID = bundle?.getString("imageuuid")

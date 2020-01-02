@@ -5,7 +5,7 @@ import com.example.squash.api.posts.Post
 
 abstract class ListFragment: Fragment() {
 
-    abstract fun startPostFragment(post: Post)
+    abstract fun startPostActivity(post: Post)
 
     abstract fun setCurrentRecyclerState()
 

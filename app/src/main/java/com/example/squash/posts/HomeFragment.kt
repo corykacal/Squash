@@ -94,7 +94,7 @@ class HomeFragment: ListFragment() {
     }
 
     override fun startPostActivity(post: Post) {
-        val intent = Intent(context, PostActivity::class.java)
+        val intent = Intent(context, SinglePostActivity::class.java)
         intent.putExtra("post_number", post.postID)
         startActivityForResult(intent, 1)
     }

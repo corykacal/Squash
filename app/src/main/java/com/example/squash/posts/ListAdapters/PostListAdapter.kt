@@ -46,6 +46,16 @@ class PostListAdapter(private val viewModel: MainViewModel,
         view.setColorFilter(ContextCompat.getColor(view.context, color), PorterDuff.Mode.SRC_IN)
     }
 
+    private fun setPoints(pointsTV: TextView, item: Post) {
+        var points = item.up!! - item.down!!
+        if(points<0) {
+            pointsTV.setTextColor(ContextCompat.getColor(pointsTV.context, R.color.badComment))
+        } else {
+            pointsTV.setTextColor(ContextCompat.getColor(pointsTV.context, R.color.goodComment))
+        }
+        pointsTV.text = points.toString()
+    }
+
 
     inner class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         /*
@@ -74,6 +84,8 @@ class PostListAdapter(private val viewModel: MainViewModel,
         private var subjectTag = itemView.findViewById<ConstraintLayout>(R.id.subject_tag)
         private var subjectTV = itemView.findViewById<TextView>(R.id.subject)
 
+        private var currentSubject = viewModel.observeSubject().value
+
 
         val imageLoaded = { success: Boolean ->
             if(success) {
@@ -82,13 +94,6 @@ class PostListAdapter(private val viewModel: MainViewModel,
         }
 
 
-        val voteLambda = { success: Boolean ->
-            if(!success) {
-                Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG)
-                setSVGcolor(downVote, R.color.black)
-                setSVGcolor(upVote, R.color.black)
-            }
-        }
 
 
         fun bind(item: Post?) {
@@ -106,10 +111,9 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
             contentsTV.text = item.contents
 
-
             commentsTV.text = item.comment_count.toString()
 
-            if(item.subject!=null) {
+            if(item.subject!=null && currentSubject=="All") {
                 subjectTV.text = item.subject!!.toUpperCase()
                 if(item.subject=="Memes") {
                     subjectTag.setBackgroundResource(R.color.orange)
@@ -118,13 +122,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 }
             }
 
-            var points = item.up!! - item.down!!
-            if(points<0) {
-                pointsTV.setTextColor(ContextCompat.getColor(itemView.context, R.color.badComment))
-            } else {
-                pointsTV.setTextColor(ContextCompat.getColor(itemView.context, R.color.goodComment))
-            }
-            pointsTV.text = points.toString()
+            setPoints(pointsTV, item)
 
             imageAndText.setOnClickListener(object : SingleClickListener() {
                 override fun onSingleClick(v: View) {
@@ -162,34 +160,88 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
 
             upVote.setOnClickListener {
-                fragment?.setCurrentRecyclerState()
                 if(downVote.tag=="true") {
                     setSVGcolor(downVote, R.color.black)
                     setSVGcolor(upVote, R.color.goodComment)
                     downVote.tag = "false"
                     upVote.tag = "true"
+                    if(item.decision==false) {
+                        item.down = item.down!!-1
+                    }
+                    item.decision = true
+                    item.up = item.up!!+1
+                    setPoints(pointsTV, item)
+                    val voteLambda = { success: Boolean ->
+                        if(!success) {
+                            Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG).show()
+                            setSVGcolor(downVote, R.color.black)
+                            setSVGcolor(upVote, R.color.black)
+                            item.decision = null
+                            item.up = item.up!!-1
+                            setPoints(pointsTV, item)
+                        }
+                    }
                     viewModel.makeDescition(item.postID!!, true, voteLambda)
                 } else {
                     downVote.tag = "true"
                     upVote.tag = "true"
                     setSVGcolor(downVote, R.color.black)
                     setSVGcolor(upVote, R.color.black)
+                    item.decision = null
+                    item.up = item.up!!-1
+                    setPoints(pointsTV, item)
+                    val voteLambda = { success: Boolean ->
+                        if(!success) {
+                            Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG).show()
+                            setSVGcolor(downVote, R.color.black)
+                            setSVGcolor(upVote, R.color.black)
+                            item.decision = true
+                            item.up = item.up!!+1
+                        }
+                    }
                     viewModel.makeDescition(item.postID!!, null, voteLambda)
                 }
             }
             downVote.setOnClickListener {
-                fragment?.setCurrentRecyclerState()
                 if(upVote.tag=="true") {
                     setSVGcolor(upVote, R.color.black)
                     setSVGcolor(downVote, R.color.badComment)
                     upVote.tag = "false"
                     downVote.tag = "true"
+                    if(item.decision==true) {
+                        item.up = item.up!!-1
+                    }
+                    item.decision = false
+                    item.down = item.down!!+1
+                    setPoints(pointsTV, item)
+                    val voteLambda = { success: Boolean ->
+                        if(!success) {
+                            Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG).show()
+                            setSVGcolor(downVote, R.color.black)
+                            setSVGcolor(upVote, R.color.black)
+                            item.decision = null
+                            item.down = item.down!!-1
+                            setPoints(pointsTV, item)
+                        }
+                    }
                     viewModel.makeDescition(item.postID!!, false, voteLambda)
                 } else {
                     downVote.tag = "true"
                     upVote.tag = "true"
                     setSVGcolor(downVote, R.color.black)
                     setSVGcolor(upVote, R.color.black)
+                    item.decision = null
+                    item.down = item.down!!-1
+                    setPoints(pointsTV, item)
+                    val voteLambda = { success: Boolean ->
+                        if(!success) {
+                            Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG).show()
+                            setSVGcolor(downVote, R.color.black)
+                            setSVGcolor(upVote, R.color.black)
+                            item.decision = false
+                            item.down = item.down!!+1
+                        }
+                    }
                     viewModel.makeDescition(item.postID!!, null, voteLambda)
                 }
             }

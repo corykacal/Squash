@@ -40,6 +40,8 @@
                 android:background="@drawable/subject_outline"
                 android:spinnerMode="dropdown"
                 android:theme="@style/SpinnerThemeList"
+                android:popupBackground="@color/secondAccentYellow"
+                android:popupElevation="3dp"
                 android:gravity="center"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -51,7 +53,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@drawable/karma_outline"
+                android:layout_marginEnd="13dp"
+                android:layout_marginBottom="3dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -66,8 +69,7 @@
                     android:text="0"
                     android:textAlignment="center"
                     android:gravity="center_horizontal"
-                    android:alpha="0.6"
-                    android:textColor="@color/black"
+                    android:textColor="@color/titleText"
                     />
 
                 <TextView
@@ -79,8 +81,7 @@
                     android:textSize="34sp"
                     android:textAlignment="center"
                     android:gravity="center_horizontal"
-                    android:alpha="0.6"
-                    android:textColor="@color/black"
+                    android:textColor="@color/titleText"
                     />
 
             </LinearLayout>

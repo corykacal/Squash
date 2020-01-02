@@ -16,7 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.posts.Post
-import com.example.squash.posts.PostActivity
+import com.example.squash.posts.SinglePostActivity
 import com.example.squash.posts.ListAdapters.PostListAdapter
 import com.example.squash.technology.ListFragment
 
@@ -87,7 +87,7 @@ class MyPostsFragment: ListFragment() {
     }
 
     override fun startPostActivity(post: Post) {
-        val intent = Intent(context, PostActivity::class.java)
+        val intent = Intent(context, SinglePostActivity::class.java)
         intent.putExtra("post_number", post.postID)
         startActivityForResult(intent, 1)
     }

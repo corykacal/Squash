@@ -10,6 +10,14 @@
         />
 
     <item
+        android:id="@+id/events_icon"
+        android:enabled="true"
+        android:icon="@drawable/events_icon"
+        android:title="Events"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
         android:id="@+id/peek_icon"
         android:enabled="true"
         android:icon="@drawable/peek_chat"
@@ -24,5 +32,6 @@
         android:title="Profile"
         app:showAsAction="ifRoom"
         />
+
 
 </menu>

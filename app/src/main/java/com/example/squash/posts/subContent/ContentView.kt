@@ -3,19 +3,12 @@ package com.example.squash.posts.subContent
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import com.example.squash.R
-import kotlinx.android.synthetic.main.content_main.view.*
-import kotlinx.android.synthetic.main.post_fragment.view.*
-
 
 /*
- * This is an on going experiemnt to set different looking post in the recyclerview
+ * This is an on going experiemnt to set different looking post in the post row.
+ * I would set images or other post in a retweet style or gifs/videos
  */
 
 class ContentView @JvmOverloads constructor(

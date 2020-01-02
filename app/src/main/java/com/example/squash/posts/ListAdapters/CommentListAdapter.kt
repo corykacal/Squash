@@ -67,8 +67,6 @@ class CommentListAdapter(private val viewModel: MainViewModel,
 
 
         fun bind(item: Post?) {
-            contentsTV.minLines = 3
-            contentsTV.maxLines = 5
             if (item == null) return
 
             val postDate = Date(item.timestamp!!.time)

@@ -369,7 +369,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="365"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/postHolder"
         app:layout_constraintBottom_toTopOf="@id/postHolder"
         />
 
@@ -380,6 +380,9 @@
         android:layout_height="wrap_content"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="3dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/commentButton"
@@ -390,9 +393,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/post_outline"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="3dp"
             android:maxLines="3"
             />
 

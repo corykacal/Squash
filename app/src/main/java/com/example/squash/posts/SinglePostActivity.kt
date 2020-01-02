@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.activity_singlepost.*
 import java.util.*
 import kotlin.random.Random
 
-class PostActivity: AppCompatActivity() {
+class SinglePostActivity: AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var auth: FirebaseAuth
 
@@ -217,9 +217,9 @@ class PostActivity: AppCompatActivity() {
             override fun onSingleClick(v: View) {
                 var contents = post.text.toString()
                 if(contents.isBlank()) {
-                    Toast.makeText(baseContext, "Error: can't send blank post", Toast.LENGTH_SHORT).show()
-                } else if(contents.lines().size>5) {
-                    Toast.makeText(baseContext, "Error: too many lines: ${contents.lines().size}, max: 10", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, "Error: can't send blank post", Toast.LENGTH_SHORT).show()
+                } else if(contents.lines().size>10) {
+                    Toast.makeText(applicationContext, "Error: too many lines: ${contents.lines().size}, max: 10", Toast.LENGTH_SHORT).show()
                 } else {
                     val postLambda = { success: Boolean ->
                         if(success) {
@@ -228,9 +228,8 @@ class PostActivity: AppCompatActivity() {
                             commentLeft.isVisible = false
                             viewModel.getComments(post_number) {}
                         } else {
-                            Toast.makeText(baseContext, "post failed", Toast.LENGTH_LONG).show()
+                            Toast.makeText(applicationContext, "post failed", Toast.LENGTH_LONG).show()
                         }
-                        var makeErrorGoAway = 0
                     }
                     viewModel.makePost(contents, null, null, null, post_number, postLambda)
                 }

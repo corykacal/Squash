@@ -23,10 +23,9 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="SpinnerThemeList">
-        <item name="android:textColor">@color/post</item>
+        <item name="android:textColor">@color/titleText</item>
         <item name="android:textSize">22sp</item>
         <item name="android:radius">10dp</item>
-        <item name="android:background">@color/accentYellow</item>
         <item name="android:textAlignment">center</item>
         <item name="android:gravity">center</item>
         <item name="android:fontFamily">sans-serif-medium</item>

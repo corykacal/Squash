@@ -1,9 +1,7 @@
 package com.example.squash.api
 
 
-import android.database.Observable
 import com.example.squash.api.posts.Post
-import com.google.android.gms.tasks.Task
 import com.google.gson.GsonBuilder
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -12,9 +10,8 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
-import java.util.*
 
-interface PostApi {
+interface SquashApi {
 
     @GET("/api/user/")
     fun getUserData(@Query("opuuid") opuuid: String
@@ -85,8 +82,8 @@ interface PostApi {
             .host("ec2-18-218-80-162.us-east-2.compute.amazonaws.com")
             .port(5000)
             .build()
-        fun create(): PostApi = create(httpurl)
-        private fun create(httpUrl: HttpUrl): PostApi {
+        fun create(): SquashApi = create(httpurl)
+        private fun create(httpUrl: HttpUrl): SquashApi {
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().apply {
@@ -98,7 +95,7 @@ interface PostApi {
                 .client(client)
                 .addConverterFactory(buildGsonConverterFactory())
                 .build()
-                .create(PostApi::class.java)
+                .create(SquashApi::class.java)
         }
     }
 

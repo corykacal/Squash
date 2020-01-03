@@ -136,8 +136,10 @@ class HomeFragment: ListFragment() {
                         && firstVisibleItemPosition >= 0
                         && totalItemCount >= PAGE_SIZE) {
                     setCurrentRecyclerState()
-                    currentPage+=1
-                    loadPosts(currentPage) {
+                    loadPosts(currentPage) { success: Boolean ->
+                        if(success) {
+                            currentPage+=1
+                        }
                     }
                 }
             }

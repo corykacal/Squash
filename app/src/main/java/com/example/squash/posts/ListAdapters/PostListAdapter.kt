@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -69,6 +70,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
          */
 
+        private var everything = itemView.findViewById<ConstraintLayout>(R.id.everything)
         private var imageAndText = itemView.findViewById<ConstraintLayout>(R.id.imageTextUnion)
 
         private var contentsTV = itemView.findViewById<TextView>(R.id.contents)
@@ -103,6 +105,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             contentsTV.minLines = 3
             contentsTV.maxLines = 5
             subjectTV.text = ""
+            everything.setBackgroundResource(R.color.post)
             subjectTag.setBackgroundResource(R.color.post)
             if (item == null) return
 
@@ -117,6 +120,9 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 subjectTV.text = item.subject!!.toUpperCase()
                 if(item.subject=="Memes") {
                     subjectTag.setBackgroundResource(R.color.orange)
+                } else if (item.subject=="STICKY") {
+                    subjectTag.setBackgroundResource(R.color.blue)
+                    everything.setBackgroundResource(R.color.lightBlue)
                 } else {
                     subjectTag.setBackgroundResource(R.color.yellow)
                 }

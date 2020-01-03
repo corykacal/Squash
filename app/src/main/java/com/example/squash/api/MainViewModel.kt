@@ -1,24 +1,15 @@
 package com.example.squash.api
 
 import android.net.Uri
-import android.util.Log
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.squash.MainActivity
 import com.example.squash.api.posts.Post
-import com.example.squash.technology.Constants.Companion.PAGE_SIZE
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.UploadTask
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,7 +27,7 @@ class MainViewModel : ViewModel() {
     private var currentSubject = MutableLiveData<String>()
 
     companion object {
-        private lateinit var postFetch: PostApi
+        private lateinit var postFetch: SquashApi
         private lateinit var auth: User
         private lateinit var storage: photoapi
     }
@@ -45,7 +36,7 @@ class MainViewModel : ViewModel() {
         db = FirebaseFirestore.getInstance()
         auth = authy
         storage = storagey
-        postFetch = PostApi.create()
+        postFetch = SquashApi.create()
     }
 
     fun getTime(postDate: Date): String {
@@ -123,8 +114,8 @@ class MainViewModel : ViewModel() {
     fun getUserData(func: (Boolean) -> Unit) {
         var uuid = getUUID()!!
         var task = postFetch.getUserData(uuid)
-        task.enqueue(object : Callback<PostApi.UserDataReponse> {
-            override fun onResponse(call: Call<PostApi.UserDataReponse>?, response: Response<PostApi.UserDataReponse>?) {
+        task.enqueue(object : Callback<SquashApi.UserDataReponse> {
+            override fun onResponse(call: Call<SquashApi.UserDataReponse>?, response: Response<SquashApi.UserDataReponse>?) {
                 var data = response!!.body()!!.results
                 if(data.size==0) {
                     userData.postValue(UserData(0,0,0,0,0,0,0,0,0,0))
@@ -133,7 +124,7 @@ class MainViewModel : ViewModel() {
                 }
                 func(true)
             }
-            override fun onFailure(call: Call<PostApi.UserDataReponse>?, t: Throwable?) {
+            override fun onFailure(call: Call<SquashApi.UserDataReponse>?, t: Throwable?) {
                 func(false)
             }
         })
@@ -143,14 +134,14 @@ class MainViewModel : ViewModel() {
     fun getComments(post_number: Long, func: (Boolean) -> Unit) {
         var uuid = getUUID()!!
         var task = postFetch.getComments(post_number, uuid)
-        task.enqueue(object : Callback<PostApi.ListingResponse> {
-            override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
+        task.enqueue(object : Callback<SquashApi.ListingResponse> {
+            override fun onResponse(call: Call<SquashApi.ListingResponse>?, response: Response<SquashApi.ListingResponse>?) {
                 var posts = response!!.body()!!.results
                 posts = posts.sortedBy { it.timestamp }
                 singlePostComments.postValue(posts)
                 func(true)
             }
-            override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {
+            override fun onFailure(call: Call<SquashApi.ListingResponse>?, t: Throwable?) {
                 func(false)
             }
         })
@@ -159,13 +150,13 @@ class MainViewModel : ViewModel() {
 
     fun getSinglePost(post_number: Long, func: (Boolean) -> Unit) {
         val task = postFetch.getSinglePost(post_number, getUUID()!!)
-        task.enqueue(object : Callback<PostApi.ListingResponse> {
-            override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
+        task.enqueue(object : Callback<SquashApi.ListingResponse> {
+            override fun onResponse(call: Call<SquashApi.ListingResponse>?, response: Response<SquashApi.ListingResponse>?) {
                 var post = response!!.body()!!.results[0]
                 singlePost.postValue(post)
                 func(true)
             }
-            override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {
+            override fun onFailure(call: Call<SquashApi.ListingResponse>?, t: Throwable?) {
                 func(false)
             }
         })
@@ -174,11 +165,11 @@ class MainViewModel : ViewModel() {
     fun makeDescition(post_number: Long, descision: Boolean?, func: (Boolean) -> Unit) {
         val opuuid = getUUID()!!
         val task = postFetch.makeDescision(opuuid, post_number, descision)
-        task.enqueue(object : Callback<PostApi.PostResponse> {
-            override fun onResponse(call: Call<PostApi.PostResponse>?, response: Response<PostApi.PostResponse>?) {
+        task.enqueue(object : Callback<SquashApi.PostResponse> {
+            override fun onResponse(call: Call<SquashApi.PostResponse>?, response: Response<SquashApi.PostResponse>?) {
                 func(true)
             }
-            override fun onFailure(call: Call<PostApi.PostResponse>?, t: Throwable?) {
+            override fun onFailure(call: Call<SquashApi.PostResponse>?, t: Throwable?) {
                 func(false)
             }
         })
@@ -192,15 +183,15 @@ class MainViewModel : ViewModel() {
             var imageTask = uploadJpg(imageuri!!, imageuuid)
             imageTask.addOnSuccessListener {
                 func(true)
-                task.enqueue(object : Callback<PostApi.PostResponse> {
+                task.enqueue(object : Callback<SquashApi.PostResponse> {
                     override fun onResponse(
-                        call: Call<PostApi.PostResponse>?,
-                        response: Response<PostApi.PostResponse>?
+                        call: Call<SquashApi.PostResponse>?,
+                        response: Response<SquashApi.PostResponse>?
                     ) {
                         func(true)
                     }
 
-                    override fun onFailure(call: Call<PostApi.PostResponse>?, t: Throwable?) {
+                    override fun onFailure(call: Call<SquashApi.PostResponse>?, t: Throwable?) {
                         func(false)
                     }
                 })
@@ -208,15 +199,15 @@ class MainViewModel : ViewModel() {
                 func(false)
             }
         } else {
-            task.enqueue(object : Callback<PostApi.PostResponse> {
+            task.enqueue(object : Callback<SquashApi.PostResponse> {
                 override fun onResponse(
-                    call: Call<PostApi.PostResponse>?,
-                    response: Response<PostApi.PostResponse>?
+                    call: Call<SquashApi.PostResponse>?,
+                    response: Response<SquashApi.PostResponse>?
                 ) {
                     func(true)
                 }
 
-                override fun onFailure(call: Call<PostApi.PostResponse>?, t: Throwable?) {
+                override fun onFailure(call: Call<SquashApi.PostResponse>?, t: Throwable?) {
                     func(false)
                 }
             })
@@ -226,11 +217,11 @@ class MainViewModel : ViewModel() {
     fun getMyPost(number_of_post: Int?, func: (Boolean) -> Unit) {
         var uuid = getUUID()
         var task = postFetch.getMyPosts(uuid!!, number_of_post, 1)
-        task.enqueue(object : Callback<PostApi.ListingResponse> {
-            override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {
+        task.enqueue(object : Callback<SquashApi.ListingResponse> {
+            override fun onFailure(call: Call<SquashApi.ListingResponse>?, t: Throwable?) {
                 func(false)
             }
-            override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
+            override fun onResponse(call: Call<SquashApi.ListingResponse>?, response: Response<SquashApi.ListingResponse>?) {
                 func(true)
                 var posts = response!!.body()!!.results
                 myPost.postValue(posts)
@@ -241,17 +232,17 @@ class MainViewModel : ViewModel() {
     fun getPosts(number_of_post: Int, page_number: Int, func: (Boolean) -> Unit) {
         val subject = currentSubject.value
         var uuid = getUUID()
-        var task: Call<PostApi.ListingResponse>
+        var task: Call<SquashApi.ListingResponse>
         if(!MainActivity.newPost) {
             task = postFetch.getHotPosts(uuid!!, number_of_post, page_number, subject)
         } else {
             task = postFetch.getRecentPosts(uuid!!, number_of_post, page_number, subject)
         }
-        task.enqueue(object : Callback<PostApi.ListingResponse> {
-            override fun onFailure(call: Call<PostApi.ListingResponse>?, t: Throwable?) {
+        task.enqueue(object : Callback<SquashApi.ListingResponse> {
+            override fun onFailure(call: Call<SquashApi.ListingResponse>?, t: Throwable?) {
                 func(false)
             }
-            override fun onResponse(call: Call<PostApi.ListingResponse>?, response: Response<PostApi.ListingResponse>?) {
+            override fun onResponse(call: Call<SquashApi.ListingResponse>?, response: Response<SquashApi.ListingResponse>?) {
                 if(response!!.isSuccessful) {
                     func(true)
                     var posts = response!!.body()!!.results

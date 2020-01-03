@@ -41,6 +41,7 @@ class HomeFragment: ListFragment() {
 
     //first page always grabbed with initial refresh
     private var currentPage: Int = 1
+    private var loadingNewPages: Boolean = false
 
     var fragId = R.id.posts_icon
 
@@ -132,13 +133,17 @@ class HomeFragment: ListFragment() {
                 var totalItemCount = layoutManager.getItemCount()
                 var firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                if(!loadingNewPages) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                         && firstVisibleItemPosition >= 0
-                        && totalItemCount >= PAGE_SIZE) {
-                    setCurrentRecyclerState()
-                    loadPosts(currentPage) { success: Boolean ->
-                        if(success) {
-                            currentPage+=1
+                    ) {
+                        loadingNewPages = true
+                        loadPosts(currentPage) { success: Boolean ->
+                            loadingNewPages = false
+                            if (success) {
+                                setCurrentRecyclerState()
+                                currentPage += 1
+                            }
                         }
                     }
                 }

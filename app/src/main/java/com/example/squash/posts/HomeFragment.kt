@@ -2,6 +2,7 @@ package com.example.squash.posts
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,9 +25,7 @@ import com.example.squash.technology.Constants.Companion.PAGE_SIZE
 import com.example.squash.technology.ListFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.fragment_home.hotButton
-import kotlinx.android.synthetic.main.fragment_home.newButton
-import kotlinx.android.synthetic.main.fragment_home.searchResults
+import kotlinx.android.synthetic.main.fragment_home.*
 
 
 class HomeFragment: ListFragment() {
@@ -114,14 +114,14 @@ class HomeFragment: ListFragment() {
                     Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
                 } else {
                     currentPage = 1
-                    searchResults.scrollToPosition(0)
+                    postRecycler.scrollToPosition(0)
                 }
             }
         }
     }
 
     private fun initAdapter(root: View) {
-        var recycler = root.findViewById<RecyclerView>(R.id.searchResults)
+        var recycler = root.findViewById<RecyclerView>(R.id.postRecycler)
         postAdapter = PostListAdapter(viewModel, this)
         recycler.adapter = postAdapter
         val layoutManager = LinearLayoutManager(context)
@@ -182,16 +182,16 @@ class HomeFragment: ListFragment() {
     }
 
     fun resetCurrentRecyclerState() {
-        searchResults.scrollToPosition(0)
+        postRecycler.scrollToPosition(0)
     }
 
     fun changeCurrentRecyclerState() {
         currentRecyclerState = previousRecyclerState
-        previousRecyclerState = searchResults.getLayoutManager()?.onSaveInstanceState()
+        previousRecyclerState = postRecycler.getLayoutManager()?.onSaveInstanceState()
     }
 
     override fun setCurrentRecyclerState() {
-        currentRecyclerState = searchResults.getLayoutManager()?.onSaveInstanceState()
+        currentRecyclerState = postRecycler.getLayoutManager()?.onSaveInstanceState()
     }
 
     private fun setDataObserver(root: View) {
@@ -203,7 +203,7 @@ class HomeFragment: ListFragment() {
             var recyclerState =  currentRecyclerState
             initAdapter(root)
             postAdapter.submitList(it)
-            searchResults.getLayoutManager()?.onRestoreInstanceState(recyclerState)
+            postRecycler.getLayoutManager()?.onRestoreInstanceState(recyclerState)
         })
 
 
@@ -215,15 +215,19 @@ class HomeFragment: ListFragment() {
 
         //listen to subject changing
         viewModel.observeSubject().observe(this, Observer {
+            postRecycler.isVisible = false
             refreshPosts { success: Boolean ->
                 if(!success) {
                     Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
+                    postRecycler.isVisible = true
                 } else {
                     currentPage = 1
-                    searchResults.scrollToPosition(0)
+                    Handler().postDelayed(Runnable {
+                        postRecycler.scrollToPosition(0)
+                        postRecycler.isVisible = true
+                    }, 100)
                 }
             }
-            viewModel.getUserData {  }
         })
     }
 

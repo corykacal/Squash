@@ -158,7 +158,7 @@
         >
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/searchResults"
+            android:id="@+id/postRecycler"
             android:clipToPadding="false"
             android:paddingBottom="150dp"
             android:paddingTop="4dp"

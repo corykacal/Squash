@@ -51,7 +51,7 @@ class SinglePostActivity: AppCompatActivity() {
     }
 
     private fun initAdapter() {
-        var recycler = findViewById<RecyclerView>(R.id.searchResults)
+        var recycler = findViewById<RecyclerView>(R.id.commentRecycler)
         postAdapter =
             CommentListAdapter(viewModel, mixedPairs)
         recycler.adapter = postAdapter

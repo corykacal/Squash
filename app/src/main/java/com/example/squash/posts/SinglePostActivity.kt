@@ -165,6 +165,7 @@ class SinglePostActivity: AppCompatActivity() {
                 Toast.makeText(applicationContext, "refresh failed", Toast.LENGTH_LONG).show()
             }
         }
+        * would refresh page_Size*current_page
         viewModel.getPosts(PAGE_SIZE, 1, lambda)
          */
         super.onBackPressed()

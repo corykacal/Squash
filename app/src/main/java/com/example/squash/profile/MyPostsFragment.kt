@@ -6,6 +6,7 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -19,6 +20,8 @@ import com.example.squash.api.posts.Post
 import com.example.squash.posts.SinglePostActivity
 import com.example.squash.posts.ListAdapters.PostListAdapter
 import com.example.squash.technology.ListFragment
+import com.example.squash.technology.SingleClickListener
+import kotlinx.android.synthetic.main.fragment_sub_myposts.*
 
 
 class MyPostsFragment: ListFragment() {
@@ -86,6 +89,14 @@ class MyPostsFragment: ListFragment() {
         })
     }
 
+    private fun setBackButton(root: View) {
+        root.findViewById<ImageView>(R.id.backButton).setOnClickListener(object: SingleClickListener() {
+            override fun onSingleClick(v: View) {
+                fragmentManager?.popBackStack()
+            }
+        })
+    }
+
     override fun startPostActivity(post: Post) {
         val intent = Intent(context, SinglePostActivity::class.java)
         intent.putExtra("post_number", post.postID)
@@ -112,6 +123,7 @@ class MyPostsFragment: ListFragment() {
         setDataObserver(root)
         initAdapter(root)
         initDownSwipeLayout(root)
+        setBackButton(root)
 
         refreshPosts {  }
 

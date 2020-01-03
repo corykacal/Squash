@@ -30,16 +30,25 @@
             android:layout_height="wrap_content"
             >
 
-            <TextView
-                android:id="@+id/current_subject"
+            <ImageView
+                android:id="@+id/backButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:fontFamily="sans-serif-smallcaps"
+                android:src="@drawable/back_arrow"
+                android:tint="@color/titleText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="My posts"
+                android:fontFamily="sans-serif-medium"
                 android:textSize="26sp"
-                android:alpha="0.6"
-                android:background="@drawable/karma_outline"
-                android:textColor="@color/black"
+                android:textColor="@color/titleText"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -50,7 +59,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@drawable/karma_outline"
+                android:layout_marginEnd="13dp"
+                android:layout_marginBottom="3dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -62,11 +72,10 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
                     android:textSize="30sp"
-                    android:text="130"
+                    android:text="0"
                     android:textAlignment="center"
                     android:gravity="center_horizontal"
-                    android:alpha="0.6"
-                    android:textColor="@color/black"
+                    android:textColor="@color/titleText"
                     />
 
                 <TextView
@@ -78,8 +87,7 @@
                     android:textSize="34sp"
                     android:textAlignment="center"
                     android:gravity="center_horizontal"
-                    android:alpha="0.6"
-                    android:textColor="@color/black"
+                    android:textColor="@color/titleText"
                     />
 
             </LinearLayout>

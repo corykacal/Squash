@@ -136,19 +136,19 @@ class SinglePostActivity: AppCompatActivity() {
         }
         if(post.decision!=null) {
             if(post.decision!!) {
-                setSVGcolor(downVote, R.color.black)
+                setSVGcolor(downVote, R.color.voteGrey)
                 setSVGcolor(upVote, R.color.goodComment)
                 downVote.tag = "false"
                 upVote.tag = "true"
             } else {
-                setSVGcolor(upVote, R.color.black)
+                setSVGcolor(upVote, R.color.voteGrey)
                 setSVGcolor(downVote, R.color.badComment)
                 upVote.tag = "false"
                 downVote.tag = "true"
             }
         } else {
-            setSVGcolor(upVote, R.color.black)
-            setSVGcolor(downVote, R.color.black)
+            setSVGcolor(upVote, R.color.voteGrey)
+            setSVGcolor(downVote, R.color.voteGrey)
         }
 
         var points = post.up!! - post.down!!
@@ -294,8 +294,8 @@ class SinglePostActivity: AppCompatActivity() {
         val voteLambda = { success: Boolean ->
             if(!success) {
                 Toast.makeText(applicationContext, "vote failed", Toast.LENGTH_LONG).show()
-                setSVGcolor(downVote, R.color.black)
-                setSVGcolor(upVote, R.color.black)
+                setSVGcolor(downVote, R.color.voteGrey)
+                setSVGcolor(upVote, R.color.voteGrey)
             }
         }
         var downVote = findViewById<ImageView>(R.id.downVote)
@@ -313,11 +313,20 @@ class SinglePostActivity: AppCompatActivity() {
                 } else {
                     curPoints+=2
                 }
-                setSVGcolor(downVote, R.color.black)
+                setSVGcolor(downVote, R.color.voteGrey)
                 setSVGcolor(upVote, R.color.goodComment)
                 downVote.tag = "false"
                 upVote.tag = "true"
                 viewModel.makeDescition(post_number, true, voteLambda)
+                updatePointColors(curPoints)
+            } else {
+                var curPoints = points.text.toString().toInt()
+                curPoints-=1
+                downVote.tag = "true"
+                upVote.tag = "true"
+                setSVGcolor(downVote, R.color.voteGrey)
+                setSVGcolor(upVote, R.color.voteGrey)
+                viewModel.makeDescition(post_number, null, voteLambda)
                 updatePointColors(curPoints)
             }
         }
@@ -329,11 +338,20 @@ class SinglePostActivity: AppCompatActivity() {
                 } else {
                     curPoints-=2
                 }
-                setSVGcolor(upVote, R.color.black)
+                setSVGcolor(upVote, R.color.voteGrey)
                 setSVGcolor(downVote, R.color.badComment)
                 upVote.tag = "false"
                 downVote.tag = "true"
                 viewModel.makeDescition(post_number, false, voteLambda)
+                updatePointColors(curPoints)
+            } else {
+                var curPoints = points.text.toString().toInt()
+                curPoints+=1
+                downVote.tag = "true"
+                upVote.tag = "true"
+                setSVGcolor(downVote, R.color.voteGrey)
+                setSVGcolor(upVote, R.color.voteGrey)
+                viewModel.makeDescition(post_number, null, voteLambda)
                 updatePointColors(curPoints)
             }
         }

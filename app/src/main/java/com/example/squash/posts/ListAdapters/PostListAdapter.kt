@@ -147,17 +147,17 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 loadingIV.isVisible = false
             }
 
-            setSVGcolor(downVote, R.color.black)
-            setSVGcolor(upVote, R.color.black)
+            setSVGcolor(downVote, R.color.voteGrey)
+            setSVGcolor(upVote, R.color.voteGrey)
 
             if(item.decision!=null) {
                 if(item.decision!!) {
-                    setSVGcolor(downVote, R.color.black)
+                    setSVGcolor(downVote, R.color.voteGrey)
                     setSVGcolor(upVote, R.color.goodComment)
                     downVote.tag = "false"
                     upVote.tag = "true"
                 } else {
-                    setSVGcolor(upVote, R.color.black)
+                    setSVGcolor(upVote, R.color.voteGrey)
                     setSVGcolor(downVote, R.color.badComment)
                     upVote.tag = "false"
                     downVote.tag = "true"
@@ -167,7 +167,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
             upVote.setOnClickListener {
                 if(downVote.tag=="true") {
-                    setSVGcolor(downVote, R.color.black)
+                    setSVGcolor(downVote, R.color.voteGrey)
                     setSVGcolor(upVote, R.color.goodComment)
                     downVote.tag = "false"
                     upVote.tag = "true"
@@ -180,8 +180,8 @@ class PostListAdapter(private val viewModel: MainViewModel,
                     val voteLambda = { success: Boolean ->
                         if(!success) {
                             Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG).show()
-                            setSVGcolor(downVote, R.color.black)
-                            setSVGcolor(upVote, R.color.black)
+                            setSVGcolor(downVote, R.color.voteGrey)
+                            setSVGcolor(upVote, R.color.voteGrey)
                             item.decision = null
                             item.up = item.up!!-1
                             setPoints(pointsTV, item)
@@ -191,16 +191,16 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 } else {
                     downVote.tag = "true"
                     upVote.tag = "true"
-                    setSVGcolor(downVote, R.color.black)
-                    setSVGcolor(upVote, R.color.black)
+                    setSVGcolor(downVote, R.color.voteGrey)
+                    setSVGcolor(upVote, R.color.voteGrey)
                     item.decision = null
                     item.up = item.up!!-1
                     setPoints(pointsTV, item)
                     val voteLambda = { success: Boolean ->
                         if(!success) {
                             Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG).show()
-                            setSVGcolor(downVote, R.color.black)
-                            setSVGcolor(upVote, R.color.black)
+                            setSVGcolor(downVote, R.color.voteGrey)
+                            setSVGcolor(upVote, R.color.voteGrey)
                             item.decision = true
                             item.up = item.up!!+1
                         }
@@ -210,7 +210,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             }
             downVote.setOnClickListener {
                 if(upVote.tag=="true") {
-                    setSVGcolor(upVote, R.color.black)
+                    setSVGcolor(upVote, R.color.voteGrey)
                     setSVGcolor(downVote, R.color.badComment)
                     upVote.tag = "false"
                     downVote.tag = "true"
@@ -223,8 +223,8 @@ class PostListAdapter(private val viewModel: MainViewModel,
                     val voteLambda = { success: Boolean ->
                         if(!success) {
                             Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG).show()
-                            setSVGcolor(downVote, R.color.black)
-                            setSVGcolor(upVote, R.color.black)
+                            setSVGcolor(downVote, R.color.voteGrey)
+                            setSVGcolor(upVote, R.color.voteGrey)
                             item.decision = null
                             item.down = item.down!!-1
                             setPoints(pointsTV, item)
@@ -234,16 +234,16 @@ class PostListAdapter(private val viewModel: MainViewModel,
                 } else {
                     downVote.tag = "true"
                     upVote.tag = "true"
-                    setSVGcolor(downVote, R.color.black)
-                    setSVGcolor(upVote, R.color.black)
+                    setSVGcolor(downVote, R.color.voteGrey)
+                    setSVGcolor(upVote, R.color.voteGrey)
                     item.decision = null
                     item.down = item.down!!-1
                     setPoints(pointsTV, item)
                     val voteLambda = { success: Boolean ->
                         if(!success) {
                             Toast.makeText(itemView.context, "vote failed", Toast.LENGTH_LONG).show()
-                            setSVGcolor(downVote, R.color.black)
-                            setSVGcolor(upVote, R.color.black)
+                            setSVGcolor(downVote, R.color.voteGrey)
+                            setSVGcolor(upVote, R.color.voteGrey)
                             item.decision = false
                             item.down = item.down!!+1
                         }

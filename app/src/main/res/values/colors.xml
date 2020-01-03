@@ -22,7 +22,7 @@
     <color name="black">#000000</color>
     <color name="gray">#696963</color>
 
-    <color name="lightBlue">#EFF3F9</color>
+    <color name="lightBlue">#DFE8F3</color>
 
     <color name="red">#ff1654</color>
     <color name="orange">#efb062</color>
@@ -40,6 +40,9 @@
     <color name="purple">#b5838d</color>
     <color name="grey">#d2d8b3</color>
     <color name="golden">#FFD700</color>
+
+    <color name="voteGrey">#A9A9A9</color>
+
 
 
 

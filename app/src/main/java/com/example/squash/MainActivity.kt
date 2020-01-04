@@ -1,35 +1,27 @@
 package com.example.squash
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.widget.FrameLayout
-import android.widget.Toast
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProviders
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.User
 import com.example.squash.api.photoapi
 import com.example.squash.posts.HomeFragment
 import com.google.firebase.auth.FirebaseAuth
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.view.MenuInflater
-import android.widget.Button
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.action_bar.*
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.view.isVisible
+import com.example.squash.intro.IntroActivity
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,11 +30,15 @@ class MainActivity : AppCompatActivity() {
 
     val TAG = "####"
 
+    private var mFusedLocationClient: FusedLocationProviderClient? = null
+
 
     companion object {
         var newPost = true
         lateinit var viewModel: MainViewModel
+        val REQUEST_PERMISSIONS_REQUEST_CODE = 12
     }
+
 
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -82,11 +78,43 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        everything.isVisible = false
         findViewById<bottomNavBar>(R.id.bar).setInstance(this)
         auth = FirebaseAuth.getInstance()
-        var user = User(auth)
+        var user = User(auth) {}
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         viewModel = MainViewModel()
-        viewModel.init(user, photoapi(resources))
+        viewModel.init(user, photoapi(resources), mFusedLocationClient)
+    }
+
+    private fun checkPermissions(): Boolean {
+        val permissionState = ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.ACCESS_FINE_LOCATION)
+        return permissionState == PackageManager.PERMISSION_GRANTED
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        startApplication()
+    }
+
+    public override fun onStart() {
+        super.onStart()
+
+        if (!checkPermissions()) {
+            var intent = Intent(applicationContext, IntroActivity::class.java)
+            intent.putExtra("isComment", false)
+            startActivityForResult(intent, 2)
+        } else {
+            startApplication()
+        }
+    }
+
+    //TODO make this not horrible. make a check. maybe a fragment. for sure a callback somehwere
+    private fun startApplication() {
+        viewModel.getLastLocation()
+        everything.isVisible = true
         homeFragment = HomeFragment.newInstance()
         launchNewFragment(homeFragment, R.id.posts_icon)
         observePoints()

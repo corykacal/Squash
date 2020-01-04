@@ -43,7 +43,9 @@ interface SquashApi {
                  @Field("reply_to") reply_to: Long?,
                  @Field("opuuid") opuuid: String,
                  @Field("contents") contents: String,
-                 @Field("subject") subject: String?
+                 @Field("subject") subject: String?,
+                 @Field("latitude") latitude: Double,
+                 @Field("longitude") longitude: Double
     ): Call<PostResponse>
 
 

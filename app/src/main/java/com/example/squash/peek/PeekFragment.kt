@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.squash.MainActivity
-import com.example.squash.MainActivity.Companion.viewModel
+import androidx.lifecycle.ViewModelProviders
 import com.example.squash.R
+import com.example.squash.api.MainViewModel
 
 
 class PeekFragment: Fragment() {
+
+    private lateinit var viewModel: MainViewModel
 
     companion object {
         fun newInstance(): PeekFragment {
@@ -25,7 +27,9 @@ class PeekFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        viewModel = MainActivity.viewModel
+        activity.let {
+            viewModel = ViewModelProviders.of(it!!)[MainViewModel::class.java]
+        }
         val root = inflater.inflate(R.layout.fragment_peek, container, false)
 
 

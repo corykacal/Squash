@@ -1,11 +1,8 @@
 package com.example.squash.technology
 
 import android.graphics.Canvas
-import android.util.Log
-import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.squash.MainActivity.Companion.viewModel
 import android.view.MotionEvent
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE
 

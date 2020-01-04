@@ -87,6 +87,7 @@ class HomeFragment: ListFragment() {
     }
 
     fun refreshPosts(func: (Boolean) -> Unit) {
+        viewModel.getLastLocation()
         viewModel.getPosts(PAGE_SIZE, 1, func)
     }
 
@@ -316,7 +317,9 @@ class HomeFragment: ListFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        viewModel = ViewModelProviders.of(activity!!)[MainViewModel::class.java]
+        activity.let {
+            viewModel = ViewModelProviders.of(it!!)[MainViewModel::class.java]
+        }
 
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 

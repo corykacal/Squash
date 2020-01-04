@@ -1,12 +1,17 @@
 package com.example.squash.api
 
+import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.squash.MainActivity
 import com.example.squash.api.posts.Post
+import com.example.squash.intro.IntroActivity
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.UploadTask
@@ -25,18 +30,45 @@ class MainViewModel : ViewModel() {
     private var singlePostComments = MutableLiveData<List<Post>>()
     private var userData = MutableLiveData<UserData>()
     private var currentSubject = MutableLiveData<String>()
+    private var coordinates = MutableLiveData<List<Double>>()
 
     companion object {
-        private lateinit var postFetch: SquashApi
         private lateinit var auth: User
         private lateinit var storage: photoapi
+        private lateinit var locationClient: FusedLocationProviderClient
+        private val postFetch = SquashApi.create()
     }
 
-    fun init(authy: User, storagey: photoapi) {
+    fun init(authy: User, storagey: photoapi, locationProviderClient: FusedLocationProviderClient?) {
         db = FirebaseFirestore.getInstance()
         auth = authy
         storage = storagey
-        postFetch = SquashApi.create()
+        //postFetch = SquashApi.create()
+        locationClient = locationProviderClient!!
+    }
+
+    /**
+     * Provides a simple way of getting a device's location and is well suited for
+     * applications that do not require a fine-grained location and that do not need location
+     * updates. Gets the best and most recent location currently available, which may be null
+     * in rare cases when a location is not available.
+     *
+     *
+     * Note: this method should be called after location permission has been granted.
+     */
+    @SuppressLint("MissingPermission")
+    fun getLastLocation() {
+        locationClient!!.lastLocation
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful && task.result != null) {
+                    val result = task.result!!
+                    Log.d("latitude: ", "${result.latitude}")
+                    Log.d("longitude: ", "${result.longitude}")
+                    coordinates.postValue(listOf(result.latitude, result.longitude))
+                } else {
+                    Log.w(IntroActivity.TAG, "getLastLocation:exception", task.exception)
+                }
+            }
     }
 
     fun getTime(postDate: Date): String {
@@ -178,7 +210,14 @@ class MainViewModel : ViewModel() {
     fun makePost(contents: String, subject: String?, imageuri: Uri?,
                  imageuuid: String?, reply_to: Long?, func: (Boolean) -> Unit) {
         var opuuid = getUUID()!!
-        var task = postFetch.makePost(imageuuid, reply_to, opuuid!!, contents, subject)
+        val currentCoordinates = coordinates.value
+        if(currentCoordinates==null) {
+            func(false)
+            return
+        }
+        val latitude = currentCoordinates[0]
+        val longitude = currentCoordinates[1]
+        var task = postFetch.makePost(imageuuid, reply_to, opuuid, contents, subject, latitude, longitude)
         if(imageuuid!=null) {
             var imageTask = uploadJpg(imageuri!!, imageuuid)
             imageTask.addOnSuccessListener {
@@ -252,8 +291,6 @@ class MainViewModel : ViewModel() {
                     } else {
                         currentPosts = chat.value?.toMutableList()
                     }
-
-
                     if(currentPosts == null) {
                         chat.postValue(posts)
                     } else {

@@ -15,7 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 //import com.example.squash.api.glide.Glide
-import com.example.squash.api.posts.Post
+import com.example.squash.api.tables.Post
+import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 
 /**
@@ -63,7 +64,7 @@ class CommentListAdapter(private val viewModel: MainViewModel,
         private var upVote = itemView.findViewById<ImageView>(R.id.upVote)
         private var downVote = itemView.findViewById<ImageView>(R.id.downVote)
         private var comment_tag = itemView.findViewById<ConstraintLayout>(R.id.comment_tag)
-        private var veggieIV = itemView.findViewById<ImageView>(R.id.veggie)
+        private var veggieIV = itemView.findViewById<CircleImageView>(R.id.veggie)
         private var opTag = itemView.findViewById<TextView>(R.id.opTag)
 
 
@@ -95,7 +96,7 @@ class CommentListAdapter(private val viewModel: MainViewModel,
             if(uniqueCommenter==0) {
                 opTag.text="OP"
             }
-            comment_tag.setBackgroundResource(color!!)
+            veggieIV.setCircleBackgroundColorResource(color!!)
             veggieIV.setImageResource(veggie!!)
 
             var points = item.up!! - item.down!!

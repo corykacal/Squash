@@ -21,7 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.squash.MainActivity
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
-import com.example.squash.api.posts.Post
+import com.example.squash.api.tables.Post
 import com.example.squash.posts.ListAdapters.CommentListAdapter
 import com.example.squash.posts.subContent.ImageFragment
 import com.example.squash.technology.Cartesian

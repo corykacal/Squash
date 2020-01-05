@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -17,7 +16,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
-import com.example.squash.api.posts.Post
+import com.example.squash.api.tables.Post
 import com.example.squash.technology.ListFragment
 import com.example.squash.technology.SingleClickListener
 import java.util.*

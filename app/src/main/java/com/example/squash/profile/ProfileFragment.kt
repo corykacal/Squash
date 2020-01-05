@@ -12,7 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
-import com.example.squash.api.UserData
+import com.example.squash.api.tables.UserData
 import com.example.squash.technology.SingleClickListener
 
 

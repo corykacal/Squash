@@ -8,12 +8,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.squash.MainActivity
-import com.example.squash.api.posts.Post
+import com.example.squash.api.tables.Post
+import com.example.squash.api.tables.Subject
+import com.example.squash.api.tables.UserData
 import com.example.squash.intro.IntroActivity
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.UploadTask
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,14 +23,15 @@ import java.util.*
 
 class MainViewModel : ViewModel() {
     private lateinit var db: FirebaseFirestore
-    private var chat = MutableLiveData<List<Post>>()
-    private var myPost = MutableLiveData<List<Post>>()
-    private var singlePost = MutableLiveData<Post>()
-    private var chatListener : ListenerRegistration? = null
-    private var singlePostComments = MutableLiveData<List<Post>>()
-    private var userData = MutableLiveData<UserData>()
-    private var currentSubject = MutableLiveData<String>()
-    private var coordinates = MutableLiveData<List<Double>>()
+
+    private var chat                = MutableLiveData<List<Post>>()
+    private var myPost              = MutableLiveData<List<Post>>()
+    private var singlePost          = MutableLiveData<Post>()
+    private var singlePostComments  = MutableLiveData<List<Post>>()
+    private var userData            = MutableLiveData<UserData>()
+    private var currentSubject      = MutableLiveData<String>()
+    private var coordinates         = MutableLiveData<List<Double>>()
+    private var subjects            = MutableLiveData<List<Subject>>()
 
     companion object {
         private lateinit var auth: User
@@ -57,16 +58,18 @@ class MainViewModel : ViewModel() {
      * Note: this method should be called after location permission has been granted.
      */
     @SuppressLint("MissingPermission")
-    fun getLastLocation() {
+    fun getLastLocation(func: (Boolean) -> Unit) {
         locationClient!!.lastLocation
             .addOnCompleteListener { task ->
                 if (task.isSuccessful && task.result != null) {
                     val result = task.result!!
                     Log.d("latitude: ", "${result.latitude}")
                     Log.d("longitude: ", "${result.longitude}")
-                    coordinates.postValue(listOf(result.latitude, result.longitude))
+                    coordinates.setValue(listOf(result.latitude, result.longitude))
+                    func(true)
                 } else {
                     Log.w(IntroActivity.TAG, "getLastLocation:exception", task.exception)
+                    func(false)
                 }
             }
     }
@@ -139,8 +142,38 @@ class MainViewModel : ViewModel() {
         return myPost
     }
 
+    fun observeSubjects(): LiveData<List<Subject>> {
+        return subjects
+    }
+
     fun setCurrentSubject(subject: String) {
         currentSubject.postValue(subject)
+    }
+
+    fun getSubjects(func: (Boolean) -> Unit) {
+        var uuid = getUUID()!!
+        val currentCoordinates = coordinates.value
+        if(currentCoordinates==null) {
+            func(false)
+            return
+        }
+        val latitude = currentCoordinates[0]
+        val longitude = currentCoordinates[1]
+        var task = postFetch.getSubjects(uuid, latitude, longitude)
+        task.enqueue(object : Callback<SquashApi.SubjectResponse> {
+            override fun onResponse(call: Call<SquashApi.SubjectResponse>?, response: Response<SquashApi.SubjectResponse>?) {
+                if(response!!.isSuccessful) {
+                    Log.d("##### subjects: ", "${response.body()!!.results}")
+                    subjects.postValue(response.body()!!.results)
+                    func(true)
+                } else {
+                    func(false)
+                }
+            }
+            override fun onFailure(call: Call<SquashApi.SubjectResponse>?, t: Throwable?) {
+                func(false)
+            }
+        })
     }
 
     fun getUserData(func: (Boolean) -> Unit) {
@@ -150,7 +183,20 @@ class MainViewModel : ViewModel() {
             override fun onResponse(call: Call<SquashApi.UserDataReponse>?, response: Response<SquashApi.UserDataReponse>?) {
                 var data = response!!.body()!!.results
                 if(data.size==0) {
-                    userData.postValue(UserData(0,0,0,0,0,0,0,0,0,0))
+                    userData.postValue(
+                        UserData(
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        )
+                    )
                 } else {
                     userData.postValue(data[0])
                 }
@@ -302,11 +348,5 @@ class MainViewModel : ViewModel() {
                 }
             }
         })
-    }
-
-    // Debateable how useful this is.
-    override fun onCleared() {
-        super.onCleared()
-        chatListener?.remove()
     }
 }

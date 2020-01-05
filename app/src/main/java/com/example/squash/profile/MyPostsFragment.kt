@@ -16,12 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
-import com.example.squash.api.posts.Post
+import com.example.squash.api.tables.Post
 import com.example.squash.posts.SinglePostActivity
 import com.example.squash.posts.ListAdapters.PostListAdapter
 import com.example.squash.technology.ListFragment
 import com.example.squash.technology.SingleClickListener
-import kotlinx.android.synthetic.main.fragment_sub_myposts.*
 
 
 class MyPostsFragment: ListFragment() {

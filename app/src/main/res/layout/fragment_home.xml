@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/fragment_home"
     android:theme="@style/LightSquash"
-    android:background="@color/background"
+    android:background="@drawable/ic_background"
     >
 
 
@@ -36,7 +36,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:prompt="@array/subject_arrays"
-                android:entries="@array/subject_arrays"
                 android:background="@drawable/subject_outline"
                 android:spinnerMode="dropdown"
                 android:theme="@style/SpinnerThemeList"

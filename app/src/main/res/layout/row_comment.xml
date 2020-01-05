@@ -1,217 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:focusable="true"
-    android:clickable="true"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    android:layout_marginStart="3.5dp"
-    android:layout_marginEnd="3.5dp"
-    android:layout_marginHorizontal="0dp"
-    card_view:cardCornerRadius="10dp"
-    >
+    tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+        android:id="@+id/comment_tag"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/colorAccent"
-        tools:context=".MainActivity">
+        android:layout_marginEnd="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@id/comment"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/comment_tag"
-            android:layout_width="25dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="-10dp"
-            android:textColor="@color/post"
-            android:fontFamily="sans-serif-medium"
-            app:layout_constraintEnd_toStartOf="@id/postVoteUnion"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/veggie"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:alpha="0.85"
+            android:src="@drawable/ic_apple"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            app:civ_circle_background_color="@color/titleText"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            >
+            />
 
-            <ImageView
-                android:id="@+id/veggie"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:alpha="0.85"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
+        <TextView
+            android:id="@+id/opTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/post"
+            android:alpha="0.9"
+            android:shadowColor="#000000"
+            android:shadowDx="1.5"
+            android:shadowDy="1.3"
+            android:shadowRadius="1.6"
+            android:text="OP"
+            android:textAllCaps="true"
+            app:layout_constraintTop_toTopOf="@id/veggie"
+            app:layout_constraintBottom_toBottomOf="@id/veggie"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
 
-            <TextView
-                android:id="@+id/opTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="@color/post"
-                android:alpha="0.9"
-                android:shadowColor="#000000"
-                android:shadowDx="1.5"
-                android:shadowDy="1.3"
-                android:shadowRadius="1.6"
-                android:text="CCC"
-                android:textAllCaps="true"
-                app:layout_constraintTop_toBottomOf="@id/veggie"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <androidx.cardview.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/comment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="3.5dp"
+        card_view:cardCornerRadius="10dp"
+        app:layout_constraintStart_toEndOf="@id/comment_tag"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/postVoteUnion"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/comment_tag"
-            app:layout_constraintEnd_toEndOf="parent"
-            >
+            android:background="?attr/colorAccent"
+            tools:context=".MainActivity">
+
+
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/imageTextUnion"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toStartOf="@id/split"
+                android:orientation="horizontal"
+                android:id="@+id/postVoteUnion"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/metadata"
-                >
-
-
-                <TextView
-                    android:id="@+id/contents"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:alpha="0.85"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginBottom="1dp"
-                    android:minLines="3"
-                    android:gravity="start"
-                    android:textSize="15.5sp"
-                    android:fontFamily="sans-serif"
-                    android:textColorLink="@color/badComment"
-                    android:linksClickable="true"
-                    android:autoLink="all"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.Guideline
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/split"
-                app:layout_constraintGuide_percent="0.88"
-                />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@id/split"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 >
 
-                <ImageView
-                    android:id="@+id/upVote"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="right"
-                    android:src="@drawable/up_boat"
-                    android:tag="true"
-                    app:layout_constraintTop_toTopOf="parent"
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageTextUnion"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toStartOf="@id/split"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/voteSplit"
-                    />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/metadata"
+                    >
+
+
+                    <TextView
+                        android:id="@+id/contents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.85"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginBottom="1dp"
+                        android:minLines="3"
+                        android:gravity="start"
+                        android:textSize="15.5sp"
+                        android:fontFamily="sans-serif"
+                        android:textColorLink="@color/badComment"
+                        android:linksClickable="true"
+                        android:autoLink="all"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.Guideline
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:id="@+id/voteSplit"
-                    app:layout_constraintGuide_percent="0.5"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/points"
-                    android:text="0"
-                    android:textSize="13sp"
-                    android:fontFamily="sans-serif-medium"
-                    app:layout_constraintTop_toTopOf="@id/voteSplit"
-                    app:layout_constraintBottom_toBottomOf="@id/voteSplit"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:orientation="vertical"
+                    android:id="@+id/split"
+                    app:layout_constraintGuide_percent="0.88"
                     />
 
-
-                <ImageView
-                    android:id="@+id/downVote"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="right"
-                    android:src="@drawable/up_boat"
-                    android:scaleY="-1"
-                    android:tag="true"
-                    app:layout_constraintTop_toBottomOf="@id/voteSplit"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/metadata"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/split"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/postVoteUnion"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="7dp"
-                    android:id="@+id/timeStamp"
-                    android:layout_marginBottom="3dp"
-                    android:textSize="13sp"
-                    android:text="2 m"
-                    android:alpha="0.45"
-                    app:layout_constraintStart_toStartOf="parent"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintStart_toEndOf="@id/split"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    >
+
+                    <ImageView
+                        android:id="@+id/upVote"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="right"
+                        android:src="@drawable/up_boat"
+                        android:tag="true"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/voteSplit"
+                        />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:id="@+id/voteSplit"
+                        app:layout_constraintGuide_percent="0.5"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/points"
+                        android:text="0"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif-medium"
+                        app:layout_constraintTop_toTopOf="@id/voteSplit"
+                        app:layout_constraintBottom_toBottomOf="@id/voteSplit"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        />
+
+
+                    <ImageView
+                        android:id="@+id/downVote"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="right"
+                        android:src="@drawable/up_boat"
+                        android:scaleY="-1"
+                        android:tag="true"
+                        app:layout_constraintTop_toBottomOf="@id/voteSplit"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/metadata"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/split"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/postVoteUnion"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="7dp"
+                        android:id="@+id/timeStamp"
+                        android:layout_marginBottom="3dp"
+                        android:textSize="13sp"
+                        android:text="2 m"
+                        android:alpha="0.45"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

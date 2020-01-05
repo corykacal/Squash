@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -19,7 +20,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.squash.MainActivity
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
-import com.example.squash.api.posts.Post
+import com.example.squash.api.tables.Post
 import com.example.squash.posts.ListAdapters.PostListAdapter
 import com.example.squash.technology.Constants.Companion.PAGE_SIZE
 import com.example.squash.technology.ListFragment
@@ -55,6 +56,11 @@ class HomeFragment: ListFragment() {
     private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
+            viewModel.getSubjects { success: Boolean ->
+                if(!success) {
+                    Toast.makeText(context, "Unable to fetch subjects", Toast.LENGTH_SHORT)
+                }
+            }
             setCurrentRecyclerState()
             viewModel.getUserData {}
             refreshPosts { success: Boolean ->
@@ -87,7 +93,7 @@ class HomeFragment: ListFragment() {
     }
 
     fun refreshPosts(func: (Boolean) -> Unit) {
-        viewModel.getLastLocation()
+        viewModel.getLastLocation() {}
         viewModel.getPosts(PAGE_SIZE, 1, func)
     }
 
@@ -214,22 +220,52 @@ class HomeFragment: ListFragment() {
         })
 
 
+        var prevSubject = "All"
         //listen to subject changing
         viewModel.observeSubject().observe(this, Observer {
             postRecycler.isVisible = false
-            refreshPosts { success: Boolean ->
-                if(!success) {
-                    Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
-                    postRecycler.isVisible = true
-                } else {
-                    currentPage = 1
-                    Handler().postDelayed(Runnable {
-                        postRecycler.scrollToPosition(0)
+            if(it!=prevSubject) {
+                prevSubject = it
+                refreshPosts { success: Boolean ->
+                    if(!success) {
+                        Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
                         postRecycler.isVisible = true
-                    }, 100)
+                    } else {
+                        currentPage = 1
+                        Handler().postDelayed(Runnable {
+                            postRecycler.scrollToPosition(0)
+                            postRecycler.isVisible = true
+                        }, 100)
+                    }
                 }
             }
         })
+
+        viewModel.observeSubjects().observe(this, Observer {
+            val subjects = mutableListOf<String>("All")
+            it.forEach {
+                subjects.add(it.contents!!)
+            }
+
+
+            val spinner = root.findViewById<Spinner>(R.id.subjectSpinner)
+
+            val currentIndex = spinner.selectedItemPosition
+
+            val adapter = ArrayAdapter<String>(context,
+                R.layout.support_simple_spinner_dropdown_item, subjects)
+
+            spinner.setSelection(currentIndex)
+
+            Log.d("subjects:   ", "$subjects")
+            spinner.adapter = adapter
+        })
+    }
+
+    private fun setSpinner(root: View) {
+        val subjects = viewModel
+        val spinner = root.findViewById<Spinner>(R.id.subjectSpinner)
+        val adapter = ArrayAdapter<String>(context, R.layout.support_simple_spinner_dropdown_item)
     }
 
     private fun initListButtons(root: View) {
@@ -311,6 +347,7 @@ class HomeFragment: ListFragment() {
 
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -336,8 +373,8 @@ class HomeFragment: ListFragment() {
 
         initListButtons(root)
 
+        setSpinner(root)
 
-        //refreshPosts {  }
 
 
 

@@ -246,7 +246,7 @@ class NewPostActivity(): AppCompatActivity() {
             picture.isVisible = false
         }
 
-        viewModel.getLastLocation()
+        viewModel.getLastLocation() {}
         imageVisible(false)
         listenToEdit()
         initPostButton()

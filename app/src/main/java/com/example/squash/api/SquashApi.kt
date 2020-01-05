@@ -1,7 +1,9 @@
 package com.example.squash.api
 
 
-import com.example.squash.api.posts.Post
+import com.example.squash.api.tables.Post
+import com.example.squash.api.tables.Subject
+import com.example.squash.api.tables.UserData
 import com.google.gson.GsonBuilder
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -66,11 +68,19 @@ interface SquashApi {
                     @Query("opuuid") opuuid: String
     ): Call<ListingResponse>
 
+    @GET("/api/subjects/")
+    fun getSubjects(@Query("opuuid") opuuid: String,
+                    @Query("latitude") latitude: Double,
+                    @Query("longitude") longitude: Double
+    ): Call<SubjectResponse>
+
     class PostResponse(val results: String)
 
     class ListingResponse(val results: List<Post>)
 
     class UserDataReponse(val results: List<UserData>)
+
+    class SubjectResponse(val results: List<Subject>)
 
 
     companion object {

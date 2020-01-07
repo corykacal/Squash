@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
-import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -77,19 +76,16 @@ class HomeFragment: ListFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("call$#@$#@", "destroy")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("meme", "meme")
-        Log.d("$#@!$#@!$#@!", "calling save instance state")
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         var prev = savedInstanceState?.getString("meme")
-        Log.d("i said before: ", "$prev")
     }
 
     fun refreshPosts(func: (Boolean) -> Unit) {
@@ -221,7 +217,6 @@ class HomeFragment: ListFragment() {
         viewModel.observePosts().observe(this, Observer {
             var recyclerState =  currentRecyclerState
             initAdapter(root)
-            Log.d("just got this list: ", "$it")
             postAdapter.submitList(it)
             postRecycler.getLayoutManager()?.onRestoreInstanceState(recyclerState)
         })
@@ -254,14 +249,15 @@ class HomeFragment: ListFragment() {
         val currentIndex = spinner.selectedItemPosition
 
         val adapter = ArrayAdapter<String>(context,
-            R.layout.support_simple_spinner_dropdown_item, subjectsArray)
+            R.layout.spinner_home_fragment_item, subjectsArray)
+
+        adapter.setDropDownViewResource(R.layout.spinner_home_fragment_dropdown)
 
         spinner.setSelection(currentIndex)
 
 
         viewModel.observeSubjects().observe(this, Observer {
             val currentSubject = viewModel.observeSubject().value
-            Log.d("currentsubject: ", "$currentSubject")
 
             var index = 0
             var foundSubject = 0

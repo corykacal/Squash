@@ -246,10 +246,9 @@ class NewPostActivity(): AppCompatActivity() {
                     }
                     index+=1
                 }
-                Log.d("fdsafdsa", "$subjectsArray")
                 val adapter = ArrayAdapter<String>(baseContext,
-                    R.layout.support_simple_spinner_dropdown_item, subjectsArray)
-                adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+                    R.layout.spinner_new_post_item, subjectsArray)
+                adapter.setDropDownViewResource(R.layout.spinner_new_post_dropdown)
                 spinner.adapter = adapter
                 spinner.setSelection(subjectIndex)
             }

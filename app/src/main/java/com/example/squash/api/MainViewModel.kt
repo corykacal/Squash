@@ -163,7 +163,6 @@ class MainViewModel : ViewModel() {
         task.enqueue(object : Callback<SquashApi.SubjectResponse> {
             override fun onResponse(call: Call<SquashApi.SubjectResponse>?, response: Response<SquashApi.SubjectResponse>?) {
                 if(response!!.isSuccessful) {
-                    Log.d("##### subjects: ", "${response.body()!!.results}")
                     val stringSubjects = mutableListOf<String>("All")
                     response.body()!!.results.forEach {
                         stringSubjects.add(it.contents!!)

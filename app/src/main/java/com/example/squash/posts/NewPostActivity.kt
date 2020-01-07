@@ -9,7 +9,6 @@ import kotlinx.android.synthetic.main.activity_new_post.*
 import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import android.content.Context.INPUT_METHOD_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
-import android.widget.EditText
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -26,19 +25,22 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import com.example.squash.MainActivity
 import android.text.Spannable
 import android.text.style.ImageSpan
 import android.text.SpannableString
-import android.widget.TextView
 import android.view.animation.Animation
 import android.view.animation.AlphaAnimation
-import android.widget.Toast
+import android.widget.*
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toFile
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModel
+import com.example.squash.api.MainViewModel
+import com.example.squash.api.User
+import com.example.squash.api.photoapi
 import com.example.squash.technology.Constants.Companion.PAGE_SIZE
+import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.row_post.*
 import okhttp3.internal.lockAndWaitNanos
 import okhttp3.internal.waitMillis
@@ -49,10 +51,9 @@ import kotlin.coroutines.coroutineContext
 
 class NewPostActivity(): AppCompatActivity() {
 
-    private var isComment: Boolean? = null
     private var reply_to: Long? = null
     private var imageURI: Uri? = null
-    var viewModel = MainActivity.viewModel
+    private lateinit var viewModel: MainViewModel
 
 
     companion object {
@@ -189,8 +190,8 @@ class NewPostActivity(): AppCompatActivity() {
 
 
     private fun imageVisible(isVisible: Boolean) {
-        selectedImage.isVisible = isVisible && !isComment!!
-        deleteImage.isVisible = isVisible && !isComment!!
+        selectedImage.isVisible = isVisible
+        deleteImage.isVisible = isVisible
     }
 
     private fun initDeleteButton() {
@@ -233,6 +234,29 @@ class NewPostActivity(): AppCompatActivity() {
         }
     }
 
+    private fun initSpinner(currentSubject: String) {
+        viewModel.getSubjects { success: Boolean ->
+            if(success) {
+                var index = 0
+                var subjectIndex = 0
+                val subjectsArray = viewModel.observeSubjects().value
+                subjectsArray?.forEach {
+                    if(it==currentSubject) {
+                        subjectIndex = index
+                    }
+                    index+=1
+                }
+                Log.d("fdsafdsa", "$subjectsArray")
+                val adapter = ArrayAdapter<String>(baseContext,
+                    R.layout.support_simple_spinner_dropdown_item, subjectsArray)
+                adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+                spinner.adapter = adapter
+                spinner.setSelection(subjectIndex)
+            }
+        }
+
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         overridePendingTransition(R.anim.fade_int, R.anim.fade_out)
@@ -240,13 +264,21 @@ class NewPostActivity(): AppCompatActivity() {
         setContentView(R.layout.activity_new_post)
 
         val intent = intent
-        isComment = intent.getBooleanExtra("isComment", false)
-        if(isComment!!) {
-            reply_to = intent.getLongExtra("reply_to", 0)
-            picture.isVisible = false
+        val currentSubject = intent.getStringExtra("subject")
+
+        var auth = FirebaseAuth.getInstance()
+        var user = User(auth) {}
+        var mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        viewModel = MainViewModel()
+        viewModel.init(user, photoapi(resources), mFusedLocationClient)
+
+        //need location before you can post
+        viewModel.getLastLocation() { success: Boolean ->
+            if(success) {
+                initSpinner(currentSubject)
+            }
         }
 
-        viewModel.getLastLocation() {}
         imageVisible(false)
         listenToEdit()
         initPostButton()

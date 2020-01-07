@@ -31,7 +31,7 @@ class MainViewModel : ViewModel() {
     private var userData            = MutableLiveData<UserData>()
     private var currentSubject      = MutableLiveData<String>()
     private var coordinates         = MutableLiveData<List<Double>>()
-    private var subjects            = MutableLiveData<List<Subject>>()
+    private var subjects            = MutableLiveData<List<String>>()
 
     companion object {
         private lateinit var auth: User
@@ -142,7 +142,7 @@ class MainViewModel : ViewModel() {
         return myPost
     }
 
-    fun observeSubjects(): LiveData<List<Subject>> {
+    fun observeSubjects(): LiveData<List<String>> {
         return subjects
     }
 
@@ -164,7 +164,11 @@ class MainViewModel : ViewModel() {
             override fun onResponse(call: Call<SquashApi.SubjectResponse>?, response: Response<SquashApi.SubjectResponse>?) {
                 if(response!!.isSuccessful) {
                     Log.d("##### subjects: ", "${response.body()!!.results}")
-                    subjects.postValue(response.body()!!.results)
+                    val stringSubjects = mutableListOf<String>("All")
+                    response.body()!!.results.forEach {
+                        stringSubjects.add(it.contents!!)
+                    }
+                    subjects.setValue(stringSubjects)
                     func(true)
                 } else {
                     func(false)

@@ -16,7 +16,6 @@
         android:layout_marginTop="20dp"
         android:theme="@style/SpinnerTheme"
         android:prompt="@array/subject_arrays"
-        android:entries="@array/subject_arrays"
         android:background="@drawable/post_outline"
         android:spinnerMode="dropdown"
         />

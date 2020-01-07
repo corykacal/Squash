@@ -44,6 +44,10 @@ class HomeFragment: ListFragment() {
     private var currentPage: Int = 1
     private var loadingNewPages: Boolean = false
 
+    private var subjectsArray: MutableList<String> = mutableListOf()
+
+    private var spinnerReset = 0
+
     var fragId = R.id.posts_icon
 
 
@@ -56,6 +60,7 @@ class HomeFragment: ListFragment() {
     private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
+            spinnerReset = 0
             viewModel.getSubjects { success: Boolean ->
                 if(!success) {
                     Toast.makeText(context, "Unable to fetch subjects", Toast.LENGTH_SHORT)
@@ -109,7 +114,11 @@ class HomeFragment: ListFragment() {
 
     private fun startCreatePostActivity(root: View) {
         var intent = Intent(root.context, NewPostActivity::class.java)
-        intent.putExtra("isComment", false)
+        var currentSubject = viewModel.observeSubject().value
+        if(currentSubject==null) {
+            currentSubject = "All"
+        }
+        intent.putExtra("subject", currentSubject)
         startActivityForResult(intent, 2)
     }
 
@@ -241,31 +250,44 @@ class HomeFragment: ListFragment() {
             }
         })
 
+        val spinner = root.findViewById<Spinner>(R.id.subjectSpinner)
+        val currentIndex = spinner.selectedItemPosition
+
+        val adapter = ArrayAdapter<String>(context,
+            R.layout.support_simple_spinner_dropdown_item, subjectsArray)
+
+        spinner.setSelection(currentIndex)
+
+
         viewModel.observeSubjects().observe(this, Observer {
-            val subjects = mutableListOf<String>("All")
-            it.forEach {
-                subjects.add(it.contents!!)
+            val currentSubject = viewModel.observeSubject().value
+
+            var index = 0
+            var foundSubject = 0
+            subjectsArray.removeAll {
+                if(it==currentSubject) {
+                    foundSubject = index
+                }
+                index+=1
+                true
             }
 
+            subjectsArray.addAll(it)
 
-            val spinner = root.findViewById<Spinner>(R.id.subjectSpinner)
-
-            val currentIndex = spinner.selectedItemPosition
-
-            val adapter = ArrayAdapter<String>(context,
-                R.layout.support_simple_spinner_dropdown_item, subjects)
-
-            spinner.setSelection(currentIndex)
-
-            Log.d("subjects:   ", "$subjects")
             spinner.adapter = adapter
+
+            if(foundSubject==0 && currentSubject!=null && currentSubject!="All") {
+                Toast.makeText(context, "moved out of $currentSubject zone", Toast.LENGTH_LONG).show()
+            }
+            spinner.setSelection(foundSubject)
         })
+
     }
 
     private fun setSpinner(root: View) {
         val subjects = viewModel
         val spinner = root.findViewById<Spinner>(R.id.subjectSpinner)
-        val adapter = ArrayAdapter<String>(context, R.layout.support_simple_spinner_dropdown_item)
+
     }
 
     private fun initListButtons(root: View) {
@@ -337,7 +359,9 @@ class HomeFragment: ListFragment() {
             object: AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                viewModel.setCurrentSubject(p0!!.selectedItem as String)
+                if(++spinnerReset > 1) {
+                    viewModel.setCurrentSubject(p0!!.selectedItem as String)
+                }
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -375,8 +399,15 @@ class HomeFragment: ListFragment() {
 
         setSpinner(root)
 
+        refreshPosts {  }
 
 
+        //need location before many of my mainviewmodel post
+        viewModel.getLastLocation { success: Boolean ->
+            if(success) {
+                viewModel.getSubjects {  }
+            }
+        }
 
         //initSideSwipes(root)
 

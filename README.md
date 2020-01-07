@@ -1,10 +1,19 @@
 # Squash
-my app called squash. just like yik yak. The app is public but my back-end repository is still pirvate.
+my app called squash. Inspired by yik yak, https://en.wikipedia.org/wiki/Yik_Yak. The app is public but my back-end repository is still pirvate.
+
+It features recyclerview pagination, location based subjects, location based sticky post, location based post, and anonymity.
+
+The features being worked on right now are:
+
+-bugs
+
+-location post frequency heatmap
+
+-more profile features
+
+-dark theme, other settings
 
 
-<img src="http://i.imgur.com/IEsGNHq.jpg" alt="Squash app screenshot" width="200"/>  
-<img src="http://i.imgur.com/OwYG90L.jpg" alt="Squash app screenshot" width="200"/>
-<img src="http://i.imgur.com/6QigGxJ.jpg" alt="Squash app screenshot" width="200"/>
-<img src="http://i.imgur.com/pdNzLJA.jpg" alt="Squash app screenshot" width="200"/>
-<img src="http://i.imgur.com/BCuYIs9.jpg" alt="Squash app screenshot" width="200"/>
-<img src="http://i.imgur.com/OOeMUrZ.jpg" alt="Squash app screenshot" width="200"/>
+
+<img src="https://i.imgur.com/D8a9pxn.gif" alt="Squash app screenshot" width="800"/>  
+

@@ -11,6 +11,14 @@ The features being worked on right now are:
 
 -more profile features
 
+-image compression and image upload limits
+
+-spam protection on frontend and backend
+
+-more error handling to make things atomic
+
+-twitter reply style post making
+
 -dark theme, other settings
 
 

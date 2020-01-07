@@ -1,5 +1,5 @@
 # Squash
-my app called squash. just like yik yak. The app is public but my back-end repository is still pirvate.
+my app called squash. Inspired by yik yak, https://en.wikipedia.org/wiki/Yik_Yak. The app is public but my back-end repository is still pirvate.
 
 It features recyclerview pagination, location based subjects, location based sticky post, location based post, and anonymity.
 

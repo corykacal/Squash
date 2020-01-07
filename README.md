@@ -10,5 +10,5 @@ The features being worked on right now are:
 -dark theme, other settings
 
 
-<img src="https://i.imgur.com/D8a9pxn.gif" alt="Squash app screenshot" width="400"/>  
+<img src="https://i.imgur.com/D8a9pxn.gif" alt="Squash app screenshot" width="800"/>  
 

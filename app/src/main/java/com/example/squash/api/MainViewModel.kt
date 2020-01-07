@@ -29,7 +29,7 @@ class MainViewModel : ViewModel() {
     private var singlePost          = MutableLiveData<Post>()
     private var singlePostComments  = MutableLiveData<List<Post>>()
     private var userData            = MutableLiveData<UserData>()
-    private var currentSubject      = MutableLiveData<String>()
+    private var currentSubject      = MutableLiveData<String>("All")
     private var coordinates         = MutableLiveData<List<Double>>()
     private var subjects            = MutableLiveData<List<String>>()
 

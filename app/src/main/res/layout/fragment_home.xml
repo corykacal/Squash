@@ -39,7 +39,7 @@
                 android:background="@drawable/subject_outline"
                 android:spinnerMode="dropdown"
                 android:theme="@style/SpinnerThemeList"
-                android:popupBackground="@color/secondAccentYellow"
+                android:popupBackground="@color/post"
                 android:popupElevation="3dp"
                 android:gravity="center"
                 app:layout_constraintTop_toTopOf="parent"

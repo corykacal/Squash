@@ -12,7 +12,7 @@
     <color name="mainGreen">#c1e868</color>
     <color name="secondaryGreen">#b0d35f</color>
 
-    <color name="post">#fffffc</color>
+    <color name="post">#F6F5EA</color>
     <color name="background">#edecd5</color>
 
     <color name="statisticsBackground">#faf9ed</color>
@@ -39,7 +39,7 @@
     <color name="brown">#776348</color>
     <color name="beige">#efd09e</color>
     <color name="purple">#9C6AAE</color>
-    <color name="grey">#5B1E1E</color>
+    <color name="grey">#AFAF97</color>
     <color name="golden">#FFD700</color>
 
     <color name="voteGrey">#A9A9A9</color>

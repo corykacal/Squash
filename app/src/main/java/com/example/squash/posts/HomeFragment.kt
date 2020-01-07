@@ -61,11 +61,6 @@ class HomeFragment: ListFragment() {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
             spinnerReset = 0
-            viewModel.getSubjects { success: Boolean ->
-                if(!success) {
-                    Toast.makeText(context, "Unable to fetch subjects", Toast.LENGTH_SHORT)
-                }
-            }
             setCurrentRecyclerState()
             viewModel.getUserData {}
             refreshPosts { success: Boolean ->
@@ -98,8 +93,16 @@ class HomeFragment: ListFragment() {
     }
 
     fun refreshPosts(func: (Boolean) -> Unit) {
-        viewModel.getLastLocation() {}
-        viewModel.getPosts(PAGE_SIZE, 1, func)
+        //need location before many of my mainviewmodel post
+        viewModel.getLastLocation { locationSuccess: Boolean ->
+            if(locationSuccess) {
+                viewModel.getSubjects { subjectSuccess: Boolean ->
+                    if(subjectSuccess) {
+                        viewModel.getPosts(PAGE_SIZE, 1, func)
+                    }
+                }
+            }
+        }
     }
 
     fun loadPosts(page_number: Int, func: (Boolean) -> Unit) {
@@ -218,6 +221,7 @@ class HomeFragment: ListFragment() {
         viewModel.observePosts().observe(this, Observer {
             var recyclerState =  currentRecyclerState
             initAdapter(root)
+            Log.d("just got this list: ", "$it")
             postAdapter.submitList(it)
             postRecycler.getLayoutManager()?.onRestoreInstanceState(recyclerState)
         })
@@ -229,23 +233,19 @@ class HomeFragment: ListFragment() {
         })
 
 
-        var prevSubject = "All"
         //listen to subject changing
         viewModel.observeSubject().observe(this, Observer {
             postRecycler.isVisible = false
-            if(it!=prevSubject) {
-                prevSubject = it
-                refreshPosts { success: Boolean ->
-                    if(!success) {
-                        Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
+            refreshPosts { success: Boolean ->
+                if(!success) {
+                    Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
+                    postRecycler.isVisible = true
+                } else {
+                    currentPage = 1
+                    Handler().postDelayed(Runnable {
+                        postRecycler.scrollToPosition(0)
                         postRecycler.isVisible = true
-                    } else {
-                        currentPage = 1
-                        Handler().postDelayed(Runnable {
-                            postRecycler.scrollToPosition(0)
-                            postRecycler.isVisible = true
-                        }, 100)
-                    }
+                    }, 100)
                 }
             }
         })
@@ -261,23 +261,27 @@ class HomeFragment: ListFragment() {
 
         viewModel.observeSubjects().observe(this, Observer {
             val currentSubject = viewModel.observeSubject().value
+            Log.d("currentsubject: ", "$currentSubject")
 
             var index = 0
             var foundSubject = 0
-            subjectsArray.removeAll {
+            it.forEach {
                 if(it==currentSubject) {
                     foundSubject = index
                 }
                 index+=1
-                true
             }
 
+            subjectsArray.removeAll {
+                true
+            }
             subjectsArray.addAll(it)
 
             spinner.adapter = adapter
 
             if(foundSubject==0 && currentSubject!=null && currentSubject!="All") {
                 Toast.makeText(context, "moved out of $currentSubject zone", Toast.LENGTH_LONG).show()
+                viewModel.setCurrentSubject("All")
             }
             spinner.setSelection(foundSubject)
         })
@@ -361,6 +365,7 @@ class HomeFragment: ListFragment() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 if(++spinnerReset > 1) {
                     viewModel.setCurrentSubject(p0!!.selectedItem as String)
+                    spinnerReset = 0
                 }
             }
 
@@ -402,12 +407,6 @@ class HomeFragment: ListFragment() {
         refreshPosts {  }
 
 
-        //need location before many of my mainviewmodel post
-        viewModel.getLastLocation { success: Boolean ->
-            if(success) {
-                viewModel.getSubjects {  }
-            }
-        }
 
         //initSideSwipes(root)
 

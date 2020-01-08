@@ -2,6 +2,7 @@ package com.example.squash.api
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.os.Looper
 import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.LiveData
@@ -12,7 +13,7 @@ import com.example.squash.api.tables.Post
 import com.example.squash.api.tables.Subject
 import com.example.squash.api.tables.UserData
 import com.example.squash.intro.IntroActivity
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.UploadTask
 import retrofit2.Call
@@ -36,16 +37,49 @@ class MainViewModel : ViewModel() {
     companion object {
         private lateinit var auth: User
         private lateinit var storage: photoapi
+        private lateinit var postFetch: SquashApi
         private lateinit var locationClient: FusedLocationProviderClient
-        private val postFetch = SquashApi.create()
     }
 
     fun init(authy: User, storagey: photoapi, locationProviderClient: FusedLocationProviderClient?) {
         db = FirebaseFirestore.getInstance()
         auth = authy
         storage = storagey
-        //postFetch = SquashApi.create()
+        postFetch = SquashApi.create()
         locationClient = locationProviderClient!!
+    }
+
+    @SuppressLint("MissingPermission")
+    fun requestNewLocationData(func: (Boolean) -> Unit) {
+        val mLocationRequest = LocationRequest()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 0
+        mLocationRequest.fastestInterval = 0
+        mLocationRequest.numUpdates = 1
+
+        val callback = object: LocationCallback() {
+            override fun onLocationResult(p0: LocationResult?) {
+                super.onLocationResult(p0)
+                if(p0 != null) {
+                    val latitude = p0.lastLocation?.latitude
+                    val longitude = p0.lastLocation?.longitude
+                    if(latitude == null || longitude == null) {
+                        func(false)
+                    }
+                    Log.d("fresh longitude: ", "$longitude")
+                    Log.d("fresh latitude: ", "$latitude")
+                    coordinates.setValue(listOf(latitude!!, longitude!!))
+                    func(true)
+                } else {
+                    func(false)
+                }
+            }
+        }
+
+        locationClient.requestLocationUpdates(
+            mLocationRequest, callback,
+            Looper.myLooper()
+        )
     }
 
     /**
@@ -59,12 +93,12 @@ class MainViewModel : ViewModel() {
      */
     @SuppressLint("MissingPermission")
     fun getLastLocation(func: (Boolean) -> Unit) {
-        locationClient!!.lastLocation
+        locationClient.lastLocation
             .addOnCompleteListener { task ->
                 if (task.isSuccessful && task.result != null) {
                     val result = task.result!!
-                    Log.d("latitude: ", "${result.latitude}")
-                    Log.d("longitude: ", "${result.longitude}")
+                    //Log.d("latitude: ", "${result.latitude}")
+                    //Log.d("longitude: ", "${result.longitude}")
                     coordinates.setValue(listOf(result.latitude, result.longitude))
                     func(true)
                 } else {
@@ -321,10 +355,17 @@ class MainViewModel : ViewModel() {
         val subject = currentSubject.value
         var uuid = getUUID()
         var task: Call<SquashApi.ListingResponse>
+        val currentCoordinates = coordinates.value
+        if(currentCoordinates==null) {
+            func(false)
+            return
+        }
+        val latitude = currentCoordinates[0]
+        val longitude = currentCoordinates[1]
         if(!MainActivity.newPost) {
-            task = postFetch.getHotPosts(uuid!!, number_of_post, page_number, subject)
+            task = postFetch.getHotPosts(uuid!!, number_of_post, page_number, subject, latitude, longitude)
         } else {
-            task = postFetch.getRecentPosts(uuid!!, number_of_post, page_number, subject)
+            task = postFetch.getRecentPosts(uuid!!, number_of_post, page_number, subject, latitude, longitude)
         }
         task.enqueue(object : Callback<SquashApi.ListingResponse> {
             override fun onFailure(call: Call<SquashApi.ListingResponse>?, t: Throwable?) {

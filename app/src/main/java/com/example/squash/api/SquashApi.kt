@@ -29,14 +29,18 @@ interface SquashApi {
     fun getRecentPosts(@Query("opuuid") opuuid: String,
                        @Query("number_of_posts") number_of_posts: Int?,
                        @Query("page_number") page_number: Int?,
-                       @Query("subject") subject: String?
+                       @Query("subject") subject: String?,
+                       @Query("latitude") latitude: Double,
+                       @Query("longitude") longitude: Double
     ): Call<ListingResponse>
 
     @GET("/api/hot/")
     fun getHotPosts(@Query("opuuid") opuuid: String,
                     @Query("number_of_posts") number_of_posts: Int?,
                     @Query("page_number") page_number: Int?,
-                    @Query("subject") subject: String?
+                    @Query("subject") subject: String?,
+                    @Query("latitude") latitude: Double,
+                    @Query("longitude") longitude: Double
     ): Call<ListingResponse>
 
     @POST("/api/submit/")

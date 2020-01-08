@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     //TODO make this not horrible. make a check. maybe a fragment. for sure a callback somehwere
     private fun startApplication() {
-        viewModel.getLastLocation() {}
+        viewModel.requestNewLocationData {  }
         everything.isVisible = true
         homeFragment = HomeFragment.newInstance()
         launchNewFragment(homeFragment, R.id.posts_icon)

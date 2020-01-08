@@ -112,20 +112,27 @@ class NewPostActivity(): AppCompatActivity() {
                     imageuuid = UUID.randomUUID().toString()
                 }
                 postButton.startAnimation()
-                val postLambda = { success: Boolean ->
+                viewModel.makePost(contents, subject,
+                    imageURI, imageuuid, reply_to) { success: Boolean ->
                     if(success) {
                         postButton.stopAnimation()
                         hideKeyboard()
+                        setResult(Activity.RESULT_OK)
                         finish()
                     } else {
                         postButton.revertAnimation()
                         Toast.makeText(applicationContext, "post failed", Toast.LENGTH_LONG)
                     }
                     var makeErrorGoAway = 0
+
                 }
-                viewModel.makePost(contents, subject, imageURI, imageuuid, reply_to, postLambda)
             }
         }
+    }
+
+    override fun onBackPressed() {
+        setResult(Activity.RESULT_CANCELED)
+        super.onBackPressed()
     }
 
 
@@ -272,7 +279,7 @@ class NewPostActivity(): AppCompatActivity() {
         viewModel.init(user, photoapi(resources), mFusedLocationClient)
 
         //need location before you can post
-        viewModel.getLastLocation() { success: Boolean ->
+        viewModel.requestNewLocationData { success: Boolean ->
             if(success) {
                 initSpinner(currentSubject)
             }

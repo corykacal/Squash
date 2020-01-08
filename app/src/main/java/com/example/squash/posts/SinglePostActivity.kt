@@ -107,8 +107,11 @@ class SinglePostActivity: AppCompatActivity() {
         comments.text = post.comment_count.toString()
 
         if(post.subject!=null) {
-            subjectTitle.text = post.subject
+            subjectTitle.text = post.subject + " - " + post.contents
+        } else {
+            subjectTitle.text = post.contents
         }
+
         timeStamp.text = viewModel.getTime(Date(post.timestamp!!.time))
         if(post.imageUUID!=null) {
             image.isVisible = true

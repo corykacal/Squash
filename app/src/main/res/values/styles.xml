@@ -26,7 +26,9 @@
     </style>
 
     <style name="SpinnerDropdownItemStyleHomeFragment" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
-        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingBottom">7dp</item>
+        <item name="android:paddingTop">7dp</item>
+        <item name="android:background">@drawable/spinner_item_border</item>
     </style>
 
 </resources>

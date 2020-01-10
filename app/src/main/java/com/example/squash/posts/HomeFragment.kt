@@ -297,7 +297,7 @@ class HomeFragment: ListFragment() {
             var index = 0
             var foundSubject = 0
             it.forEach {
-                if(it==currentSubject) {
+                if(it.subject==currentSubject) {
                     foundSubject = index
                 }
                 index+=1
@@ -306,7 +306,10 @@ class HomeFragment: ListFragment() {
             subjectsArray.removeAll {
                 true
             }
-            subjectsArray.addAll(it)
+
+            it.forEach {
+                subjectsArray.add(it.subject!!)
+            }
 
             spinner.adapter = adapter
 

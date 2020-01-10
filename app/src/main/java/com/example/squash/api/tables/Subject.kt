@@ -4,5 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class Subject(
     @SerializedName("subject")
-    var contents: String? = null
+    var subject: String? = null,
+
+    @SerializedName("color")
+    var color: Int? = null
+
 )

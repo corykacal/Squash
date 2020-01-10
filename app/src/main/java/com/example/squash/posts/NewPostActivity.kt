@@ -246,8 +246,12 @@ class NewPostActivity(): AppCompatActivity() {
             if(success) {
                 var index = 0
                 var subjectIndex = 0
-                val subjectsArray = viewModel.observeSubjects().value
-                subjectsArray?.forEach {
+                val subjectsAllArray = viewModel.observeSubjects().value
+                val subjectsArray = mutableListOf<String>()
+                subjectsAllArray?.forEach {
+                    subjectsArray.add(it.subject!!)
+                }
+                subjectsArray.forEach {
                     if(it==currentSubject) {
                         subjectIndex = index
                     }

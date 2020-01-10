@@ -1,6 +1,8 @@
 package com.example.squash.posts.ListAdapters
 
+import android.graphics.Color
 import android.graphics.PorterDuff
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.tables.Post
+import com.example.squash.api.tables.Subject
 import com.example.squash.technology.ListFragment
 import com.example.squash.technology.SingleClickListener
 import java.util.*
@@ -87,6 +90,8 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
         private var currentSubject = viewModel.observeSubject().value
 
+        private var subjects = viewModel.observeSubjects().value
+
 
         val imageLoaded = { success: Boolean ->
             if(success) {
@@ -115,15 +120,20 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
             commentsTV.text = item.comment_count.toString()
 
+            var color = ""
+            subjects?.forEach {
+                if(it.subject==item.subject) {
+                    color = "#%06x".format(it.color)
+                }
+            }
+
             if(item.subject!=null && currentSubject=="All") {
                 subjectTV.text = item.subject!!.toUpperCase()
-                if(item.subject=="Memes") {
-                    subjectTag.setBackgroundResource(R.color.orange)
-                } else if (item.subject=="STICKY") {
+                if (item.subject=="STICKY") {
                     subjectTag.setBackgroundResource(R.color.blue)
                     everything.setBackgroundResource(R.color.lightBlue)
                 } else {
-                    subjectTag.setBackgroundResource(R.color.yellow)
+                    subjectTag.setBackgroundColor(Color.parseColor(color))
                 }
             }
 

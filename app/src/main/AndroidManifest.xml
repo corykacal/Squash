@@ -32,6 +32,7 @@
         <activity android:name=".posts.SinglePostActivity"
             android:theme="@style/LightSquash"
             android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode=""
             >
 
         </activity>

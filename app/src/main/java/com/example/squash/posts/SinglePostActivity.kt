@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.inputmethod.InputMethodManager

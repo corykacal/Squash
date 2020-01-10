@@ -2,51 +2,35 @@ package com.example.squash.posts
 
 import android.Manifest
 import android.app.Activity
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.example.squash.R
-import kotlinx.android.synthetic.main.activity_new_post.*
-import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
-import android.content.Context.INPUT_METHOD_SERVICE
-import androidx.core.content.ContextCompat.getSystemService
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.inputmethodservice.InputMethodService
+import android.database.Cursor
 import android.net.Uri
 import android.os.Build
-import android.renderscript.ScriptGroup
+import android.os.Bundle
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
-import android.text.Spannable
-import android.text.style.ImageSpan
-import android.text.SpannableString
-import android.view.animation.Animation
 import android.view.animation.AlphaAnimation
-import android.widget.*
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.net.toFile
+import android.view.animation.Animation
+import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModel
+import androidx.core.widget.addTextChangedListener
+import com.example.squash.R
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.User
 import com.example.squash.api.photoapi
-import com.example.squash.technology.Constants.Companion.PAGE_SIZE
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.row_post.*
-import okhttp3.internal.lockAndWaitNanos
-import okhttp3.internal.waitMillis
+import kotlinx.android.synthetic.main.activity_new_post.*
+import java.io.File
 import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.coroutines.coroutineContext
 
 
 class NewPostActivity(): AppCompatActivity() {
@@ -83,12 +67,17 @@ class NewPostActivity(): AppCompatActivity() {
         imm.hideSoftInputFromWindow(view.windowToken, 0);
     }
 
+    private fun displayError(error: String) {
+        postError.text = error
+        pulseAnimation(postError)
+    }
+
     private fun pulseAnimation(textView: TextView) {
         val anim = AlphaAnimation(0.0f, 1.0f)
-        anim.duration = 100 //You can manage the blinking time with this parameter
+        anim.duration = 110 //You can manage the blinking time with this parameter
         anim.startOffset = 60
         anim.repeatMode = Animation.REVERSE
-        anim.repeatCount = 2
+        anim.repeatCount = 3
         textView.startAnimation(anim)
     }
 
@@ -101,11 +90,9 @@ class NewPostActivity(): AppCompatActivity() {
                  subject = spinner.selectedItem.toString()
             }
             if(contents.isBlank()) {
-                postError.text = "Error: can't send blank post"
-                pulseAnimation(postError)
+                displayError("Error: can't send blank post")
             } else if(contents.lines().size>10) {
-                postError.text = "Error: too many lines: ${contents.lines().size}, max: 10"
-                pulseAnimation(postError)
+                displayError("Error: too many lines: ${contents.lines().size}, max: 10")
             } else {
                 var imageuuid: String? = null
                 if(imageURI!=null) {
@@ -216,6 +203,7 @@ class NewPostActivity(): AppCompatActivity() {
             PERMISSION_CODE -> {
                 if (grantResults.size >0 && grantResults[0] ==
                     PackageManager.PERMISSION_GRANTED){
+                    Log.d("getting imag eswag zone", "$#@$#@$#@@#$@#@$#@$@#$")
                     //permission from popup granted
                     pickImageFromGallery()
                 }
@@ -233,12 +221,58 @@ class NewPostActivity(): AppCompatActivity() {
     //handle result of picked image
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        openKeybaord()
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
-            selectedImage.setImageURI(data?.data)
+            openKeybaord()
             imageURI = data?.data
-            imageVisible(true)
+            val imagePath = getRealPathFromURI(imageURI.toString())
+            val file = File(imagePath)
+            val size = file.length()
+            Log.d("size is:", "$size")
+            if(size>625000)  {
+                displayError("5MB filesize limit")
+            } else {
+                selectedImage.setImageURI(imageURI)
+                imageVisible(true)
+            }
         }
+    }
+
+    fun getRealPathFromURI(contentURI: String?): String? {
+        val contentUri = Uri.parse(contentURI)
+        val projection =
+            arrayOf(MediaStore.Images.Media.DATA)
+        var cursor: Cursor? = null
+        try {
+            cursor = if (Build.VERSION.SDK_INT > 19) { // Will return "image:x*"
+                val wholeID = DocumentsContract.getDocumentId(contentUri)
+                // Split at colon, use second item in the array
+                val id = wholeID.split(":").toTypedArray()[1]
+                // where id is equal to
+                val sel = MediaStore.Images.Media._ID + "=?"
+                applicationContext.getContentResolver().query(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    projection, sel, arrayOf(id), null
+                )
+            } else {
+                applicationContext.getContentResolver().query(
+                    contentUri,
+                    projection, null, null, null
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        var path: String? = null
+        try {
+            val column_index: Int = cursor!!
+                .getColumnIndex(MediaStore.Images.Media.DATA)
+            cursor.moveToFirst()
+            path = cursor.getString(column_index).toString()
+            cursor.close()
+        } catch (e: NullPointerException) {
+            e.printStackTrace()
+        }
+        return path
     }
 
     private fun initSpinner(currentSubject: String) {

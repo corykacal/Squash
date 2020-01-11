@@ -51,7 +51,7 @@ class photoapi(private val resources: Resources) {
     fun loadFileToTV(localFile: String, textView: ImageView, isThumbnail: Boolean) {
         var bitmap = BitmapFactory.decodeFile(localFile)
         if(isThumbnail) {
-            val width = 275.0
+            val width = 250.0
             val height = (width/bitmap.width) * bitmap.height
             bitmap = ThumbnailUtils.extractThumbnail(bitmap, width.toInt(), height.toInt())
         }

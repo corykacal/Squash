@@ -40,5 +40,14 @@ data class Post(
     var down: Int? = null,
 
     @SerializedName("timestamp")
-    @ServerTimestamp val timestamp: Timestamp? = null
+    @ServerTimestamp val timestamp: Timestamp? = null,
+
+    @SerializedName("color")
+    var subject_color: Int? = null,
+
+    @SerializedName("svg")
+    var subject_svg: String? = null,
+
+    @SerializedName("image")
+    var subject_image: String? = null
 )

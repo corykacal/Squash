@@ -2,6 +2,7 @@ package com.example.squash.posts.ListAdapters
 
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +23,9 @@ import com.example.squash.api.tables.Post
 import com.example.squash.api.tables.Subject
 import com.example.squash.technology.ListFragment
 import com.example.squash.technology.SingleClickListener
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import java.util.*
+import kotlin.coroutines.coroutineContext
 
 /**
  * Created by witchel on 8/25/2019
@@ -87,6 +90,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
         private var subjectTag = itemView.findViewById<ConstraintLayout>(R.id.subject_tag)
         private var subjectTV = itemView.findViewById<TextView>(R.id.subject)
+        private var subjectIV = itemView.findViewById<ImageView>(R.id.subjectIV)
 
         private var currentSubject = viewModel.observeSubject().value
 
@@ -120,20 +124,20 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
             commentsTV.text = item.comment_count.toString()
 
-            var color = ""
-            subjects?.forEach {
-                if(it.subject==item.subject) {
-                    color = "#%06x".format(it.color)
-                }
-            }
 
             if(item.subject!=null && currentSubject=="All") {
                 subjectTV.text = item.subject!!.toUpperCase()
                 if (item.subject=="STICKY") {
                     subjectTag.setBackgroundResource(R.color.blue)
                     everything.setBackgroundResource(R.color.lightBlue)
+                    GlideToVectorYou.justLoadImage(fragment?.activity, Uri.parse("https://squashsvg.s3.us-east-2.amazonaws.com/sticky.svg") , subjectIV)
                 } else {
-                    subjectTag.setBackgroundColor(Color.parseColor(color))
+                    if(item.subject_color != null) {
+                        subjectTag.setBackgroundColor(Color.parseColor("#%06x".format(item.subject_color)))
+                    }
+                    if(item.subject_svg != null) {
+                        GlideToVectorYou.justLoadImage(fragment?.activity, Uri.parse(item.subject_svg) , subjectIV)
+                    }
                 }
             }
 

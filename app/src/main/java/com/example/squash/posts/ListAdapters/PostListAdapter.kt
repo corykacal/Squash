@@ -113,6 +113,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             contentsTV.minLines = 3
             contentsTV.maxLines = 5
             subjectTV.text = ""
+            subjectIV.isVisible = false
             everything.setBackgroundResource(R.color.post)
             subjectTag.setBackgroundResource(R.color.post)
             if (item == null) return
@@ -128,6 +129,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             if(item.subject!=null && currentSubject=="All") {
                 subjectTV.text = item.subject!!.toUpperCase()
                 if (item.subject=="STICKY") {
+                    subjectIV.isVisible = true
                     subjectTag.setBackgroundResource(R.color.blue)
                     everything.setBackgroundResource(R.color.lightBlue)
                     GlideToVectorYou.justLoadImage(fragment?.activity, Uri.parse("https://squashsvg.s3.us-east-2.amazonaws.com/sticky.svg") , subjectIV)
@@ -136,6 +138,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
                         subjectTag.setBackgroundColor(Color.parseColor("#%06x".format(item.subject_color)))
                     }
                     if(item.subject_svg != null) {
+                        subjectIV.isVisible = true
                         GlideToVectorYou.justLoadImage(fragment?.activity, Uri.parse(item.subject_svg) , subjectIV)
                     }
                 }

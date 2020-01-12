@@ -311,7 +311,12 @@ class NewPostActivity(): AppCompatActivity() {
         val currentSubject = intent.getStringExtra("subject")
 
         var auth = FirebaseAuth.getInstance()
-        var user = User(auth) {}
+        var user = User(auth) { success, user ->
+            if(!success) {
+                Toast.makeText(applicationContext, "please check internet connection", Toast.LENGTH_LONG)
+                finish()
+            }
+        }
         var mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         viewModel = MainViewModel()
         viewModel.init(user, photoapi(resources), mFusedLocationClient)

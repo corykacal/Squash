@@ -16,6 +16,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import com.example.squash.intro.IntroActivity
@@ -80,11 +82,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         everything.isVisible = false
         findViewById<bottomNavBar>(R.id.bar).setInstance(this)
-        auth = FirebaseAuth.getInstance()
-        var user = User(auth) {}
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        viewModel = MainViewModel()
-        viewModel.init(user, photoapi(resources), mFusedLocationClient)
+        listenToButton()
+    }
+
+    private fun listenToButton() {
+        failedLogin.setOnClickListener {
+            startApplication()
+        }
     }
 
     private fun checkPermissions(): Boolean {
@@ -113,11 +117,24 @@ class MainActivity : AppCompatActivity() {
 
     //TODO make this not horrible. make a check. maybe a fragment. for sure a callback somehwere
     private fun startApplication() {
-        viewModel.requestNewLocationData {  }
-        everything.isVisible = true
-        homeFragment = HomeFragment.newInstance()
-        launchNewFragment(homeFragment, R.id.posts_icon)
-        observePoints()
+        auth = FirebaseAuth.getInstance()
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        viewModel = MainViewModel()
+        Toast.makeText(applicationContext, "logging in...", Toast.LENGTH_SHORT).show()
+        User(auth) { success, user ->
+            if(success) {
+                viewModel.init(user, photoapi(resources), mFusedLocationClient)
+                viewModel.requestNewLocationData {  }
+                failedLogin.visibility = View.INVISIBLE
+                everything.isVisible = true
+                homeFragment = HomeFragment.newInstance()
+                launchNewFragment(homeFragment, R.id.posts_icon)
+                observePoints()
+            } else {
+                failedLogin.visibility = View.VISIBLE
+                Toast.makeText(applicationContext, "anonymous login failed, try again", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

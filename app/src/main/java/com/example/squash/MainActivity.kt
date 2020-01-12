@@ -120,11 +120,11 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         viewModel = MainViewModel()
-        Toast.makeText(applicationContext, "logging in...", Toast.LENGTH_SHORT).show()
         User(auth) { success, user ->
             if(success) {
                 viewModel.init(user, photoapi(resources), mFusedLocationClient)
-                viewModel.requestNewLocationData {  }
+                viewModel.quickLocationData {  }
+                viewModel.startLocationServices()
                 failedLogin.visibility = View.INVISIBLE
                 everything.isVisible = true
                 homeFragment = HomeFragment.newInstance()

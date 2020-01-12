@@ -31,10 +31,10 @@ class MainViewModel : ViewModel() {
     private var singlePostComments  = MutableLiveData<List<Post>>()
     private var userData            = MutableLiveData<UserData>()
     private var currentSubject      = MutableLiveData<String>("All")
-    private var coordinates         = MutableLiveData<List<Double>>()
     private var subjects            = MutableLiveData<List<Subject>>()
 
     companion object {
+        private var coordinates         = MutableLiveData<List<Double>>()
         private lateinit var auth: User
         private lateinit var storage: photoapi
         private lateinit var postFetch: SquashApi
@@ -50,25 +50,22 @@ class MainViewModel : ViewModel() {
     }
 
     @SuppressLint("MissingPermission")
-    fun requestNewLocationData(func: (Boolean) -> Unit) {
+    fun quickLocationData(func: (Boolean) -> Unit) {
         val mLocationRequest = LocationRequest()
         mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         mLocationRequest.interval = 0
         mLocationRequest.fastestInterval = 0
         mLocationRequest.numUpdates = 1
 
-        val callback = object: LocationCallback() {
+        val callback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult?) {
                 super.onLocationResult(p0)
-                if(p0 != null) {
+                if (p0 != null) {
                     val latitude = p0.lastLocation?.latitude
                     val longitude = p0.lastLocation?.longitude
-                    if(latitude == null || longitude == null) {
+                    if (latitude == null || longitude == null) {
                         func(false)
                     }
-                    Log.d("fresh longitude: ", "$longitude")
-                    Log.d("fresh latitude: ", "$latitude")
-                    coordinates.setValue(listOf(latitude!!, longitude!!))
                     func(true)
                 } else {
                     func(false)
@@ -80,6 +77,45 @@ class MainViewModel : ViewModel() {
             mLocationRequest, callback,
             Looper.myLooper()
         )
+    }
+
+    @SuppressLint("MissingPermission")
+    fun requestNewLocationData(func: (Double?, Double?) -> Unit) {
+        val mLocationRequest = LocationRequest()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 13000
+        mLocationRequest.fastestInterval = 8000
+
+        val callback = object: LocationCallback() {
+            override fun onLocationResult(p0: LocationResult?) {
+                super.onLocationResult(p0)
+                if(p0 != null) {
+                    val latitude = p0.lastLocation?.latitude
+                    val longitude = p0.lastLocation?.longitude
+                    if(latitude == null || longitude == null) {
+                        func(null, null)
+                    }
+                    Log.d("fresh longitude: ", "$longitude")
+                    Log.d("fresh latitude: ", "$latitude")
+                    func(latitude, longitude)
+                } else {
+                    func(null, null)
+                }
+            }
+        }
+
+        locationClient.requestLocationUpdates(
+            mLocationRequest, callback,
+            Looper.myLooper()
+        )
+    }
+
+    fun startLocationServices() {
+        requestNewLocationData { lat, long ->
+            if(lat!=null && long!=null) {
+                coordinates.setValue(listOf(lat, long))
+            }
+        }
     }
 
     /**
@@ -187,6 +223,7 @@ class MainViewModel : ViewModel() {
     fun getSubjects(func: (Boolean) -> Unit) {
         var uuid = getUUID()!!
         val currentCoordinates = coordinates.value
+        Log.d("fdsfdsafdsafds", "$coordinates")
         if(currentCoordinates==null) {
             func(false)
             return

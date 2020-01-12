@@ -322,12 +322,9 @@ class NewPostActivity(): AppCompatActivity() {
         viewModel.init(user, photoapi(resources), mFusedLocationClient)
 
         //need location before you can post
-        viewModel.requestNewLocationData { success: Boolean ->
-            if(success) {
-                initSpinner(currentSubject)
-            }
-        }
+        viewModel.startLocationServices()
 
+        initSpinner(currentSubject)
         imageVisible(false)
         listenToEdit()
         initPostButton()

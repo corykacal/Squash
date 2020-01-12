@@ -63,36 +63,11 @@ class HomeFragment: ListFragment() {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun requestNewLocationData() {
-        val mLocationRequest = LocationRequest()
-        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        mLocationRequest.interval = 0
-        mLocationRequest.fastestInterval = 0
-        mLocationRequest.numUpdates = 1
-
-        val callback = object: LocationCallback() {
-            override fun onLocationResult(p0: LocationResult?) {
-                super.onLocationResult(p0)
-                val latitude = p0?.lastLocation?.latitude
-                val longitude = p0?.lastLocation?.longitude
-                Log.d("fresh longitude: ", "$longitude")
-                Log.d("fresh latitude: ", "$latitude")
-            }
-        }
-
-        val mFusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!.applicationContext)
-        mFusedLocationClient!!.requestLocationUpdates(
-            mLocationRequest, callback,
-            Looper.myLooper()
-        )
-    }
 
     private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
             spinnerReset = 0
-            requestNewLocationData()
             setCurrentRecyclerState()
             viewModel.getUserData {}
             refreshPosts { success: Boolean ->
@@ -123,13 +98,13 @@ class HomeFragment: ListFragment() {
 
     fun refreshPosts(func: (Boolean) -> Unit) {
         //need location before many of my mainviewmodel post
-        viewModel.requestNewLocationData { locationSuccess: Boolean ->
-            if(locationSuccess) {
-                viewModel.getSubjects { subjectSuccess: Boolean ->
-                    if(subjectSuccess) {
-                        viewModel.getPosts(PAGE_SIZE, 1, func)
-                    }
-                }
+        Log.d("getting the post", "Fdsafdsafdsafdsafdsafdsafasfdsafdsafadsf$#@$#@$#@#")
+        viewModel.getSubjects { subjectSuccess: Boolean ->
+            if(subjectSuccess) {
+                viewModel.getPosts(PAGE_SIZE, 1, func)
+            } else {
+                //Toast.makeText(context, "check connection", Toast.LENGTH_SHORT).show()
+                func(false)
             }
         }
     }
@@ -268,7 +243,7 @@ class HomeFragment: ListFragment() {
             postRecycler.isVisible = false
             refreshPosts { success: Boolean ->
                 if(!success) {
-                    Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
                     postRecycler.isVisible = true
                 } else {
                     currentPage = 1
@@ -438,7 +413,17 @@ class HomeFragment: ListFragment() {
 
         setSpinner(root)
 
-        refreshPosts {  }
+        viewModel.quickLocationData {
+            if(it) {
+                refreshPosts {
+                    if(!it) {
+                        Toast.makeText(context, "refresh failed", Toast.LENGTH_SHORT)
+                    }
+                }
+            } else {
+                Toast.makeText(context, "refresh failed", Toast.LENGTH_SHORT)
+            }
+        }
 
 
 

@@ -57,19 +57,6 @@ class SinglePostActivity: AppCompatActivity() {
             CommentListAdapter(viewModel, mixedPairs)
         recycler.adapter = postAdapter
         recycler.layoutManager = LinearLayoutManager(this)
-
-        /*
-        old cocde when i was going to have swipe left for favorite.
-        but i am going to have swipe left for the changing between
-        hot anda new.
-
-        val itemTouchCallback = postTouchHelper(0, ItemTouchHelper.LEFT)
-
-
-        val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
-        itemTouchHelper.attachToRecyclerView(recycler)
-         */
-
     }
 
     private fun initDownSwipeLayout(post_number: Long) {
@@ -160,41 +147,6 @@ class SinglePostActivity: AppCompatActivity() {
     }
 
 
-    override fun onBackPressed() {
-        /*
-         * Do I want this???
-
-        val lambda = { success: Boolean ->
-            if(!success) {
-                Toast.makeText(applicationContext, "refresh failed", Toast.LENGTH_LONG).show()
-            }
-        }
-        * would refresh page_Size*current_page
-        viewModel.getPosts(PAGE_SIZE, 1, lambda)
-         */
-        super.onBackPressed()
-    }
-
-    private fun initActionBar() {
-        /*
-        toolbar = findViewById(R.id.posttoolbar)
-        toolbar.setTitle(title)
-        toolbar.setNavigationIcon(R.drawable.back_arrow)
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            onBackPressed()
-        }
-
-         */
-    }
-
-    private fun startCreatePostActivity(post_number: Long) {
-        var intent = Intent(this, NewPostActivity::class.java)
-        intent.putExtra("isComment", true)
-        intent.putExtra("reply_to", post_number)
-        startActivity(intent)
-    }
-
     private fun pulseAnimation(textView: TextView) {
         val anim = AlphaAnimation(0.0f, 1.0f)
         anim.duration = 100 //You can manage the blinking time with this parameter
@@ -203,6 +155,7 @@ class SinglePostActivity: AppCompatActivity() {
         anim.repeatCount = 2
         textView.startAnimation(anim)
     }
+
 
     private fun hideKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -305,10 +258,6 @@ class SinglePostActivity: AppCompatActivity() {
         }
         var downVote = findViewById<ImageView>(R.id.downVote)
         var upVote = findViewById<ImageView>(R.id.upVote)
-
-        val lambda = { success: Boolean ->
-        }
-
 
         upVote.setOnClickListener {
             if(downVote.tag=="true") {
@@ -454,9 +403,6 @@ class SinglePostActivity: AppCompatActivity() {
         }
 
         refreshSinglePost(post_number, lambda)
-
-        initActionBar()
-
 
     }
 

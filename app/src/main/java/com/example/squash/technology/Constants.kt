@@ -4,9 +4,19 @@ import com.example.squash.R
 
 class Constants {
     companion object {
+        //pagination size
         const val PAGE_SIZE = 8
+
+        //make new post activity
         const val CREATE_POST_ACTIVITY = 2
+
+        //single post activity
         const val VIEW_POST_ACTIVITY = 1
+
+        //image pick code
+        const val IMAGE_PICK_CODE = 1000;
+        //Permission code
+        const val PERMISSION_CODE = 1001;
 
 
         val VEGGIES = listOf<Int>(

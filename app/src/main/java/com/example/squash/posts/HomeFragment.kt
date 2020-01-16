@@ -158,7 +158,6 @@ class HomeFragment: ListFragment() {
                     if (!success) {
                         Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
                     } else {
-                        Log.d("meme", "fdsfdsafdsafdsafdsafdsafs%$$#@%$#%$#@%@$#^^$#@^@#")
                         currentPage = 1
                         resetCurrentRecyclerState()
                     }
@@ -204,10 +203,6 @@ class HomeFragment: ListFragment() {
                     }
                 }
             }
-
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-            }
         })
     }
 
@@ -240,7 +235,6 @@ class HomeFragment: ListFragment() {
     /*
      * Keeps track of two recycler states. one for Hot and one for New
      *
-     * TODO: doesnt work since subject update
      */
     fun changeCurrentRecyclerState() {
         currentRecyclerState = previousRecyclerState
@@ -282,7 +276,6 @@ class HomeFragment: ListFragment() {
 
         //listen to subject changing
         viewModel.observeSubject().observe(this, Observer {
-            Log.d("SUBJECT NIGGA", "()()()()()()()()()()()()()()()()()()()()()()()()()()()()")
             postRecycler.isVisible = false
             refreshPostsAndSubjects { success: Boolean ->
                 if(!success) {
@@ -352,8 +345,6 @@ class HomeFragment: ListFragment() {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
                         MainActivity.newPost = true
                     }
-                    //makes error go away
-                    var MakeErrorGoAway = 0
                 }
                 changeCurrentRecyclerState()
                 refreshPostsAndSubjects(sortLambda)

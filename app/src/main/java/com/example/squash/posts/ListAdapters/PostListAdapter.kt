@@ -3,6 +3,7 @@ package com.example.squash.posts.ListAdapters
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.Uri
+import android.opengl.Visibility
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -113,9 +114,9 @@ class PostListAdapter(private val viewModel: MainViewModel,
             contentsTV.minLines = 3
             contentsTV.maxLines = 5
             subjectTV.text = ""
+            subjectTag.visibility = View.GONE
             subjectIV.isVisible = false
             everything.setBackgroundResource(R.color.post)
-            subjectTag.setBackgroundResource(R.color.post)
             if (item == null) return
 
             val postDate = Date(item.timestamp!!.time)
@@ -128,18 +129,19 @@ class PostListAdapter(private val viewModel: MainViewModel,
 
             if(item.subject!=null && currentSubject=="All") {
                 subjectTV.text = item.subject!!.toUpperCase()
+                subjectTag.visibility = View.VISIBLE
                 if (item.subject=="STICKY") {
-                    subjectIV.isVisible = true
                     subjectTag.setBackgroundResource(R.color.blue)
                     everything.setBackgroundResource(R.color.lightBlue)
+                    subjectIV.isVisible = true
                     GlideToVectorYou.justLoadImage(fragment?.activity, Uri.parse("https://squashsvg.s3.us-east-2.amazonaws.com/sticky.svg") , subjectIV)
                 } else {
                     if(item.subject_color != null) {
                         subjectTag.setBackgroundColor(Color.parseColor("#%06x".format(item.subject_color)))
                     }
                     if(item.subject_svg != null) {
-                        subjectIV.isVisible = true
                         GlideToVectorYou.justLoadImage(fragment?.activity, Uri.parse(item.subject_svg) , subjectIV)
+                        subjectIV.isVisible = true
                     }
                 }
             }

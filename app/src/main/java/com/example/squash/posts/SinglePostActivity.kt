@@ -26,31 +26,38 @@ import com.example.squash.api.tables.Post
 import com.example.squash.posts.ListAdapters.CommentListAdapter
 import com.example.squash.posts.subContent.ImageFragment
 import com.example.squash.technology.Cartesian
+import com.example.squash.technology.Constants.Companion.COLORS
+import com.example.squash.technology.Constants.Companion.VEGGIES
 import com.example.squash.technology.SingleClickListener
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_singlepost.*
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import java.util.*
 import kotlin.random.Random
 
 class SinglePostActivity: AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
-    private lateinit var auth: FirebaseAuth
-
     private lateinit var postAdapter: CommentListAdapter
     private lateinit var mixedPairs: List<List<Int>>
 
-    private lateinit var toolbar: Toolbar
-
-    private fun initSideSwipes(root: View) {
+    private var post_number: Long = 0
 
 
-    }
-
-    private fun refreshSinglePost(post_number: Long, func: (Boolean) -> Unit) {
+    /*
+     * Updates the comment section and the single post (needs ot be updated for points
+     * param:
+     *  func: callback
+     */
+    private fun refreshSinglePost(func: (Boolean) -> Unit) {
         viewModel.getComments(post_number, func)
         viewModel.getSinglePost(post_number, func)
     }
 
+
+    /*
+     * Attach post adapter and setup recycler view
+     */
     private fun initAdapter() {
         var recycler = findViewById<RecyclerView>(R.id.commentRecycler)
         postAdapter =
@@ -59,19 +66,28 @@ class SinglePostActivity: AppCompatActivity() {
         recycler.layoutManager = LinearLayoutManager(this)
     }
 
-    private fun initDownSwipeLayout(post_number: Long) {
+
+    /*
+     * listen to the down swipe and refresh on swipe
+     */
+    private fun initDownSwipeLayout() {
         var refresher = findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
-            val lambda = { success: Boolean ->
+            refreshSinglePost { success: Boolean ->
                 refresher.isRefreshing = false
                 if(!success) {
                     Toast.makeText(applicationContext, "refresh failed", Toast.LENGTH_LONG).show()
                 }
             }
-            refreshSinglePost(post_number, lambda)
         }
     }
 
+
+    /*
+     * Called when the user votes have changed and the colors need to be updated
+     * param:
+     *  points: amount of points the single post has
+     */
     private fun updatePointColors(points: Int) {
         var pointsTV = findViewById<TextView>(R.id.points)
         pointsTV.text = points.toString()
@@ -82,6 +98,11 @@ class SinglePostActivity: AppCompatActivity() {
         }
     }
 
+    /*
+     * Sets the main post with all the data it needs
+     * param:
+     *  post: the post
+     */
     private fun setMainPost(post: Post) {
         image.setImageDrawable(null)
         image.isVisible = false
@@ -106,6 +127,7 @@ class SinglePostActivity: AppCompatActivity() {
             contents.minLines = 0
             image.clipToOutline = true
             viewModel.downloadImg(post.imageUUID!!, image, imageLoaded)
+            //start the imageview fragment when a user clicks on the image
             image.setOnClickListener(object : SingleClickListener() {
                 override fun onSingleClick(v: View) {
                     val fragment = ImageFragment.newInstance()
@@ -147,6 +169,11 @@ class SinglePostActivity: AppCompatActivity() {
     }
 
 
+    /*
+     * Will apply a pulsing animation on the given textView
+     * param:
+     *  textView: the textview you would like to pulse
+     */
     private fun pulseAnimation(textView: TextView) {
         val anim = AlphaAnimation(0.0f, 1.0f)
         anim.duration = 100 //You can manage the blinking time with this parameter
@@ -157,6 +184,10 @@ class SinglePostActivity: AppCompatActivity() {
     }
 
 
+    /*
+     * Helpful function to hide keyboard if it is every out at a bad time. Such as when
+     * you hit submit
+     */
     private fun hideKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -169,8 +200,10 @@ class SinglePostActivity: AppCompatActivity() {
     }
 
 
-
-    fun initSubmitButton(post_number: Long) {
+    /*
+     * Listens to the submit button and will send a POST request to the server.
+     */
+    fun initSubmitButton() {
         commentButton.setOnClickListener(object : SingleClickListener() {
             override fun onSingleClick(v: View) {
                 var contents = post.text.toString()
@@ -195,6 +228,30 @@ class SinglePostActivity: AppCompatActivity() {
         })
     }
 
+
+    /*
+     * Callback for if the keyboard is lowered or raised. The cursor and characters left box will
+     * disappear when the keyboard is collapsed.
+     */
+    private fun listenToKeyboard() {
+        KeyboardVisibilityEvent.setEventListener(this, object: KeyboardVisibilityEventListener {
+            override fun onVisibilityChanged(isOpen: Boolean) {
+                if(!isOpen) {
+                    commentLeft.isVisible = false
+                    post.isCursorVisible = false
+                } else {
+                    commentLeft.isVisible = true
+                    post.isCursorVisible = true
+                }
+            }
+        })
+    }
+
+
+    /*
+     * Callback for every time the text changes. This is to let the user know how many
+     * characters they have left.
+     */
     private fun listenToEdit() {
         post.addTextChangedListener {
             val text = it.toString()
@@ -226,17 +283,17 @@ class SinglePostActivity: AppCompatActivity() {
     }
 
 
-    private fun setDataObserver(post_number: Long) {
+    /*
+     * The data observers for this activity
+     */
+    private fun setDataObserver() {
         viewModel.observeComments().observe(this, Observer {
             initAdapter()
             postAdapter.submitList(it)
         })
 
         viewModel.observePosts().observe(this, Observer {
-            val lambda = { success: Boolean ->
-
-            }
-            refreshSinglePost(post_number, lambda)
+            refreshSinglePost {}
         })
 
         viewModel.observeSinglePost().observe(this, Observer {
@@ -244,11 +301,22 @@ class SinglePostActivity: AppCompatActivity() {
         })
     }
 
+
+    /*
+     * Changes the color of the given image view to the given color.
+     * params:
+     *  view: The target image view
+     *  color: the color destination of the view
+     */
     private fun setSVGcolor(view: ImageView, color: Int) {
         view.setColorFilter(ContextCompat.getColor(view.context, color), PorterDuff.Mode.SRC_IN)
     }
 
-    private fun initVoteArrows(post_number: Long) {
+
+    /*
+     * Currently spaghetti code to define how arrows should behave.
+     */
+    private fun initVoteArrows() {
         val voteLambda = { success: Boolean ->
             if(!success) {
                 Toast.makeText(applicationContext, "vote failed", Toast.LENGTH_LONG).show()
@@ -311,6 +379,10 @@ class SinglePostActivity: AppCompatActivity() {
         }
     }
 
+
+    /*
+     * Enables the back button on the toolbar
+     */
     private fun setBackButton() {
         backButton.setOnClickListener(object: SingleClickListener() {
             override fun onSingleClick(v: View) {
@@ -319,90 +391,39 @@ class SinglePostActivity: AppCompatActivity() {
         })
     }
 
-    private var veggies = listOf<Int>(R.drawable.ic_apple,
-        R.drawable.ic_beetroot,
-        R.drawable.ic_bell_pepper,
-        R.drawable.ic_broccoli,
-        R.drawable.ic_carrot,
-        R.drawable.ic_cherry,
-        R.drawable.ic_chili,
-        R.drawable.ic_corn,
-        R.drawable.ic_cucumber,
-        R.drawable.ic_eggplant,
-        R.drawable.ic_grape,
-        R.drawable.ic_orange,
-        R.drawable.ic_pineapple,
-        R.drawable.ic_strawberry,
-        R.drawable.ic_watermelon,
-        R.drawable.ic_avocado
-    )
-
-    private var colors = listOf<Int>(
-        R.color.red,
-        R.color.orange,
-        R.color.yellow,
-        R.color.green,
-        R.color.lime,
-        R.color.maroon,
-        R.color.blue,
-        R.color.teal,
-        R.color.turquoise,
-        R.color.navy,
-        R.color.pink,
-        R.color.brown,
-        R.color.beige,
-        R.color.purple,
-        R.color.grey,
-        R.color.golden
-    )
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_singlepost)
 
-        /*
-        KeyboardVisibilityEvent.setEventListener(this, object: KeyboardVisibilityEventListener {
-            override fun onVisibilityChanged(isOpen: Boolean) {
-                Toast.makeText(baseContext, "$isOpen", Toast.LENGTH_SHORT).show()
-                if(!isOpen) {
-                    commentLeft.isVisible = false
-                    post.isCursorVisible = false
-                } else {
-                    commentLeft.isVisible = true
-                    post.isCursorVisible = true
-                }
-            }
-        })
-         */
 
         viewModel = MainActivity.viewModel
         val intent = intent
-        val post_number = intent.getLongExtra("post_number", 0)
+        post_number = intent.getLongExtra("post_number", 0)
 
-        initSubmitButton(post_number)
-        initDownSwipeLayout(post_number)
-        initVoteArrows(post_number)
+
+        initSubmitButton()
+        initDownSwipeLayout()
+        initVoteArrows()
+
+        listenToKeyboard()
         listenToEdit()
 
         setBackButton()
 
 
-        val pairs = Cartesian.nAryCartesianProduct(listOf<List<Int>>(colors, veggies))
-
+        val pairs = Cartesian.nAryCartesianProduct(listOf<List<Int>>(COLORS, VEGGIES))
         mixedPairs = pairs.shuffled(Random(post_number)) as List<List<Int>>
-
 
         commentLeft.isVisible = false
 
+        setDataObserver()
 
-        setDataObserver(post_number)
-        val lambda = { success: Boolean ->
+        refreshSinglePost { success -> Boolean
+            if(!success) {
+                Toast.makeText(applicationContext, "unable to fetch post", Toast.LENGTH_SHORT).show()
+            }
         }
-
-        refreshSinglePost(post_number, lambda)
 
     }
 

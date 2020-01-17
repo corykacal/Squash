@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_home"
-    android:theme="@style/LightSquash"
-    android:background="@drawable/ic_background"
+    android:background="?attr/colorBackgroundFloating"
     >
 
 
@@ -17,7 +16,6 @@
         android:layout_width="match_parent"
         android:fitsSystemWindows="true"
         android:minHeight="?attr/actionBarSize"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:background="?attr/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +36,7 @@
                 android:prompt="@array/subject_arrays"
                 android:background="@drawable/subject_outline"
                 android:spinnerMode="dropdown"
-                android:popupBackground="@color/post"
+                android:popupBackground="?attr/panelBackground"
                 android:popupElevation="3dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -134,7 +132,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/unselected_button"
                 android:foreground="?attr/selectableItemBackground"
-                android:textColor="?attr/colorAccent"
+                android:textColor="?attr/panelBackground"
                 android:text="hot"
                 />
 

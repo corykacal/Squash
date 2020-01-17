@@ -12,6 +12,7 @@
     android:layout_marginEnd="6.5dp"
     card_view:cardCornerRadius="10dp"
     card_view:cardElevation="3dp"
+    card_view:cardBackgroundColor="?attr/panelBackground"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,7 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/everything"
-        android:background="?attr/colorAccent"
         tools:context=".MainActivity">
 
 
@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textSize="10sp"
-                android:textColor="@color/post"
+                android:textColor="?attr/panelBackground"
                 android:layout_marginStart="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

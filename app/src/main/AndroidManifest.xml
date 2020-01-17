@@ -12,11 +12,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/LightSquash">
+        android:theme="@style/DarkSquash">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/LightSquash"
+            android:theme="@style/DarkSquash"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,19 +25,19 @@
             </intent-filter>
         </activity>
         <activity android:name=".posts.NewPostActivity"
-            android:theme="@style/LightSquash"
+            android:theme="@style/DarkSquash"
             android:configChanges="orientation|screenSize|keyboardHidden">
 
         </activity>
         <activity android:name=".posts.SinglePostActivity"
-            android:theme="@style/LightSquash"
+            android:theme="@style/DarkSquash"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode=""
             >
 
         </activity>
         <activity android:name=".intro.IntroActivity"
-            android:theme="@style/LightSquash"
+            android:theme="@style/DarkSquash"
             android:configChanges="orientation|screenSize|keyboardHidden"
             >
 

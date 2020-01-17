@@ -2,17 +2,20 @@ package com.example.squash.posts
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -331,15 +334,29 @@ class HomeFragment: ListFragment() {
     }
 
 
+
+
+
+    private fun getColor(context: Context, colorResId: Int): Int {
+
+        val typedValue = TypedValue()
+        val typedArray = context.obtainStyledAttributes(typedValue.data, intArrayOf(colorResId))
+        val color = typedArray.getColor(0, 0)
+        typedArray.recycle()
+        return color
+    }
+
+
     private fun initListButtons(root: View) {
         root.findViewById<Button>(R.id.hotButton).setOnClickListener {
             if(MainActivity.newPost) {
                 MainActivity.newPost = false
                 val sortLambda = { success: Boolean ->
                     if(success) {
-                        it.setBackground(resources.getDrawable(R.drawable.selected_button))
+                        //TODO make this isnt a backgorund drawable thing
+                        it.setBackgroundResource(R.drawable.selected_button)
                         (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                       newButton.setBackground(resources.getDrawable(R.drawable.unselected_button))
+                        newButton.setBackgroundResource(R.drawable.unselected_button)
                         newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                     } else {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
@@ -356,9 +373,9 @@ class HomeFragment: ListFragment() {
                 MainActivity.newPost = true
                 val sortLambda = { success: Boolean ->
                     if(success) {
-                        it.setBackground(resources.getDrawable(R.drawable.selected_button))
+                        it.setBackgroundResource(R.drawable.selected_button)
                         (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                        hotButton.setBackground(resources.getDrawable(R.drawable.unselected_button))
+                        hotButton.setBackgroundResource(R.drawable.unselected_button)
                         hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                     } else {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()

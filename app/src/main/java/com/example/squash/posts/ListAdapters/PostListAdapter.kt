@@ -116,7 +116,7 @@ class PostListAdapter(private val viewModel: MainViewModel,
             subjectTV.text = ""
             subjectTag.visibility = View.GONE
             subjectIV.isVisible = false
-            everything.setBackgroundResource(R.color.post)
+            everything.setBackgroundResource(R.drawable.post)
             if (item == null) return
 
             val postDate = Date(item.timestamp!!.time)

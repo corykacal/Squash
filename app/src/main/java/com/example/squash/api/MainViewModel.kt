@@ -221,15 +221,17 @@ class MainViewModel : ViewModel() {
     }
 
     fun getSubjects(func: (Boolean) -> Unit) {
+
         var uuid = getUUID()!!
         val currentCoordinates = coordinates.value
-        Log.d("fdsfdsafdsafds", "$coordinates")
         if(currentCoordinates==null) {
             func(false)
             return
         }
         val latitude = currentCoordinates[0]
         val longitude = currentCoordinates[1]
+
+
         var task = postFetch.getSubjects(uuid, latitude, longitude)
         task.enqueue(object : Callback<SquashApi.SubjectResponse> {
             override fun onResponse(call: Call<SquashApi.SubjectResponse>?, response: Response<SquashApi.SubjectResponse>?) {

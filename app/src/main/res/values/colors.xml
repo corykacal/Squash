@@ -8,11 +8,18 @@
     <color name="accentYellow">#f7e87e</color>
     <color name="secondAccentYellow">#f7e774</color>
     <color name="titleText">#70682c</color>
+    <color name="post">#fffef5</color>
+
+    <color name="darkMainYellow">#292510</color>
+    <color name="darkSecondaryYellow">#131108</color>
+    <color name="darkAccentYellow">#2B2506</color>
+    <color name="darkSecondAccentYellow">#1E1D11</color>
+    <color name="darkTitleText">#756635</color>
+    <color name="darkPost">#3C3C30</color>
 
     <color name="mainGreen">#c1e868</color>
     <color name="secondaryGreen">#b0d35f</color>
 
-    <color name="post">#fffef5</color>
     <color name="background">#edecd5</color>
 
     <color name="statisticsBackground">#faf9ed</color>

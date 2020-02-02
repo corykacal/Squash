@@ -2,17 +2,20 @@ package com.example.squash.posts
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -24,7 +27,9 @@ import com.example.squash.R
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.tables.Post
 import com.example.squash.posts.ListAdapters.PostListAdapter
+import com.example.squash.technology.Constants.Companion.CREATE_POST_ACTIVITY
 import com.example.squash.technology.Constants.Companion.PAGE_SIZE
+import com.example.squash.technology.Constants.Companion.VIEW_POST_ACTIVITY
 import com.example.squash.technology.ListFragment
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -46,15 +51,13 @@ class HomeFragment: ListFragment() {
     private var currentRecyclerState: Parcelable? = null
     private var previousRecyclerState: Parcelable? = null
 
-    //first page always grabbed with initial refresh
+    //First page always grabbed with initial refresh
     private var currentPage: Int = 1
     private var loadingNewPages: Boolean = false
 
     private var subjectsArray: MutableList<String> = mutableListOf()
 
     private var spinnerReset = 0
-
-    var fragId = R.id.posts_icon
 
 
     companion object {
@@ -63,39 +66,20 @@ class HomeFragment: ListFragment() {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun requestNewLocationData() {
-        val mLocationRequest = LocationRequest()
-        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        mLocationRequest.interval = 0
-        mLocationRequest.fastestInterval = 0
-        mLocationRequest.numUpdates = 1
 
-        val callback = object: LocationCallback() {
-            override fun onLocationResult(p0: LocationResult?) {
-                super.onLocationResult(p0)
-                val latitude = p0?.lastLocation?.latitude
-                val longitude = p0?.lastLocation?.longitude
-                Log.d("fresh longitude: ", "$longitude")
-                Log.d("fresh latitude: ", "$latitude")
-            }
-        }
-
-        val mFusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!.applicationContext)
-        mFusedLocationClient!!.requestLocationUpdates(
-            mLocationRequest, callback,
-            Looper.myLooper()
-        )
-    }
-
+    /*
+     * Initialized the down swipe listener
+     * param:
+     *  root: root view
+     */
     private fun initDownSwipeLayout(root: View) {
         var refresher = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         refresher.setOnRefreshListener {
-            spinnerReset = 0
-            requestNewLocationData()
+
             setCurrentRecyclerState()
             viewModel.getUserData {}
-            refreshPosts { success: Boolean ->
+
+            refreshPostsAndSubjects { success: Boolean ->
                 refresher.isRefreshing = false
                 if(!success) {
                     Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
@@ -107,74 +91,98 @@ class HomeFragment: ListFragment() {
     }
 
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("meme", "meme")
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        var prev = savedInstanceState?.getString("meme")
-    }
-
-    fun refreshPosts(func: (Boolean) -> Unit) {
-        //need location before many of my mainviewmodel post
-        viewModel.requestNewLocationData { locationSuccess: Boolean ->
-            if(locationSuccess) {
-                viewModel.getSubjects { subjectSuccess: Boolean ->
-                    if(subjectSuccess) {
-                        viewModel.getPosts(PAGE_SIZE, 1, func)
-                    }
-                }
+    /*
+     * Refreshes the location based data.
+     * Param:
+     *  func: callback
+     */
+    fun refreshPostsAndSubjects(func: (Boolean) -> Unit) {
+        spinnerReset = 0 //how many times the spinner has been clicked
+        viewModel.getSubjects { subjectSuccess: Boolean ->
+            if(subjectSuccess) {
+                viewModel.getPosts(PAGE_SIZE, 1, func)
+            } else {
+                func(false)
             }
         }
     }
 
+
+    /*
+     * loads a new batch of posts
+     * param:
+     *  page_number: the pagination page number
+     *  func: callback
+     */
     fun loadPosts(page_number: Int, func: (Boolean) -> Unit) {
         viewModel.getPosts(PAGE_SIZE, page_number, func)
     }
 
+
+    /* starts the view post activity
+     * param:
+     *  post: the post you want to view
+     */
     override fun startPostActivity(post: Post) {
         val intent = Intent(context, SinglePostActivity::class.java)
         intent.putExtra("post_number", post.postID)
-        startActivityForResult(intent, 1)
+        startActivityForResult(intent, VIEW_POST_ACTIVITY)
     }
 
-    private fun startCreatePostActivity(root: View) {
-        var intent = Intent(root.context, NewPostActivity::class.java)
+
+    /*
+     * starts the new post creation activity
+     */
+    private fun startCreatePostActivity() {
+        var intent = Intent(context, NewPostActivity::class.java)
         var currentSubject = viewModel.observeSubject().value
         if(currentSubject==null) {
             currentSubject = "All"
         }
         intent.putExtra("subject", currentSubject)
-        startActivityForResult(intent, 2)
+        startActivityForResult(intent, CREATE_POST_ACTIVITY)
     }
 
+
+    /*
+     * On activity return android will arrive here
+     *
+     * From Constants.kt
+     * const val CREATE_POST_ACTIVITY = 2
+     * const val VIEW_POST_ACTIVITY = 1
+     *
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == 2) {
+        //Create post activity
+        if(requestCode == CREATE_POST_ACTIVITY) {
             if(resultCode == Activity.RESULT_OK) {
-                refreshPosts { success: Boolean ->
+                refreshPostsAndSubjects { success: Boolean ->
                     if (!success) {
                         Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
                     } else {
                         currentPage = 1
-                        postRecycler.scrollToPosition(0)
+                        resetCurrentRecyclerState()
                     }
                 }
             }
+
         }
+        /*else if (requestCode == VIEW_POST_ACTIVITY) {
+            //TODO check HomeFragment is ever destroyed after opening viewpost
+        } */
     }
 
+
+    /*
+     * Initializes the list adapter and assigns recycler scroll behavior
+     */
     private fun initAdapter(root: View) {
-        var recycler = root.findViewById<RecyclerView>(R.id.postRecycler)
         postAdapter = PostListAdapter(viewModel, this)
-        recycler.adapter = postAdapter
         val layoutManager = LinearLayoutManager(context)
+        var recycler = root.findViewById<RecyclerView>(R.id.postRecycler)
+
+        recycler.adapter = postAdapter
         recycler.layoutManager =  layoutManager
         recycler.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -183,67 +191,73 @@ class HomeFragment: ListFragment() {
                 var totalItemCount = layoutManager.getItemCount()
                 var firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-                if(!loadingNewPages) {
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                        && firstVisibleItemPosition >= 0
-                    ) {
-                        loadingNewPages = true
-                        loadPosts(currentPage) { success: Boolean ->
-                            loadingNewPages = false
-                            if (success) {
-                                setCurrentRecyclerState()
-                                currentPage += 1
-                            }
+                if (!loadingNewPages
+                    && (visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                    && firstVisibleItemPosition >= 0) {
+
+                    loadingNewPages = true
+
+                    loadPosts(currentPage) { success: Boolean ->
+                        loadingNewPages = false
+                        if (success) {
+                            setCurrentRecyclerState()
+                            currentPage += 1
                         }
                     }
                 }
             }
-
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-            }
         })
-
-        /*
-        old cocde when i was going to have swipe left for favorite.
-        but i am going to have swipe left for the changing between
-        hot anda new.
-
-        val itemTouchCallback = postTouchHelper(0, ItemTouchHelper.LEFT)
-
-
-        val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
-        itemTouchHelper.attachToRecyclerView(recycler)
-         */
-
     }
+
 
     /*
-    private fun initSideSwipes(root: View) {
-
-    }
-
+     * creates the listener for the new post button
+     * param:
+     *  root: the root view
      */
-
     private fun initFloatingButton(root: View) {
         root.findViewById<FloatingActionButton>(R.id.newPost).setOnClickListener {
-            startCreatePostActivity(root)
+            startCreatePostActivity()
         }
     }
 
+
+    /*
+     * resets the scroll position (recycler state) to the top of the list (0)
+     *
+     *  TODO: fix the janky post delayed fix
+     */
     fun resetCurrentRecyclerState() {
-        postRecycler.scrollToPosition(0)
+        Handler().postDelayed(Runnable {
+            postRecycler.scrollToPosition(0)
+            postRecycler.isVisible = true
+        }, 100)
     }
 
+
+    /*
+     * Keeps track of two recycler states. one for Hot and one for New
+     *
+     */
     fun changeCurrentRecyclerState() {
         currentRecyclerState = previousRecyclerState
         previousRecyclerState = postRecycler.getLayoutManager()?.onSaveInstanceState()
     }
 
+
+    /*
+     * saves the current scroll position
+     */
     override fun setCurrentRecyclerState() {
         currentRecyclerState = postRecycler.getLayoutManager()?.onSaveInstanceState()
     }
 
+
+    /*
+     * Sets up all data observers to observe data from MainViewModel
+     * param:
+     *  root: the root view
+     */
     private fun setDataObserver(root: View) {
 
         //listen to post refreshing
@@ -266,16 +280,13 @@ class HomeFragment: ListFragment() {
         //listen to subject changing
         viewModel.observeSubject().observe(this, Observer {
             postRecycler.isVisible = false
-            refreshPosts { success: Boolean ->
+            refreshPostsAndSubjects { success: Boolean ->
                 if(!success) {
-                    Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context, "refresh failed", Toast.LENGTH_LONG).show()
                     postRecycler.isVisible = true
                 } else {
                     currentPage = 1
-                    Handler().postDelayed(Runnable {
-                        postRecycler.scrollToPosition(0)
-                        postRecycler.isVisible = true
-                    }, 100)
+                    resetCurrentRecyclerState()
                 }
             }
         })
@@ -322,11 +333,19 @@ class HomeFragment: ListFragment() {
 
     }
 
-    private fun setSpinner(root: View) {
-        val subjects = viewModel
-        val spinner = root.findViewById<Spinner>(R.id.subjectSpinner)
 
+
+
+
+    private fun getColor(context: Context, colorResId: Int): Int {
+
+        val typedValue = TypedValue()
+        val typedArray = context.obtainStyledAttributes(typedValue.data, intArrayOf(colorResId))
+        val color = typedArray.getColor(0, 0)
+        typedArray.recycle()
+        return color
     }
+
 
     private fun initListButtons(root: View) {
         root.findViewById<Button>(R.id.hotButton).setOnClickListener {
@@ -334,19 +353,18 @@ class HomeFragment: ListFragment() {
                 MainActivity.newPost = false
                 val sortLambda = { success: Boolean ->
                     if(success) {
-                        it.setBackground(resources.getDrawable(R.drawable.selected_button))
+                        //TODO make this isnt a backgorund drawable thing
+                        it.setBackgroundResource(R.drawable.selected_button)
                         (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                       newButton.setBackground(resources.getDrawable(R.drawable.unselected_button))
+                        newButton.setBackgroundResource(R.drawable.unselected_button)
                         newButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                     } else {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
                         MainActivity.newPost = true
                     }
-                    //makes error go away
-                    var MakeErrorGoAway = 0
                 }
                 changeCurrentRecyclerState()
-                refreshPosts(sortLambda)
+                refreshPostsAndSubjects(sortLambda)
             }
         }
 
@@ -355,9 +373,9 @@ class HomeFragment: ListFragment() {
                 MainActivity.newPost = true
                 val sortLambda = { success: Boolean ->
                     if(success) {
-                        it.setBackground(resources.getDrawable(R.drawable.selected_button))
+                        it.setBackgroundResource(R.drawable.selected_button)
                         (it as Button).setTextColor(ContextCompat.getColor(it.context, R.color.secondaryYellow))
-                        hotButton.setBackground(resources.getDrawable(R.drawable.unselected_button))
+                        hotButton.setBackgroundResource(R.drawable.unselected_button)
                         hotButton.setTextColor(ContextCompat.getColor(it.context, R.color.selectedButton))
                     } else {
                         Toast.makeText(context, "network failed", Toast.LENGTH_LONG).show()
@@ -365,32 +383,12 @@ class HomeFragment: ListFragment() {
                     }
                 }
                 changeCurrentRecyclerState()
-                refreshPosts(sortLambda)
+                refreshPostsAndSubjects(sortLambda)
             }
         }
 
     }
 
-    private fun listenForScrolling(root: View) {
-        //not sure how pretty or useful to the UX  this is
-        /*
-        val fab = root.findViewById<FloatingActionButton>(R.id.newPost)
-        root.findViewById<RecyclerView>(R.id.searchResults).addOnScrollListener(object: RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if(dy > 0 || dy < 0 && fab.isShown) {
-                    fab.alpha = 0.5f
-                }
-            }
-
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    fab.alpha = 0.9f
-                }
-                super.onScrollStateChanged(recyclerView, newState)
-            }
-        })
-         */
-    }
 
     private fun listenToSpinner(root: View) {
         root.findViewById<Spinner>(R.id.subjectSpinner).onItemSelectedListener =
@@ -407,8 +405,6 @@ class HomeFragment: ListFragment() {
             }
         }
     }
-
-
 
 
     override fun onCreateView(
@@ -428,38 +424,27 @@ class HomeFragment: ListFragment() {
         initDownSwipeLayout(root)
         setDataObserver(root)
 
-        listenForScrolling(root)
-
         listenToSpinner(root)
 
         initFloatingButton(root)
 
         initListButtons(root)
 
-        setSpinner(root)
-
-        refreshPosts {  }
-
-
-
-        //initSideSwipes(root)
-
-        /*
-        root.setOnTouchListener(object: OnSwipeTouchListener(recycle.context) {
-            override fun onSwipeRight() {
-                Toast.makeText(recycle.context, "right", Toast.LENGTH_SHORT).show()
+        viewModel.quickLocationData {
+            if(it) {
+                refreshPostsAndSubjects {
+                    if(!it) {
+                        Toast.makeText(context, "refresh failed", Toast.LENGTH_SHORT)
+                    }
+                }
+            } else {
+                Toast.makeText(context, "refresh failed", Toast.LENGTH_SHORT)
             }
-            override fun onSwipeLeft() {
-                Toast.makeText(recycle.context, "left", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-         */
-
-
+        }
 
         return root
     }
+
 
 }
 

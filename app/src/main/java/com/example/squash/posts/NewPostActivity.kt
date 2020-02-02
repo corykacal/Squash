@@ -26,6 +26,8 @@ import com.example.squash.R
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.User
 import com.example.squash.api.photoapi
+import com.example.squash.technology.Constants.Companion.IMAGE_PICK_CODE
+import com.example.squash.technology.Constants.Companion.PERMISSION_CODE
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_new_post.*
@@ -40,13 +42,9 @@ class NewPostActivity(): AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
 
 
-    companion object {
-        //image pick code
-        private val IMAGE_PICK_CODE = 1000;
-        //Permission code
-        private val PERMISSION_CODE = 1001;
-    }
-
+    /*
+     * Function to open the on-screen keyboard
+     */
     private fun openKeybaord() {
         editPostText.postDelayed(object : Runnable {
             override fun run() {
@@ -56,6 +54,10 @@ class NewPostActivity(): AppCompatActivity() {
         }, 100)
     }
 
+
+    /*
+     * Function to hide the on-screen keyboard
+     */
     private fun hideKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -67,11 +69,23 @@ class NewPostActivity(): AppCompatActivity() {
         imm.hideSoftInputFromWindow(view.windowToken, 0);
     }
 
+
+    /*
+     * Displays the error in the text box right below the edit text box.
+     * param:
+     *  error: the string to be displayed
+     */
     private fun displayError(error: String) {
         postError.text = error
         pulseAnimation(postError)
     }
 
+
+    /*
+     * Will apply a pulsing animation on the given textView.
+     * param:
+     *  textView: the textview you would like to pulse
+     */
     private fun pulseAnimation(textView: TextView) {
         val anim = AlphaAnimation(0.0f, 1.0f)
         anim.duration = 110 //You can manage the blinking time with this parameter
@@ -82,6 +96,9 @@ class NewPostActivity(): AppCompatActivity() {
     }
 
 
+    /*
+     * Sets up the listener for the post button.
+     */
     private fun initPostButton() {
         postButton.setOnClickListener {
             var contents = editPostText.text.toString()
@@ -117,12 +134,21 @@ class NewPostActivity(): AppCompatActivity() {
         }
     }
 
+
+    /*
+     * Override android back button
+     */
     override fun onBackPressed() {
+        //no post made, result is canceled, don't refresh
         setResult(Activity.RESULT_CANCELED)
         super.onBackPressed()
     }
 
 
+    /*
+     * Callback for every time the text changes. This is to let the user know how many
+     * characters they have left.
+     */
     private fun listenToEdit() {
         editPostText.addTextChangedListener {
             postError.text = ""
@@ -146,6 +172,7 @@ class NewPostActivity(): AppCompatActivity() {
             }
         }
     }
+
 
     private fun initPictureButton() {
 
@@ -203,7 +230,6 @@ class NewPostActivity(): AppCompatActivity() {
             PERMISSION_CODE -> {
                 if (grantResults.size >0 && grantResults[0] ==
                     PackageManager.PERMISSION_GRANTED){
-                    Log.d("getting imag eswag zone", "$#@$#@$#@@#$@#@$#@$@#$")
                     //permission from popup granted
                     pickImageFromGallery()
                 }
@@ -311,18 +337,20 @@ class NewPostActivity(): AppCompatActivity() {
         val currentSubject = intent.getStringExtra("subject")
 
         var auth = FirebaseAuth.getInstance()
-        var user = User(auth) {}
+        var user = User(auth) { success, user ->
+            if(!success) {
+                Toast.makeText(applicationContext, "please check internet connection", Toast.LENGTH_LONG)
+                finish()
+            }
+        }
         var mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         viewModel = MainViewModel()
         viewModel.init(user, photoapi(resources), mFusedLocationClient)
 
         //need location before you can post
-        viewModel.requestNewLocationData { success: Boolean ->
-            if(success) {
-                initSpinner(currentSubject)
-            }
-        }
+        viewModel.startLocationServices()
 
+        initSpinner(currentSubject)
         imageVisible(false)
         listenToEdit()
         initPostButton()

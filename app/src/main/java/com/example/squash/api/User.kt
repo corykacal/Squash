@@ -11,7 +11,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlin.coroutines.coroutineContext
 
-class User(private val auth: FirebaseAuth, func: (Boolean) -> Unit) {
+class User(private val auth: FirebaseAuth, func: (Boolean, User) -> Unit) {
     companion object {
         var user: FirebaseUser? = null
     }
@@ -23,17 +23,17 @@ class User(private val auth: FirebaseAuth, func: (Boolean) -> Unit) {
                 if (it.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     user = auth.currentUser
-                    func(true)
+                    func(true, this)
                     //updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
-                    func(false)
+                    func(false, this)
                 }
                 // ...
             }
         } else {
             user = auth.currentUser
-            func(true)
+            func(true, this)
         }
     }
     fun getUid(): String? {

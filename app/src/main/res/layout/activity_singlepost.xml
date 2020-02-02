@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@drawable/ic_background"
+    android:background="?attr/colorBackgroundFloating"
     >
 
 
@@ -108,7 +108,7 @@
                         xmlns:tools="http://schemas.android.com/tools"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/post"
+                        android:background="?attr/panelBackground"
                         tools:context=".MainActivity">
 
 
@@ -140,7 +140,6 @@
                                     android:layout_height="wrap_content"
                                     android:id="@+id/contents"
                                     android:alpha="1"
-                                    android:textColor="@color/black"
                                     android:layout_marginStart="12dp"
                                     android:layout_marginTop="10dp"
                                     android:layout_marginBottom="2dp"

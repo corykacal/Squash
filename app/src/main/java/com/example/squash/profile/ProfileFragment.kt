@@ -105,6 +105,13 @@ class ProfileFragment: Fragment() {
         })
     }
 
+    private fun listenToSettings(root: View) {
+        root.findViewById<CardView>(R.id.settings).setOnClickListener {
+            
+
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -118,6 +125,7 @@ class ProfileFragment: Fragment() {
         initProfile(root)
         listenToUserData(root)
         listenToPostsButton(root)
+        listenToSettings(root)
 
         viewModel.getUserData {}
 

@@ -252,10 +252,15 @@ class MainViewModel : ViewModel() {
         var task = postFetch.getComments(post_number, uuid)
         task.enqueue(object : Callback<SquashApi.ListingResponse> {
             override fun onResponse(call: Call<SquashApi.ListingResponse>?, response: Response<SquashApi.ListingResponse>?) {
-                var posts = response!!.body()!!.results
-                posts = posts.sortedBy { it.timestamp }
-                singlePostComments.postValue(posts)
-                func(true)
+                //TODO catch all of the responses
+                try {
+                    var posts = response!!.body()!!.results
+                    posts = posts.sortedBy { it.timestamp }
+                    singlePostComments.postValue(posts)
+                    func(true)
+                } finally {
+                    func(false)
+                }
             }
             override fun onFailure(call: Call<SquashApi.ListingResponse>?, t: Throwable?) {
                 func(false)

@@ -49,5 +49,11 @@ data class Post(
     var subject_svg: String? = null,
 
     @SerializedName("image")
-    var subject_image: String? = null
+    var subject_image: String? = null,
+
+    @SerializedName("veggie")
+    var veggie_url: String? = null,
+
+    @SerializedName("veggie_color")
+    var veggie_color: Int? = null
 )

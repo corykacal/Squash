@@ -20,12 +20,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 import com.example.squash.api.tables.Post
-import com.example.squash.api.tables.Subject
 import com.example.squash.technology.ListFragment
 import com.example.squash.technology.SingleClickListener
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import java.util.*
-import kotlin.coroutines.coroutineContext
 
 /**
  * Created by witchel on 8/25/2019

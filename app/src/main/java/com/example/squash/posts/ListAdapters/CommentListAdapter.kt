@@ -1,6 +1,8 @@
 package com.example.squash.posts.ListAdapters
 
+import android.graphics.Color
 import android.graphics.PorterDuff
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,19 +14,21 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.squash.R
 import com.example.squash.api.MainViewModel
 //import com.example.squash.api.glide.Glide
 import com.example.squash.api.tables.Post
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
+import kotlin.coroutines.coroutineContext
 
 /**
  * Created by witchel on 8/25/2019
  */
 
-class CommentListAdapter(private val viewModel: MainViewModel,
-                      private val pairs: List<List<Int>>?)
+class CommentListAdapter(private val viewModel: MainViewModel)
     : ListAdapter<Post, CommentListAdapter.VH>(RedditDiff()) {
     class RedditDiff : DiffUtil.ItemCallback<Post>() {
 
@@ -88,16 +92,20 @@ class CommentListAdapter(private val viewModel: MainViewModel,
 
 
             val uniqueCommenter = item.uniqueCommenter!!
-            val cur_pair = pairs?.get(uniqueCommenter%256)
-            val color = cur_pair?.get(0)
-            val veggie = cur_pair?.get(1)
+            val veggie_color = item.veggie_color
+            val veggie_url = item.veggie_url
             //setSVGcolor(comment_tag, color!!)
             opTag.text = ""
             if(uniqueCommenter==0) {
                 opTag.text="OP"
             }
-            veggieIV.setCircleBackgroundColorResource(color!!)
-            veggieIV.setImageResource(veggie!!)
+            Log.d("XXX", "$veggie_color")
+            Log.d("XXX", "$veggie_url")
+            veggieIV.setCircleBackgroundColor(Color.parseColor("#%06x".format(veggie_color)))
+            Glide.with(veggieIV.context)
+                .load(veggie_url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(veggieIV)
 
             var points = item.up!! - item.down!!
             if(points<0) {
